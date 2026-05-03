@@ -11,6 +11,7 @@
 
         public List<string> GetParagonFiles()
         {
+
             if (!Directory.Exists(_directoryPath))
             {
                 throw new DirectoryNotFoundException($"Directory not found: {_directoryPath}");
