@@ -1,6 +1,6 @@
 namespace CostAnalizerApp.Interfaces
 {
-    public interface ISpendingCase : ISpending
+    public interface ISpendingCase 
     {
         /// <summary>
         /// Data wydatku
@@ -12,17 +12,22 @@ namespace CostAnalizerApp.Interfaces
         /// User friendly name
         /// </summary>
         public string UserFriendlyName { get; }
+
+        public string Name { get; }
+
         public bool IsRoot { get; }
 
         public bool IsLeaf { get; }
 
         public IReadOnlyList<ISpendingCase> Childs { get; }
 
-        public SpendingTags Tags { get; }
+        public ISpendingTags Tags { get; }
 
         public ISpendingId Id { get; }
 
         public ISpendingDecorations Decorations { get; set; }
+
+        public ISpending Summary { get; set; }
 
     }
 }

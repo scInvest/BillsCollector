@@ -1,6 +1,6 @@
 namespace CostAnalizerApp.Interfaces
 {
-    public interface SpendingTags
+    public interface ISpendingTags
     {
         /// <summary>
         /// Stadardowe tagi, alvkoho slodycze zywnosc
