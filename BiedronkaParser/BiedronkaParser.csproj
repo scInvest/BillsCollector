@@ -10,4 +10,8 @@
     <InternalsVisibleTo Include="BiedronkaParser.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CostAnalizerApp.Interfaces\CostAnalizerApp.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>
