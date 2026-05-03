@@ -44,6 +44,9 @@ namespace BiedronkaParser.BiedronkaImport.Dto
             if (root.TryGetProperty("sysNumber", out v))
                 return JsonSerializer.Deserialize<SysNumber>(v.GetRawText(), options);
 
+            if (root.TryGetProperty("pack", out v))
+                return JsonSerializer.Deserialize<Pack>(v.GetRawText(), options);
+
             throw new NotSupportedException($"Unknown body item: {root}");
         }
 
@@ -106,6 +109,11 @@ namespace BiedronkaParser.BiedronkaImport.Dto
                 case SysNumber s:
                     writer.WritePropertyName("sysNumber");
                     JsonSerializer.Serialize(writer, s, options);
+                    break;
+
+                case Pack p:
+                    writer.WritePropertyName("pack");
+                    JsonSerializer.Serialize(writer, p, options);
                     break;
 
                 default:
