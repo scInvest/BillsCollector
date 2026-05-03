@@ -6,7 +6,7 @@ namespace CostAnalizerApp.Interfaces
         /// <summary>
         /// Numer elementu w kolejnosci. Glownie do obslugi gdy mamy kilka "identycznych", wydatków jeden po drugim.
         /// </summary>
-        public int Index { get; set; }
+        public int Index { get; }
 
         /// <summary>
         /// Unikalne ID, wramach systemu.

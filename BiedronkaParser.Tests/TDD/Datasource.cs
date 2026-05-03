@@ -1,7 +1,7 @@
 ﻿namespace BiedronkaParser.Tests.TDD
 {
     [TestClass]
-    public sealed class Datasource
+    public sealed class DatasourceTests
     {
         [TestMethod]
         public void ParagonTestData_ShouldNotBeNull()

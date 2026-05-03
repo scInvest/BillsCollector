@@ -3,12 +3,14 @@ using CostAnalizerApp.Interfaces;
 
 namespace BiedronkaParser
 {
-    public class Class1
+    public class BiedronkaToBLConverter
     {
-        //public ISpendingCase ConvertToStandardFromat(ReceiptDto receipt)
-        //{
+        public ISpendingCase ConvertToStandardFromat(ReceiptDto receipt)
+        {
+            var result = new ISpendingCaseReciptV1(receipt, 0);
 
-        //}
+            return result;
+        }
     }
 
     public static class TagsConsts
@@ -23,6 +25,14 @@ namespace BiedronkaParser
             Receipt = receipt;
             Date = ExtractDateFromReceipt(receipt);
             Id = new ReceiptIdV1Dto(receipt, processingIndex);
+            Tags = CreateTags();
+        }
+
+        private static ISpendingTags CreateTags()
+        {
+            var tags = new SpendingTags();
+            tags.Tags.Add(TagsConsts.Biedronka);
+            return tags;
         }
 
         private DateTime ExtractDateFromReceipt(ReceiptDto receipt)
@@ -51,7 +61,7 @@ namespace BiedronkaParser
 
         public IReadOnlyList<ISpendingCase> Childs => throw new NotImplementedException();
 
-        public ISpendingTags Tags => throw new NotImplementedException();
+        public ISpendingTags Tags { get; }
 
         public ISpendingId Id { get; }
 
@@ -59,24 +69,36 @@ namespace BiedronkaParser
         public ISpending Summary { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     }
+    class SpendingTags : ISpendingTags
+    {
+        public List<string> Tags { get; set; } = new List<string>();
+        public List<string> GroupingTags { get; set; } = new List<string>();
 
+        IReadOnlyList<string> ISpendingTags.Tags { get => Tags; set => Tags = value?.ToList() ?? new List<string>(); }
+        IReadOnlyList<string> ISpendingTags.GroupingTags { get => GroupingTags; set => GroupingTags = value?.ToList() ?? new List<string>(); }
+    }
     internal class ReceiptIdV1Dto : ISpendingId
     {
         private readonly Dictionary<string, string> _allIds = new Dictionary<string, string>();
+        private readonly string _id;
 
         public ReceiptIdV1Dto(int processingIndex)
         {
             this.Index = processingIndex;
+            _id = $"Receipt_{Index}";
         }
 
         public ReceiptIdV1Dto(ReceiptDto receipt, int processingIndex) : this(processingIndex)
         {
+            Receipt = receipt;
             PopulateIdsFromReceipt(receipt);
+            _id = _allIds.TryGetValue("ReceiptId", out var id) ? id : $"Receipt_{Index}";
         }
 
-        public int Index { get; set; }
+        public ReceiptDto Receipt { get; }
+        public int Index { get; init; }
 
-        public string ID => _allIds.TryGetValue("ReceiptId", out var id) ? id : $"Receipt_{Index}";
+        public string ID => _id;
 
         public IReadOnlyDictionary<string, string> AllIds => _allIds;
 
