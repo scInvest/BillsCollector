@@ -1,8 +1,11 @@
 <Solution>
   <Folder Name="/Tests/">
     <Project Path="BiedronkaParser.Tests/BiedronkaParser.Tests.csproj" />
+    <Project Path="CostAnalizerApp.Tests/CostAnalizerApp.Tests.csproj" />
   </Folder>
   <Project Path="BiedronkaParser/BiedronkaParser.csproj" />
   <Project Path="ConsoleApp3/ConsoleApp3.csproj" />
-  <Project Path="DataSrouce/DataSrouce.csproj" />
+  <Project Path="CostAnalizerApp.Interfaces/CostAnalizerApp.Interfaces.csproj" Id="40edc16a-225d-44e3-9246-dfb44b709ecb" />
+  <Project Path="CostAnalizerApp/CostAnalizerApp.csproj" />
+  <Project Path="DataSrouce/DataSource.csproj" />
 </Solution>

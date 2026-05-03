@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BiedronkaParser\BiedronkaParser.csproj" />
-    <ProjectReference Include="..\DataSrouce\DataSrouce.csproj" />
+    <ProjectReference Include="..\DataSrouce\DataSource.csproj" />
   </ItemGroup>
 
 </Project>
