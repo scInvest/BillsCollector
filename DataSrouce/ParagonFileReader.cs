@@ -1,13 +1,36 @@
-﻿namespace DataSrouce
+﻿using BiedronkaParser.BiedronkaImport.Dto;
+using System.Text.Json;
+
+namespace DataSrouce
 {
     public class ParagonFileReader
     {
         private readonly string _directoryPath;
 
+        JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         public ParagonFileReader(string directoryPath)
         {
             _directoryPath = directoryPath;
         }
+
+        public async Task<ReceiptDto> ReadFiles(string path)
+        {
+            var json = await File.ReadAllTextAsync(path);
+            var dto = JsonSerializer.Deserialize<ReceiptDto>(json, options);
+            return dto;
+        }
+
+        public async Task<IEnumerable<ReceiptDto>> ReadFiles(IEnumerable<string> paths)
+        {
+            var tasks = paths.Select(path => ReadFiles(path));
+            var results = await Task.WhenAll(tasks);
+            return results.Where(r => r != null);
+        }
+
 
         public List<string> GetParagonFiles()
         {

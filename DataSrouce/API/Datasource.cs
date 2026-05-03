@@ -5,14 +5,32 @@ using System.Text;
 
 namespace DataSrouce.API
 {
-    internal class Datasource 
+    public class Datasource 
     {
         public Datasource()
         {
-            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            var dataPath = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\DataSrouce\BierdronkaData\"));
-            TestData = new ParagonFileReader(dataPath);
+            var dataPath = FindDataDirectory();
+            ParagonTestData = new ParagonFileReader(dataPath);
         }
-        public ParagonFileReader TestData { get; } 
+        public ParagonFileReader ParagonTestData { get; }
+
+        private static string FindDataDirectory()
+        {
+            var currentDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+
+            while (currentDir != null)
+            {
+                var dataPath = Path.Combine(currentDir.FullName, "DataSrouce", "BierdronkaData");
+                if (Directory.Exists(dataPath))
+                {
+                    return dataPath;
+                }
+                currentDir = currentDir.Parent;
+            }
+
+            throw new DirectoryNotFoundException(
+                "Could not find DataSrouce\\BierdronkaData directory. " +
+                "Searched from: " + AppDomain.CurrentDomain.BaseDirectory);
+        }
     }
 }

@@ -1,5 +1,7 @@
 <Solution>
-  <Project Path="BiedronkaParser.Tests/BiedronkaParser.Tests.csproj" />
+  <Folder Name="/Tests/">
+    <Project Path="BiedronkaParser.Tests/BiedronkaParser.Tests.csproj" />
+  </Folder>
   <Project Path="BiedronkaParser/BiedronkaParser.csproj" />
   <Project Path="ConsoleApp3/ConsoleApp3.csproj" />
   <Project Path="DataSrouce/DataSrouce.csproj" />

@@ -15,4 +15,9 @@
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BiedronkaParser\BiedronkaParser.csproj" />
+    <ProjectReference Include="..\DataSrouce\DataSrouce.csproj" />
+  </ItemGroup>
+
 </Project>

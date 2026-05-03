@@ -7,7 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="BiedronkaParser.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="BierdronkaData\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BiedronkaParser\BiedronkaParser.csproj" />
   </ItemGroup>
 
 </Project>
