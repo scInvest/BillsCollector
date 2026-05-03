@@ -1,0 +1,128 @@
+# =========================
+# Visual Studio
+# =========================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Build results
+# =========================
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# =========================
+# .NET / NuGet
+# =========================
+*.nupkg
+*.snupkg
+packages/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# =========================
+# Rider / VS Code (optional)
+# =========================
+.idea/
+.vscode/
+
+# =========================
+# Resharper
+# =========================
+_ReSharper*/
+*.DotSettings.user
+
+# =========================
+# Windows
+# =========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================
+# Mac (if cross-platform dev)
+# =========================
+.DS_Store
+
+# =========================
+# Logs & temp
+# =========================
+*.log
+*.tmp
+*.temp
+
+# =========================
+# ASP.NET / Web
+# =========================
+wwwroot/lib/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Secrets / config
+# =========================
+appsettings.Development.json
+secrets.json
+
+# =========================
+# Azure / publish
+# =========================
+PublishProfiles/
+*.pubxml
+*.publishproj
+
+# =========================
+# Xamarin / MAUI (Mobile)
+# =========================
+*.apk
+*.aab
+*.ap_ 
+*.keystore
+*.p12
+*.jks
+
+# iOS
+*.ipa
+*.xcuserstate
+*.xcworkspace
+DerivedData/
+
+# Android
+*.dex
+*.class
+*.gradle/
+build/
+
+# =========================
+# Test Results
+# =========================
+TestResults/
+*.trx
+
+# =========================
+# Coverage
+# =========================
+coverage/
+*.coverage
+*.coveragexml
+
+# =========================
+# Database files
+# =========================
+*.mdf
+*.ldf
+
+# =========================
+# Misc
+# =========================
+*.cache
+*.dbmdl
