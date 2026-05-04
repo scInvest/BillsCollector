@@ -29,6 +29,7 @@ namespace BiedronkaParser
             Date = ExtractDateFromReceipt(receipt);
             Id = new ReceiptIdV1Dto(receipt, processingIndex);
             Tags = CreateTags();
+            Summary = ExtractSummaryFromBody(receipt);
         }
 
         private ISpendingTags CreateTags()
@@ -48,6 +49,35 @@ namespace BiedronkaParser
                 }
             }
             throw new InvalidOperationException("Date not found in receipt headers");
+        }
+
+        private ISpending ExtractSummaryFromBody(ReceiptDto receipt)
+        {
+            var discount = 0.0;
+            var total = 0.0;
+
+            if (receipt.Body != null)
+            {
+                foreach (var item in receipt.Body)
+                {
+                    if (item is DiscountSummary discountSummary)
+                    {
+                        discount = discountSummary.Discounts / 100.0;
+                    }
+                    else if (item is SumInCurrency sumInCurrency)
+                    {
+                        total = sumInCurrency.FiscalTotal / 100.0;
+                    }
+                }
+            }
+
+            return new SpendingImp
+            {
+                Discount = discount,
+                Total = total,
+                Cost = total + discount,
+                Quantity = new ValueFatory().CreateNull(),
+            };
         }
 
         public DateTime Date { get; }
@@ -73,7 +103,7 @@ namespace BiedronkaParser
 
     }
 
-    public class SpendingImp
+    public class SpendingImp : ISpending
     {
         public double Cost { get; set; }
         public double Discount { get; set; }

@@ -48,6 +48,11 @@ namespace BiedronkaParser.Tests.TDD
             Assert.IsNotNull(spendingCase.Tags.Tags, "Tags.Tags should not be null");
             Assert.IsTrue(spendingCase.Tags.Tags.Count >= 2, $"Tags should contain at least 2 tags, but found {spendingCase.Tags.Tags.Count}");
             Assert.IsTrue(spendingCase.Tags.Tags.Any(t => t.Equals("biedronka", StringComparison.OrdinalIgnoreCase)), "Tags should contain 'biedronka' tag");
+
+            Assert.IsNotNull(spendingCase.Summary, "Summary should not be null");
+            Assert.IsTrue(spendingCase.Summary.Cost > 0, "Cost should be greater than 0");
+            Assert.IsTrue(spendingCase.Summary.Total > 0, "Total should be greater than 0");
+            Assert.AreEqual(spendingCase.Summary.Total + spendingCase.Summary.Discount, spendingCase.Summary.Cost, 0.01, "Cost should equal Total + Discount");
         }
     }
 
