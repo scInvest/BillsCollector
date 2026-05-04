@@ -16,6 +16,8 @@ namespace BiedronkaParser
     public static class TagsConsts
     {
         public const string Biedronka = "Biedronka";
+        public const string Leaf = "Leaf";
+        public const string TopLevel = "TopLevel";
     }
 
     class ISpendingCaseReciptV1 : ISpendingCase
@@ -28,9 +30,9 @@ namespace BiedronkaParser
             Tags = CreateTags();
         }
 
-        private static ISpendingTags CreateTags()
+        private ISpendingTags CreateTags()
         {
-            var tags = new SpendingTags();
+            var tags = new SpendingTags(this);
             tags.Tags.Add(TagsConsts.Biedronka);
             return tags;
         }
@@ -59,6 +61,8 @@ namespace BiedronkaParser
 
         public ReceiptDto Receipt { get; }
 
+        public ISpendingCase? Parent { get; }
+
         public IReadOnlyList<ISpendingCase> Childs => throw new NotImplementedException();
 
         public ISpendingTags Tags { get; }
@@ -71,11 +75,26 @@ namespace BiedronkaParser
     }
     class SpendingTags : ISpendingTags
     {
-        public List<string> Tags { get; set; } = new List<string>();
-        public List<string> GroupingTags { get; set; } = new List<string>();
+        public SpendingTags(ISpendingCase parent)
+        {
+            if (parent != null)
+            {
+                if (parent.IsLeaf)
+                {
+                    Tags.Add(TagsConsts.Leaf);
+                }
+                if (parent.IsRoot)
+                {
+                    Tags.Add(TagsConsts.TopLevel);
+                }
+            }
+        }
 
-        IReadOnlyList<string> ISpendingTags.Tags { get => Tags; set => Tags = value?.ToList() ?? new List<string>(); }
-        IReadOnlyList<string> ISpendingTags.GroupingTags { get => GroupingTags; set => GroupingTags = value?.ToList() ?? new List<string>(); }
+        public List<string> Tags { get; } = new List<string>();
+        public List<string> GroupingTags { get; } = new List<string>();
+
+        IReadOnlyList<string> ISpendingTags.Tags => Tags;
+        IReadOnlyList<string> ISpendingTags.GroupingTags => GroupingTags;
     }
     internal class ReceiptIdV1Dto : ISpendingId
     {

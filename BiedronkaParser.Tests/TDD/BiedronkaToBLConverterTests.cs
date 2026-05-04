@@ -43,6 +43,11 @@ namespace BiedronkaParser.Tests.TDD
                 Assert.IsFalse(string.IsNullOrEmpty(kvp.Key), $"AllIds key should not be empty");
                 Assert.IsFalse(string.IsNullOrEmpty(kvp.Value), $"AllIds value for key '{kvp.Key}' should not be empty");
             }
+
+            Assert.IsNotNull(spendingCase.Tags, "Tags should not be null");
+            Assert.IsNotNull(spendingCase.Tags.Tags, "Tags.Tags should not be null");
+            Assert.IsTrue(spendingCase.Tags.Tags.Count >= 2, $"Tags should contain at least 2 tags, but found {spendingCase.Tags.Tags.Count}");
+            Assert.IsTrue(spendingCase.Tags.Tags.Any(t => t.Equals("biedronka", StringComparison.OrdinalIgnoreCase)), "Tags should contain 'biedronka' tag");
         }
     }
 

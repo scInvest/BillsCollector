@@ -5,11 +5,11 @@ namespace CostAnalizerApp.Interfaces
         /// <summary>
         /// Stadardowe tagi, alvkoho slodycze zywnosc
         /// </summary>
-        public string[] Tags { get; set; }
+        public  IReadOnlyList<string> Tags { get;  }
 
         /// <summary>
         /// Dodatkowe teagi ulatwiajece gruowanie
         /// </summary>
-        public string[] GroupingTags { get; set; }
+        public IReadOnlyList<string> GroupingTags { get;  }
     }
 }
