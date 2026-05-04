@@ -33,7 +33,7 @@
 
             Assert.IsNotNull(receipts);
             var receiptList = receipts.ToList();
-            Assert.IsTrue(receiptList.Count == 48, $"Expected 48 receipts, got {receiptList.Count}");
+            lkAssert.IsTrue(receiptList.Count == 48, $"Expected 48 receipts, got {receiptList.Count}");
         }
     }
 }

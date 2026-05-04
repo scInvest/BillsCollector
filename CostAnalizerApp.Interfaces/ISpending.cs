@@ -12,6 +12,7 @@ namespace CostAnalizerApp.Interfaces
         public IValue Quantity { get; }
 
     }
+
     class ValueImp : IValue
     {
         public string Type { get; set; }

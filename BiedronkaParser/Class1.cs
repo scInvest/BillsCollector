@@ -18,6 +18,7 @@ namespace BiedronkaParser
         public const string Biedronka = "Biedronka";
         public const string Leaf = "Leaf";
         public const string TopLevel = "TopLevel";
+        public const string Kaucaja = "Kaucaja";
     }
 
     class ISpendingCaseReciptV1 : ISpendingCase
@@ -53,8 +54,6 @@ namespace BiedronkaParser
 
         public string UserFriendlyName => TagsConsts.Biedronka + " " + Date.ToString("yyyy-MM-dd");
         public string Name => TagsConsts.Biedronka;
-
-
         public bool IsRoot => true;
 
         public bool IsLeaf => false;
@@ -70,7 +69,17 @@ namespace BiedronkaParser
         public ISpendingId Id { get; }
 
         public ISpendingDecorations Decorations { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ISpending Summary { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ISpending Summary { get; }
+
+    }
+
+    public class SpendingImp
+    {
+        public double Cost { get; set; }
+        public double Discount { get; set; }
+        public double Total { get; set; }
+
+        public IValue Quantity { get; set; }
 
     }
     class SpendingTags : ISpendingTags
