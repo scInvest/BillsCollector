@@ -2,7 +2,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace BiedronkaParser.BiedronkaImport.Dto
+namespace Integrations.Biedronka.BiedronkaImport.Dto
 {
     public class HeaderItemConverter : JsonConverter<HeaderItem>
     {

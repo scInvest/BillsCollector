@@ -1,4 +1,4 @@
-namespace BiedronkaParser.BiedronkaImport.Dto
+namespace Integrations.Biedronka.BiedronkaImport.Dto
 {
     public class ImageHeader : HeaderItem
     {
