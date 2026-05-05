@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace BiedronkaParser.BiedronkaImport.Dto
+namespace Integrations.Biedronka.BiedronkaImport.Dto
 {
     [JsonConverter(typeof(BodyItemConverter))]
     public abstract class BodyItem { }

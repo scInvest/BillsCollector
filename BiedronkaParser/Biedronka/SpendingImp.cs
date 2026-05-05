@@ -1,6 +1,6 @@
 using CostAnalizerApp.Interfaces;
 
-namespace BiedronkaParser
+namespace Integrations.Biedronka
 {
     public class SpendingImp : ISpending
     {

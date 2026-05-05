@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BiedronkaParser.BiedronkaImport.Dto
+namespace Integrations.Biedronka.BiedronkaImport.Dto
 {
     public class ReceiptDto
     {

@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BiedronkaParser\BiedronkaParser.csproj" />
+    <ProjectReference Include="..\BiedronkaParser\Integrations.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 using System;
 
-namespace BiedronkaParser.BiedronkaImport.Dto
+namespace Integrations.Biedronka.BiedronkaImport.Dto
 {
     public class FiscalFooter : BodyItem
     {

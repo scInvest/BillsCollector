@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Integrations.Biedronka;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

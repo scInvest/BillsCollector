@@ -1,4 +1,4 @@
-﻿using BiedronkaParser.BiedronkaImport.Dto;
+﻿using Integrations.Biedronka.BiedronkaImport.Dto;
 using System.Text.Json;
 
 namespace DataSrouce

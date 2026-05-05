@@ -3,7 +3,7 @@
     <Project Path="BiedronkaParser.Tests/BiedronkaParser.Tests.csproj" />
     <Project Path="CostAnalizerApp.Tests/CostAnalizerApp.Tests.csproj" />
   </Folder>
-  <Project Path="BiedronkaParser/BiedronkaParser.csproj" />
+  <Project Path="BiedronkaParser/Integrations.csproj" />
   <Project Path="ConsoleApp3/ConsoleApp3.csproj" />
   <Project Path="CostAnalizerApp.Interfaces/CostAnalizerApp.Interfaces.csproj" Id="40edc16a-225d-44e3-9246-dfb44b709ecb" />
   <Project Path="CostAnalizerApp/CostAnalizerApp.csproj" />

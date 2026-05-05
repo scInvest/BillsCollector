@@ -1,4 +1,4 @@
-namespace BiedronkaParser
+namespace Integrations.Biedronka
 {
     public static class TagsConsts
     {

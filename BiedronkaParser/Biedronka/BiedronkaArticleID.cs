@@ -1,7 +1,7 @@
-using BiedronkaParser.BiedronkaImport.Dto;
 using CostAnalizerApp.Interfaces;
+using Integrations.Biedronka.BiedronkaImport.Dto;
 
-namespace BiedronkaParser
+namespace Integrations.Biedronka
 {
     class BiedronkaArticleID : ISpendingId
     {
