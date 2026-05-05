@@ -1,5 +1,19 @@
 namespace CostAnalizerApp.Interfaces
 {
+    /// <summary>
+    /// Represents the hierarchical structure of a spending case node
+    /// </summary>
+    public interface ISpendingCaseNode
+    {
+        public bool IsRoot { get; }
+
+        public bool IsLeaf { get; }
+
+        public ISpendingCase? Parent { get; }
+
+        public IReadOnlyList<ISpendingCase> Childs { get; }
+    }
+
     public interface ISpendingCase
     {
         /// <summary>
@@ -15,11 +29,7 @@ namespace CostAnalizerApp.Interfaces
 
         public string Name { get; }
 
-        public bool IsRoot { get; }
-
-        public bool IsLeaf { get; }
-
-        public IReadOnlyList<ISpendingCase> Childs { get; }
+        public ISpendingCaseNode Node { get; }
 
         public ISpendingTags Tags { get; }
 

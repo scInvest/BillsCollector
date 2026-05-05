@@ -31,6 +31,15 @@ namespace CostAnalizerApp.Interfaces
                 Unit = "",
             }; 
         }
+        public IValue CreateCount(double amount)
+        {
+            return new ValueImp()
+            {
+                Amount = amount,
+                Type = "zakup",
+                Unit = "sztuka",
+            };
+        }
     }
 
     public interface IValue
