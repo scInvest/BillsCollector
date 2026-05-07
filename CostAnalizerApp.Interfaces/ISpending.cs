@@ -8,44 +8,8 @@ namespace CostAnalizerApp.Interfaces
         public double Cost { get; }
         public double Discount { get; }
         public double Total { get; }
-        
+
         public IValue Quantity { get; }
 
-    }
-
-    class ValueImp : IValue
-    {
-        public string Type { get; set; }
-        public double Amount { get; set; }
-        public string Unit { get; set; }
-    }
-
-    public class ValueFatory
-    {
-        public IValue CreateNull()
-        {
-            return new ValueImp()
-            {
-                Amount = 0,
-                Type = "NULL",
-                Unit = "",
-            }; 
-        }
-        public IValue CreateCount(double amount)
-        {
-            return new ValueImp()
-            {
-                Amount = amount,
-                Type = "zakup",
-                Unit = "sztuka",
-            };
-        }
-    }
-
-    public interface IValue
-    {
-        public string Type { get; set; }
-        public double Amount { get; }
-        public string Unit { get;  }
     }
 }
