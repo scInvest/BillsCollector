@@ -1,4 +1,9 @@
 ﻿@page "/counter"
+@using BlazorDatasheet.Core.Data
+@using BlazorDatasheet
+@using BlazorDatasheet.Core
+@using BlazorDatasheet.DataStructures.Store
+@using BlazorDatasheet.Formula.Core
 @rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
@@ -8,6 +13,108 @@
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<InputFile OnChange="HandleFileSelected" multiple />
+
+@code {
+    // private Sheet sheet = new Sheet(50, 20)
+    // {
+
+    // };
+
+    // protected override void OnInitialized()
+    // {
+    //     sheet.Cells.SetValue(0, 0, "Hello");
+    //     sheet.Cells.SetValue(1, 0, 123);
+    // }
+}
+
+<p>@content</p>
+<div class="formula-container">
+    <div class="cell-address">@GetAddress()</div>
+    <input class="formula-input"
+           @bind="_formulaValue"
+           @bind:event="oninput"
+           @onkeydown="HandleFormulaKeyDown"
+           placeholder="Enter value or formula..." />
+</div>
+<Datasheet Virtualise="true" ShowRowHeadings="true" Sheet="@sheet" ShowColHeadings="true"/>
+@code {
+    @code {
+        private Sheet sheet;
+        private string _formulaValue = "";
+
+        protected override void OnInitialized()
+        {
+            sheet = new Sheet(20, 10);
+
+            // Listen for when the user moves around
+            sheet.Selection.SelectionChanged += (s, e) =>
+            {
+                SyncFormulaBar();
+                StateHasChanged();
+            };
+        }
+
+        private void SyncFormulaBar()
+        {
+            var pos = sheet.Selection.ActiveCellPosition;
+
+            // If no cell is active, clear the bar
+            if (pos.row < 0 || pos.col < 0)
+            {
+                _formulaValue = "";
+                return;
+            }
+
+            // Use the position to fetch the actual cell data from the Cells manager
+            var cell = sheet.Cells.GetCell(pos.row, pos.col);
+
+            // Priority: Show formula if it exists, otherwise the raw value
+            _formulaValue = cell.Formula ?? cell.Value?.ToString() ?? "";
+        }
+
+        private void HandleFormulaKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
+            {
+                var pos = sheet.Selection.ActiveCellPosition;
+                if (pos.row < 0) return;
+
+                if (_formulaValue.StartsWith("="))
+                    sheet.Cells[pos.row, pos.col].Formula = _formulaValue;
+                else
+                    sheet.Cells[pos.row, pos.col].Value = _formulaValue;
+            }
+        }
+
+        // Helper to turn (0, 0) into "A1"
+        private string GetAddress()
+        {
+            var pos = sheet.Selection.ActiveCellPosition;
+            if (pos.row < 0) return "";
+
+            // Convert column index to Letter (0 -> A, 1 -> B)
+            string colLetter = ((char)('A' + pos.col)).ToString();
+            return $"{colLetter}{pos.row + 1}";
+        }
+    }
+}
+@code {
+    List<string> files = new List<string>();
+    private string? content;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var files = e.GetMultipleFiles();
+
+        foreach (var file in files)
+        {
+            using var stream = file.OpenReadStream();
+            using var reader = new StreamReader(stream);
+            content = await reader.ReadToEndAsync();
+        }
+    }
+}
 
 @code {
     private int currentCount = 0;
@@ -17,3 +124,8 @@
         currentCount++;
     }
 }
+
+
+
+
+

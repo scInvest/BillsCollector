@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Clients/">
+    <Project Path="WebClient/WebClient.csproj" Id="90975d18-e468-4a98-ac72-e1394c82b994" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="BiedronkaParser.Tests/BiedronkaParser.Tests.csproj" />
     <Project Path="CostAnalizerApp.Tests/CostAnalizerApp.Tests.csproj" />

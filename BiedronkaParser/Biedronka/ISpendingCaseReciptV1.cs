@@ -96,8 +96,9 @@ namespace Integrations.Biedronka
                 Discount = discount,
                 Total = total,
                 Cost = total + discount,
-                Quantity = new ValueFatory().CreateNull(),
+                Quantity = new ValueFactory().CreateNull(),
             };
+
         }
         public DateTime Date { get; }
         public string UserFriendlyName => TagsConsts.Biedronka + " " + Date.ToString("yyyy-MM-dd");

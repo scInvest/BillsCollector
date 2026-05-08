@@ -38,7 +38,7 @@ namespace Integrations.Biedronka
         private IValue ExtractQuantity(SellLine sellLine)
         {
             var count = double.Parse(sellLine.Quantity);
-            return new ValueFatory().CreateCount(count);
+            return new ValueFactory().CreateCount(count);
         }
 
         private ISpending CreateSpending(double total, double discount, IValue quantity)
