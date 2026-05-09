@@ -1,0 +1,23 @@
+﻿@using BlazorDatasheet.Core.Data
+@using BlazorDatasheet.Core.Formats
+@using BlazorDatasheet.Core.Interfaces
+@using BlazorDatasheet.DataStructures.Geometry
+
+<ExcelBorderPicker></ExcelBorderPicker>
+<Datasheet @ref="datasheet"
+           Sheet="sheet" />
+
+@code {
+
+    private Datasheet datasheet;
+    private Sheet sheet;
+    private int selectedBorderThickness = 2;
+    private string selectedBorderPosition = "all";
+
+
+    protected override void OnInitialized()
+    {
+        sheet = new Sheet(20, 10);
+        sheet.Cells.SetValue(0, 0, "Hello");
+    }
+}
