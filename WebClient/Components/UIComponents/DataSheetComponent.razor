@@ -3,6 +3,8 @@
 @using BlazorDatasheet.Core.Interfaces
 @using BlazorDatasheet.DataStructures.Geometry
 
+@inject SheetFocusManger SheetFocusManger
+
 <div class="ribbon">
 <ExcelFontColorPicker @ref="colorPickerFont" Context="selectedColor" SelectedColorChanged="HandleForeGroundColorChange">
     <MainIcon>

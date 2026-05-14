@@ -1,4 +1,6 @@
-﻿<div class="excel-color-picker">
+﻿@inject SheetFocusManger SheetFocusManger
+
+<div class="excel-color-picker">
 
     <button class="color-button compact"
             @onclick="ToggleDropdown">
@@ -30,46 +32,3 @@
         </div>
     }
 </div>
-
-@code {
-    [Parameter]
-
-    public RenderFragment<string>  MainIcon { get; set; }
-    public class FontColorOption
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Color { get; set; } = string.Empty;
-    }
-    private bool IsOpen;
-
-    [Parameter]
-    public string SelectedColor { get; set; } = "#000000";
-
-    [Parameter]
-    public EventCallback<string> SelectedColorChanged { get; set; }
-
-    private List<FontColorOption> Colors = new()
-    {
-        new() { Name = "Black", Color = "#000000" },
-        new() { Name = "Red", Color = "#C00000" },
-        new() { Name = "Blue", Color = "#4472C4" },
-        new() { Name = "Green", Color = "#70AD47" },
-        new() { Name = "Orange", Color = "#ED7D31" },
-        new() { Name = "Purple", Color = "#7030A0" },
-        new() { Name = "Gray", Color = "#7F7F7F" },
-        new() { Name = "Yellow", Color = "#FFC000" }
-    };
-
-    private void ToggleDropdown()
-    {
-        IsOpen = !IsOpen;
-    }
-
-    private async Task SelectColor(string color)
-    {
-        SelectedColor = color;
-        IsOpen = false;
-
-        await SelectedColorChanged.InvokeAsync(color);
-    }
-}

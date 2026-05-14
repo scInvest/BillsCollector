@@ -1,12 +1,13 @@
 ﻿using BlazorDatasheet;
 using BlazorDatasheet.Core.Data;
+using BlazorDatasheet.Core.Events.Selection;
 using BlazorDatasheet.Core.Formats;
 using Microsoft.AspNetCore.Components;
 using WebClient.Components.UIComponents.Extenstions;
 
 namespace WebClient.Components.UIComponents
 {
-    public partial class DataSheetComponent : ComponentBase
+    public partial class DataSheetComponent : ComponentBase, IFocusableObject
     {
         private ExcelBorderPicker? borderPicker;
         private ExcelFontColorPicker? colorPickerFont;
@@ -15,13 +16,23 @@ namespace WebClient.Components.UIComponents
         private Sheet sheet;
         private int selectedBorderThickness = 2;
         private string selectedBorderPosition = "all";
-        
-        
+
+        public event EventHandler Focus;
+
         protected override void OnInitialized()
         {
             sheet = new Sheet(20, 10);
-
+            sheet.Selection.CellsSelected += Selection_CellsSelected;
             sheet.Cells.SetValue(0, 0, "Hello");
+            this.SheetFocusManger.Register(this);
+        }
+        public void RemoveFocus()
+        {
+            // no action needed.
+        }
+        private void Selection_CellsSelected(object? sender, CellsSelectedEventArgs e)
+        {
+           this.Focus?.Invoke(this, EventArgs.Empty);
         }
 
         private void HandleColorChanged(string color)
@@ -103,5 +114,6 @@ namespace WebClient.Components.UIComponents
             });
         }
 
+ 
     }
 }
