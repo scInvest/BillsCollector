@@ -1,0 +1,50 @@
+﻿.fill-icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.fill-icon {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #666;
+    border-radius: 2px;
+}
+
+.color-bar {
+    width: 18px;
+    height: 3px;
+    border-radius: 1px;
+}
+
+/* Ribbon layout: keep picker/button elements visually aligned and same height
+   without changing dropdown positioning (dropdowns are absolutely positioned).
+   Targets buttons inside the custom pickers only; should not interfere with
+   dynamic combo boxes or their panels. */
+.ribbon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ribbon :where(.color-button, .border-button) {
+    /* Enforce a consistent visual height while preserving internal padding
+       and dropdown behavior. */
+    height: 38px;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Ensure icon wrappers remain centered within the enforced height */
+.ribbon .font-icon-wrapper,
+.ribbon .fill-icon-wrapper,
+.ribbon .icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+

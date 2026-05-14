@@ -3,21 +3,40 @@
 @using BlazorDatasheet.Core.Interfaces
 @using BlazorDatasheet.DataStructures.Geometry
 
-<ExcelBorderPicker></ExcelBorderPicker>
+<div class="ribbon">
+<ExcelFontColorPicker @ref="colorPickerFont" Context="selectedColor" SelectedColorChanged="HandleForeGroundColorChange">
+    <MainIcon>
+        <div class="font-icon-wrapper">
+            <span class="font-letter"
+                  style="color:@selectedColor">
+                A
+            </span>
+        </div>
+    </MainIcon>
+</ExcelFontColorPicker>
+<ExcelFontColorPicker 
+    @ref="colorPickerFill" 
+    Context="selectedColor"
+    SelectedColorChanged="HandleColorChanged">
+    <MainIcon>
+        <div class="fill-icon-wrapper">
+            <div class="fill-icon"
+                 style="background-color:@selectedColor">
+            </div>
+
+            <div class="color-bar"
+                 style="background-color:@selectedColor">
+            </div>
+        </div>
+    </MainIcon>
+</ExcelFontColorPicker>
+<ExcelBorderPicker @ref="borderPicker" SelectedBorderChanged="HandleBorderChanged"></ExcelBorderPicker>
+</div>
+<div>
 <Datasheet @ref="datasheet"
            Sheet="sheet" />
-
+</div>
 @code {
 
-    private Datasheet datasheet;
-    private Sheet sheet;
-    private int selectedBorderThickness = 2;
-    private string selectedBorderPosition = "all";
 
-
-    protected override void OnInitialized()
-    {
-        sheet = new Sheet(20, 10);
-        sheet.Cells.SetValue(0, 0, "Hello");
-    }
 }

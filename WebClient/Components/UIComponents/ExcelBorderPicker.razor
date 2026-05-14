@@ -1,6 +1,4 @@
-﻿<h3>ExcelBorderPicker</h3>
-
-@code {
+﻿@code {
 
     public enum BorderOption
     {
@@ -16,14 +14,13 @@
     }
 
 }
+@inject SheetFocusManger SheetFocusManger
 
 <div class="excel-border-picker">
-    <button class="border-button" @onclick="ToggleDropdown">
+    <button class="border-button compact" @onclick="ToggleDropdown">
         <span class="icon-wrapper">
             @((MarkupString)GetIcon(SelectedBorder))
         </span>
-        <span class="label">@GetLabel(SelectedBorder)</span>
-        <span class="arrow">▾</span>
     </button>
 
     @if (IsOpen)
