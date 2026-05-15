@@ -6,16 +6,19 @@
 .data-picker-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 10px;
+  padding: 10px 16px; /* larger hit area */
+  min-height: 42px; /* ensure consistent height */
+  min-width: 120px; /* make buttons wider so labels fit */
   border-radius: 6px;
   border: 1px solid var(--picker-border, #cfcfcf);
   background: var(--picker-bg, transparent);
   color: var(--picker-color, #0b5ed7); /* default custom text color */
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 1rem;
   position: relative; /* allow absolutely positioned input inside */
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .data-picker-btn:hover {
@@ -54,4 +57,110 @@
   width: 20px;
   height: 20px;
 }
+
+/* Inverted Biedronka: red background, yellow border and text (reverse of default) */
+.data-picker.biedronka-inverted .data-picker-btn {
+  background: #D50000; /* vivid red background */
+  border: 2px solid #FFD400; /* bright yellow border */
+  color: #FFD400; /* yellow text */
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.data-picker.biedronka-inverted .data-picker-btn:hover {
+  background: #e04848; /* slightly lighter red on hover */
+}
+
+.data-picker.biedronka-inverted .upload-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Allegro themed styling: white background, orange border and text */
+.data-picker.allegro .data-picker-btn {
+  background: #ffffff; /* white background */
+  border: 2px solid #ff6a00; /* Allegro-like orange */
+  color: #ff6a00; /* orange text */
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+}
+
+.data-picker.allegro .data-picker-btn:hover {
+  background: #fff7f0; /* very light orange tint on hover */
+}
+
+.data-picker.allegro .upload-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* mBank themed styling: striped background (red, orange, burgundy, green) with white text */
+.data-picker.mbank .data-picker-btn {
+  /* sharp, hard-edged horizontal stripes for mBank look */
+  background: linear-gradient(90deg,
+    #d21b1b 0%, #d21b1b 25%,
+    #ff7a00 25%, #ff7a00 50%,
+    #8b0000 50%, #8b0000 75%,
+    #2ecc71 75%, #2ecc71 100%);
+  border: 2px solid #ffffff; /* white border to match other buttons */
+  color: #ffffff; /* white text */
+  font-weight: 700;
+  box-shadow: none; /* remove blur to keep edges crisp */
+  background-repeat: no-repeat;
+}
+
+.data-picker.mbank .data-picker-btn:hover {
+  filter: none; /* avoid softening on hover */
+}
+
+.data-picker.mbank .upload-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Custom pale-green CSV picker: subtle, clean styling */
+.data-picker.csv-custom .data-picker-btn {
+  background: #e9f8ec; /* pale green */
+  border: 2px solid #cdebd1; /* slightly darker pale green border */
+  color: #19692c; /* dark green text */
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(25,105,44,0.06);
+}
+
+.data-picker.csv-custom .data-picker-btn:hover {
+  background: #e0f2df;
+}
+
+.data-picker.csv-custom .upload-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* New sheet button styling: plain neutral button */
+.data-picker .new-sheet-btn {
+  /* make the plain button visually match the other .data-picker-btn elements */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  min-height: 36px;
+  line-height: 1;
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  background: #f7f7f7;
+  color: #222222;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-sizing: border-box;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.data-picker .new-sheet-btn:hover {
+  background: #f0f0f0;
+}
+
+
 
