@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using WebClient.Components.UIServices;
 
 namespace WebClient.Components.UIComponents
 {

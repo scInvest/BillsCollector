@@ -4,6 +4,7 @@ using BlazorDatasheet.Core.Events.Selection;
 using BlazorDatasheet.Core.Formats;
 using Microsoft.AspNetCore.Components;
 using WebClient.Components.UIComponents.Extenstions;
+using WebClient.Components.UIServices;
 
 namespace WebClient.Components.UIComponents
 {
@@ -25,7 +26,13 @@ namespace WebClient.Components.UIComponents
             sheet.Selection.CellsSelected += Selection_CellsSelected;
             sheet.Cells.SetValue(0, 0, "Hello");
             this.SheetFocusManger.Register(this);
+            this.sheet.SheetDirty += Sheet_SheetDirty;
         }
+
+        private void Sheet_SheetDirty(object? sender, BlazorDatasheet.Core.Events.Visual.DirtySheetEventArgs e)
+        {
+        }
+
         public void RemoveFocus()
         {
             // no action needed.

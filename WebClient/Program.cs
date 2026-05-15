@@ -3,7 +3,7 @@ using BlazorDatasheet.Services;
 using MudBlazor.Services;
 using System.ComponentModel.Design;
 using WebClient.Components;
-using WebClient.Components.UIComponents;
+using WebClient.Components.UIServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +13,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddBlazorDatasheet();
 builder.Services.AddMudServices();
-builder.Services.AddScoped<SheetFocusManger>(); 
+builder.Services.AddScoped<SheetFocusMangerService>(); 
 
 var app = builder.Build();
 

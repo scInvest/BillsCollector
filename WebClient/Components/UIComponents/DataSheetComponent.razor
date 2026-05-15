@@ -2,9 +2,15 @@
 @using BlazorDatasheet.Core.Formats
 @using BlazorDatasheet.Core.Interfaces
 @using BlazorDatasheet.DataStructures.Geometry
+@using WebClient.Components.UIComponents.DataPicker
+@using WebClient.Components.UIServices
 
-@inject SheetFocusManger SheetFocusManger
+@inject SheetFocusMangerService SheetFocusManger
 
+
+<DataPicker>
+
+</DataPicker>
 <div class="ribbon">
 <ExcelFontColorPicker @ref="colorPickerFont" Context="selectedColor" SelectedColorChanged="HandleForeGroundColorChange">
     <MainIcon>

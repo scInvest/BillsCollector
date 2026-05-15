@@ -1,4 +1,5 @@
-﻿@code {
+﻿@using WebClient.Components.UIServices
+@code {
 
     public enum BorderOption
     {
@@ -14,7 +15,7 @@
     }
 
 }
-@inject SheetFocusManger SheetFocusManger
+@inject SheetFocusMangerService SheetFocusManger
 
 <div class="excel-border-picker">
     <button class="border-button compact" @onclick="ToggleDropdown">

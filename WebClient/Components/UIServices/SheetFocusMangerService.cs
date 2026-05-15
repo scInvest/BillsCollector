@@ -1,9 +1,13 @@
-﻿namespace WebClient.Components.UIComponents
+﻿namespace WebClient.Components.UIServices
 {
-    public class SheetFocusManger
+    public class SheetFocusMangerService
     {
         List<IFocusableObject> _focusableObjects = new List<IFocusableObject>();
         public IReadOnlyCollection<IFocusableObject> FocusableObjects => _focusableObjects;
+        public SheetFocusMangerService()
+        {
+            Console.WriteLine();
+        }
 
         public void Register(IFocusableObject focusableObject)
         {

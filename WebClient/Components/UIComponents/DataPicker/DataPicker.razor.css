@@ -1,0 +1,57 @@
+﻿/* Styles for DataPicker component */
+.data-picker {
+  display: inline-block;
+}
+
+.data-picker-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--picker-border, #cfcfcf);
+  background: var(--picker-bg, transparent);
+  color: var(--picker-color, #0b5ed7); /* default custom text color */
+  cursor: pointer;
+  font-size: 0.95rem;
+  position: relative; /* allow absolutely positioned input inside */
+  overflow: hidden;
+}
+
+.data-picker-btn:hover {
+  background: rgba(11, 94, 215, 0.06);
+}
+
+.upload-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor; /* inherit color so icon matches text */
+}
+
+.label-text {
+  color: inherit; /* inherit text color so it's consistent */
+}
+
+/* Consumers can override these CSS variables to customize color/icon */
+/* Biedronka themed styling: yellow background, red border and text */
+.data-picker.biedronka .data-picker-btn {
+  background: #FFD400; /* bright Biedronka-like yellow */
+  border: 2px solid #D50000; /* vivid red border */
+  color: #D50000; /* red text */
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.data-picker.biedronka .data-picker-btn:hover {
+  background: #ffe680; /* slightly lighter on hover */
+}
+
+.data-picker.biedronka .upload-icon {
+  /* icon inherits text color via currentColor; increase size slightly for emphasis */
+  width: 20px;
+  height: 20px;
+}
+
