@@ -1,9 +1,29 @@
 .tabbed-row {
   display: flex;
-  gap: 12px;
+  gap: 0; /* panels touch */
   align-items: flex-start;
 }
 
+/* Panels take only the space they need */
 .tabbed-row > * {
-  flex: 1 1 0;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+}
+
+.tabbed-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+/* keep titles aligned and remove extra vertical offset */
+.panel-title {
+  font-weight: 600;
+  margin: 0 0 6px 0; /* smaller bottom margin so titles sit close to tab bars */
+  color: #333;
+  padding: 8px 12px 0 12px; /* align title padding with tab bar content */
+}
+
+/* Ensure TabbedBar uses its natural width (don't force 100%) */
+.tabbed-panel .tabbed-bar {
+  width: auto;
 }
