@@ -4,35 +4,28 @@
         @for (int i = 0; i < tabs.Count; i++)
         {
             int index = i; // capture loop variable for lambda
-             <button class="tab @(selected.HasValue && i == selected.Value ? "active" : "")" @onclick="() => Select(index)">@tabs[index]</button>
+             <button class="tab @(SelectedIndex.HasValue && i == SelectedIndex.Value ? "active" : "")" @onclick="() => Select(index)">@tabs[index]</button>
         }
 
         <button class="add-btn" title="Dodaj zakładkę" @onclick="AddTab">+</button>
         <button class="clear-btn" title="Brak" @onclick="ClearSelection">×</button>
     </div>
 
-    <div class="tab-content" style="display:@(selected.HasValue ? "block" : "none")">
-        <div class="content">
-            @if (selected.HasValue)
-            {
-                var idx = selected.Value;
-                if (contents.Count > idx && contents[idx] is not null)
-                {
-                    @contents[idx]
-                }
-                else
-                {
-                    <p>Content @(idx + 1)</p>
-                }
-            }
-        </div>
-    </div>
+    @* Content rendering removed - will be handled externally *@
 </div>
 
 @code {
     private List<string> tabs = new();
-    private List<RenderFragment?> contents = new();
-    private int? selected = null;
+
+    // Public list of render fragments (can be set by parent)
+    [Parameter]
+    public List<RenderFragment?> Contents { get; set; } = new();
+
+    // Public selected index
+    public int? SelectedIndex { get; private set; } = null;
+
+    // Public accessor for the currently selected fragment
+    public RenderFragment? SelectedContent => SelectedIndex.HasValue && SelectedIndex.Value >= 0 && SelectedIndex.Value < Contents.Count ? Contents[SelectedIndex.Value] : null;
 
     /// <summary>
     /// Optional callback invoked when a new tab is added. The int parameter is the new tab index.
@@ -42,17 +35,27 @@
     [Parameter]
     public Func<int, RenderFragment>? AddTabCallback { get; set; }
 
+    /// <summary>
+    /// Event invoked when selection changes. The argument is the new selected index (or null).
+    /// </summary>
+    [Parameter]
+    public EventCallback<int?> OnSelectionChanged { get; set; }
+
     protected override void OnInitialized()
     {
         // start with two tabs
         tabs.Add("Tab 1");
         tabs.Add("Tab 2");
 
-        contents.Add(DefaultContentFragment(1));
-        contents.Add(DefaultContentFragment(2));
+        // initialize contents with default fragments if none provided
+        if (Contents.Count == 0)
+        {
+            Contents.Add(DefaultContentFragment(1));
+            Contents.Add(DefaultContentFragment(2));
+        }
 
         // leave selection empty by default
-        selected = null;
+        SelectedIndex = null;
     }
 
     public void AddTab()
@@ -74,8 +77,9 @@
             }
         }
 
-        contents.Add(fragment ?? DefaultContentFragment(newIndex + 1));
-        selected = tabs.Count - 1;
+        Contents.Add(fragment ?? DefaultContentFragment(newIndex + 1));
+        SelectedIndex = tabs.Count - 1;
+        _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
         StateHasChanged();
     }
 
@@ -83,14 +87,16 @@
     {
         if (index >= 0 && index < tabs.Count)
         {
-            selected = index;
+            SelectedIndex = index;
+            _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
         }
         this.StateHasChanged();
     }
 
     private void ClearSelection()
     {
-        selected = null;
+        SelectedIndex = null;
+        _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
         StateHasChanged();
     }
 
