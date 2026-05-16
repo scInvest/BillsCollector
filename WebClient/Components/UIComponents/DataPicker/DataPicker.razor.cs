@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorDatasheet.Core.Data;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using BlazorDatasheet.Core.Data;
+using WebClient.Components.UIComponents.Dialogs;
 
 namespace WebClient.Components.UIComponents.DataPicker
 {
@@ -26,14 +27,9 @@ namespace WebClient.Components.UIComponents.DataPicker
 
         private async Task CreateNewSheet()
         {
-            // create a default sheet (20 rows x 10 cols)
-            var sheet = new Sheet(20, 10);
-            // invoke callback so parent can attach or display the sheet
-            if (OnNewSheet.HasDelegate)
-            {
-                await OnNewSheet.InvokeAsync(sheet);
-            }
+            Dialog.Show("New Sheet");
         }
+        public TextInputModal    Dialog { get; set; }
     }
 }
 

@@ -1,0 +1,84 @@
+.timodal-backdrop {
+  position: fixed;
+  inset: 0; /* top:0; bottom:0; left:0; right:0 */
+  background: rgba(0,0,0,0.45); /* translucent gray blocker */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.timodal {
+  width: 520px;
+  max-width: calc(100% - 40px);
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  overflow: hidden;
+  transform: translateY(0);
+}
+
+.timodal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f7f7f7;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.timodal-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #222;
+}
+
+.timodal-close {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.timodal-body {
+  padding: 16px;
+}
+
+.timodal-textarea {
+  width: 100%;
+  min-height: 120px;
+  font-size: 14px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.timodal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+
+.timodal-btn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d0d0d0;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.timodal-btn-primary {
+  background: #0b5ed7;
+  color: #fff;
+  border-color: #0b5ed7;
+}
+
+.timodal-btn-secondary {
+  background: transparent;
+  color: #333;
+}

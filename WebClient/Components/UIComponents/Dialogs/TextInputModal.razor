@@ -1,0 +1,74 @@
+﻿@using Microsoft.AspNetCore.Components
+
+<div class="timodal-backdrop" style="@(Visible ? "display:block" : "display:none")">
+    <div class="timodal">
+        <div class="timodal-header">
+            <div class="timodal-title">@Title</div>
+            <button class="timodal-close" @onclick="OnCloseClicked" aria-label="Close">✕</button>
+        </div>
+        <div class="timodal-body">
+            <textarea class="timodal-textarea" @bind="InputText" placeholder="Wpisz tekst..."></textarea>
+        </div>
+        <div class="timodal-footer">
+            <button class="timodal-btn timodal-btn-secondary" @onclick="OnCancelClicked">Anuluj</button>
+            <button class="timodal-btn timodal-btn-primary" @onclick="OnOkClicked">OK</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Parameter to control initial visibility; component is initialized hidden by default
+    [Parameter]
+    public bool Visible { get; set; } = false;
+
+    [Parameter]
+    public string Title { get; set; } = "Wpisz tekst";
+
+    [Parameter]
+    public EventCallback<string> OnOk { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    // Current input value
+    public string InputText { get; set; } = string.Empty;
+
+    // Show the modal (call from parent via @ref)
+    public void Show(string initialText = "")
+    {
+        InputText = initialText ?? string.Empty;
+        Visible = true;
+        StateHasChanged();
+    }
+
+    // Hide the modal
+    public void Hide()
+    {
+        Visible = false;
+        StateHasChanged();
+    }
+
+    private async Task OnOkClicked()
+    {
+        if (OnOk.HasDelegate)
+        {
+            await OnOk.InvokeAsync(InputText);
+        }
+        Hide();
+    }
+
+    private async Task OnCancelClicked()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+        Hide();
+    }
+
+    private Task OnCloseClicked()
+    {
+        // treat close same as cancel
+        return OnCancelClicked();
+    }
+}
