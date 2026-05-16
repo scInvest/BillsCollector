@@ -1,0 +1,44 @@
+﻿<div class="tabbed-bar">
+    <div class="tabs">
+        @for (int i = 0; i < tabs.Count; i++)
+        {
+            int index = i; // capture loop variable for lambda
+             <button class="tab @(i == selected ? "active" : "")" @onclick="() => Select(index)">@tabs[index]</button>
+        }
+
+        <button class="add-btn" title="Dodaj zakładkę" @onclick="AddTab">+</button>
+    </div>
+
+    <div class="tab-content">
+        <div class="content">
+            <p>Content @(selected + 1)</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<string> tabs = new();
+    private int selected = 0;
+
+    protected override void OnInitialized()
+    {
+        // start with two tabs
+        tabs.Add("Tab 1");
+        tabs.Add("Tab 2");
+    }
+
+    private void AddTab()
+    {
+        tabs.Add($"Tab {tabs.Count + 1}");
+        selected = tabs.Count - 1;
+    }
+
+    private void Select(int index)
+    {
+        if (index >= 0 && index < tabs.Count)
+        {
+            selected = index;
+        }
+        this.StateHasChanged();
+    }
+}
