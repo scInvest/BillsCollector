@@ -1,0 +1,9 @@
+.tabbed-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.tabbed-row > * {
+  flex: 1 1 0;
+}
