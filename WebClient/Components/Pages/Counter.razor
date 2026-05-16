@@ -8,48 +8,20 @@
 @using BlazorDatasheet.Formula.Core
 @using MudBlazor
 @using WebClient.Components.UIComponents
+@using WebClient.Components.UIComponents.DataPicker
 
 @rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<DataPicker>
 
-@code {
-    // private Sheet sheet = new Sheet(50, 20)
-    // {
-
-    // };
-
-    // protected override void OnInitialized()
-    // {
-    //     sheet.Cells.SetValue(0, 0, "Hello");
-    //     sheet.Cells.SetValue(1, 0, 123);
-    // }
-}
-
-<p>@content</p>
+</DataPicker>
 
 <DataSheetComponent>
 
 </DataSheetComponent>
 
-@code {
-    List<string> files = new List<string>();
-    private string? content;
-
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        var files = e.GetMultipleFiles();
-
-        foreach (var file in files)
-        {
-            using var stream = file.OpenReadStream();
-            using var reader = new StreamReader(stream);
-            content = await reader.ReadToEndAsync();
-        }
-    }
-}
 
 
 

@@ -1,58 +1,66 @@
-﻿<h3>Dodaj rachunki</h3>
+﻿<div>
+    <!-- Enable Biedronka theme by default -->
+    <div class="data-picker biedronka">
+        <label class="data-picker-btn" role="button">
+            <InputFile OnChange="HandleFileSelected" hidden multiple />
+            <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="label-text">Biedronka</span>
+        </label>
+    </div>
 
-<!-- Enable Biedronka theme by default -->
-<div class="data-picker biedronka">
-    <label class="data-picker-btn" role="button">
-        <InputFile OnChange="HandleFileSelected" hidden multiple/>
-        <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <span class="label-text">Biedronka</span>
-    </label>
-</div>
+    <!-- mBank themed picker: striped background (red, orange, burgundy, green) with white 'mbank' text -->
+    <div class="data-picker mbank" style="display:inline-block; margin-left:12px">
+        <label class="data-picker-btn" role="button">
+            <InputFile OnChange="HandleFileSelected" hidden multiple />
+            <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="label-text">mBank CSV</span>
+        </label>
+    </div>
 
-<!-- Regular button to create a new sheet (not a file reader) -->
-<div class="data-picker" style="display:inline-block; margin-left:12px">
-    <button type="button" class="data-picker-btn new-sheet-btn" @onclick="CreateNewSheet">Nowy arkusz</button>
-</div>
+    <!-- Allegro themed picker: white background, orange text and border -->
+    <div class="data-picker allegro" style="display:inline-block; margin-left:12px">
+        <label class="data-picker-btn" role="button">
+            <InputFile OnChange="HandleFileSelected" hidden multiple />
+            <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="label-text">Allegro CSV</span>
+        </label>
+    </div>
 
-<!-- Custom pale-green CSV picker -->
-<div class="data-picker csv-custom" style="display:inline-block; margin-left:12px">
-    <label class="data-picker-btn" role="button">
-        <InputFile OnChange="HandleFileSelected" hidden multiple/>
-        <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <span class="label-text">Custom CSV</span>
-    </label>
-</div>
 
-<!-- mBank themed picker: striped background (red, orange, burgundy, green) with white 'mbank' text -->
-<div class="data-picker mbank" style="display:inline-block; margin-left:12px">
-    <label class="data-picker-btn" role="button">
-        <InputFile OnChange="HandleFileSelected" hidden multiple/>
-        <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <span class="label-text">mBank CSV</span>
-    </label>
-</div>
+    <!-- Regular button to create a new sheet (not a file reader) - made to look like other pickers -->
+    <div class="data-picker" style="display:inline-block; margin-left:12px">
+        <label class="data-picker-btn new-sheet-btn" role="button" @onclick="CreateNewSheet">
+            <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <!-- simple plus icon to indicate new sheet -->
+                <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <span class="label-text">Nowy arkusz</span>
+        </label>
+    </div>
 
-<!-- Allegro themed picker: white background, orange text and border -->
-<div class="data-picker allegro" style="display:inline-block; margin-left:12px">
-    <label class="data-picker-btn" role="button">
-        <InputFile OnChange="HandleFileSelected" hidden multiple/>
-        <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <span class="label-text">Allegro CSV</span>
-    </label>
+    <!-- Custom pale-green CSV picker -->
+    <div class="data-picker csv-custom" style="display:inline-block; margin-left:12px">
+        <label class="data-picker-btn" role="button">
+            <InputFile OnChange="HandleFileSelected" hidden multiple />
+            <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="label-text">Custom CSV</span>
+        </label>
+    </div>
 </div>

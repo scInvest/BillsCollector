@@ -136,26 +136,27 @@
   height: 18px;
 }
 
-/* New sheet button styling: plain neutral button */
+/* New sheet button styling: make it visually match the other .data-picker-btn elements */
 .data-picker .new-sheet-btn {
-  /* make the plain button visually match the other .data-picker-btn elements */
+  /* reuse the main button sizing and spacing so it lines up with labelled pickers */
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  min-height: 36px;
-  line-height: 1;
+  gap: 10px;
+  padding: 10px 16px; /* match .data-picker-btn */
+  min-height: 42px; /* match height of file pickers */
+  min-width: 120px; /* give same minimum width so labels align */
   border-radius: 6px;
-  border: 2px solid #e0e0e0;
-  background: #f7f7f7;
-  color: #222222;
+  border: 1px solid var(--picker-border, #e0e0e0);
+  background: var(--picker-bg, #f7f7f7);
+  color: var(--picker-color, #222222);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1rem;
   cursor: pointer;
   box-sizing: border-box;
   vertical-align: middle;
   -webkit-appearance: none;
   appearance: none;
+  transform: translateY(-2px); /* przesunąć 2px do góry */
 }
 
 .data-picker .new-sheet-btn:hover {
