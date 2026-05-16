@@ -1,4 +1,5 @@
-﻿<div class="tabbed-bar">
+﻿@using Microsoft.AspNetCore.Components
+<div class="tabbed-bar">
     <div class="tabs">
         @for (int i = 0; i < tabs.Count; i++)
         {
@@ -11,26 +12,63 @@
 
     <div class="tab-content">
         <div class="content">
-            <p>Content @(selected + 1)</p>
+            @if (contents.Count > selected && contents[selected] is not null)
+            {
+                @contents[selected]
+            }
+            else
+            {
+                <p>Content @(selected + 1)</p>
+            }
         </div>
     </div>
 </div>
 
 @code {
     private List<string> tabs = new();
+    private List<RenderFragment?> contents = new();
     private int selected = 0;
+
+    /// <summary>
+    /// Optional callback invoked when a new tab is added. The int parameter is the new tab index.
+    /// The callback should return a RenderFragment which will be rendered as the tab content.
+    /// If not provided, a default content fragment is used.
+    /// </summary>
+    [Parameter]
+    public Func<int, RenderFragment>? AddTabCallback { get; set; }
 
     protected override void OnInitialized()
     {
         // start with two tabs
         tabs.Add("Tab 1");
         tabs.Add("Tab 2");
+
+        contents.Add(DefaultContentFragment(1));
+        contents.Add(DefaultContentFragment(2));
     }
 
-    private void AddTab()
+    public void AddTab()
     {
-        tabs.Add($"Tab {tabs.Count + 1}");
+        var newIndex = tabs.Count;
+        tabs.Add($"Tab {newIndex + 1}");
+
+        RenderFragment? fragment = null;
+        if (AddTabCallback is not null)
+        {
+            try
+            {
+                fragment = AddTabCallback(newIndex);
+            }
+            catch
+            {
+                // swallow callback exceptions and fall back to default content
+                fragment = null;
+            }
+        }
+
+        contents.Add(fragment ?? DefaultContentFragment(newIndex + 1));
         selected = tabs.Count - 1;
+        StateHasChanged();
     }
 
     private void Select(int index)
@@ -41,4 +79,11 @@
         }
         this.StateHasChanged();
     }
+
+    private RenderFragment DefaultContentFragment(int number) => builder =>
+    {
+        builder.OpenElement(0, "p");
+        builder.AddContent(1, $"Content {number}");
+        builder.CloseElement();
+    };
 }
