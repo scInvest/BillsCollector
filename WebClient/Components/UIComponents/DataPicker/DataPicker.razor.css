@@ -38,6 +38,17 @@
   color: inherit; /* inherit text color so it's consistent */
 }
 
+/* Small helper for showing an underline segment between letters */
+.label-underline-gap {
+  display: inline-block;
+  width: 14px; /* length of the visible underline */
+  height: 0; /* rely on border for the visual line */
+  border-bottom: 2px solid currentColor; /* use current text color */
+  margin: 0 2px; /* small spacing around the underline */
+  vertical-align: middle;
+  transform: translateY(2px); /* nudge the line closer to text baseline */
+}
+
 /* Consumers can override these CSS variables to customize color/icon */
 /* Biedronka themed styling: yellow background, red border and text */
 .data-picker.biedronka .data-picker-btn {
@@ -163,5 +174,26 @@
   background: #f0f0f0;
 }
 
+/* Żabka themed styling: dark green background, light flashy green border and text */
+.data-picker.zabka .data-picker-btn {
+  background: #0b3f1a; /* dark green background */
+  border: 2px solid #7cff4d; /* light flashy green border */
+  color: #7cff4d; /* light flashy green text */
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(11,63,26,0.12);
+}
+
+.data-picker.zabka .data-picker-btn:hover {
+  background: #0e4b22; /* slightly lighter dark green on hover */
+}
+
+.data-picker.zabka .upload-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.underline {
+    text-decoration: underline;
+}
 
 
