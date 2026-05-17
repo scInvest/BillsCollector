@@ -21,12 +21,12 @@
 <div class="tabbed-row">
     <div class="tabbed-panel">
         <div class="panel-title">Analiza</div>
-        <TabbedBar OnSelectionChanged="OnSelectedIndexChanged" AddTabNameCallback="getName" @ref="analiticBar"  AddTabCallback="AddAnalyticViewClicked"></TabbedBar>
+        <TabbedBar OnSelectionChanged="OnSelectedIndexChanged" @ref="analiticBar" AddTabCallback="AddAnalyticViewClicked"></TabbedBar>
     </div>
 
     <div class="tabbed-panel" >
         <div class="panel-title">Dane</div>
-        <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged" AddTabNameCallback="getName" @ref="dataBar" AddTabCallback="AddDataClicked"></TabbedBar>
+        <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged" @ref="dataBar" AddTabCallback="AddDataClicked"></TabbedBar>
     </div>
 </div>
 
@@ -37,20 +37,31 @@
 @code {
     TabbedBar analiticBar = null!;
     TabbedBar dataBar = null!;
+
+    // store contents for each bar locally
+    private List<RenderFragment?> analyticContents = new();
+    private List<RenderFragment?> dataContents = new();
+
     private void OnSelectedIndexChanged(int? args)
     {
+        // when analytic selection changes, clear data selection
         this.dataBar.Select(null);
         this.StateHasChanged();
     }
     private void OnSelectedIndexDataChanged(int? args)
     {
+        // when data selection changes, clear analytic selection
         this.analiticBar.Select(null);
         this.StateHasChanged();
     }
-    public RenderFragment? DataSheet => dataBar?.SelectedContent ?? EmptyView;
+
+    public RenderFragment? DataSheet =>
+        (dataBar?.SelectedIndex.HasValue == true && dataBar.SelectedIndex.Value >= 0 && dataBar.SelectedIndex.Value < dataContents.Count)
+        ? dataContents[dataBar.SelectedIndex.Value]
+        : EmptyView;
 
     public RenderFragment? DataSheet2 { get; set; }
-    private void test(MouseEventArgs args)
+    private void test(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
     {
         DataSheet2 = builder =>
         {
@@ -73,10 +84,14 @@
     };
     List<DataSheetComponent> dataSheetComponents = new List<DataSheetComponent>();
 
-    private RenderFragment? AddAnalyticViewClicked(int index)
+    // Called by TabbedBar when creating a new analytic tab. Should return the tab name or null to cancel.
+    private string? AddAnalyticViewClicked(int index)
     {
-        return builder =>
-        {   
+        // ensure list is large enough
+        while (analyticContents.Count <= index) analyticContents.Add(null);
+
+        var fragment = (RenderFragment?)(builder =>
+        {
             builder.OpenComponent<DataSheetComponent>(0);
 
            // builder.AddAttribute(1, "Index", index);
@@ -88,12 +103,19 @@
             });
 
             builder.CloseComponent();
-        };
+        });
+
+        analyticContents[index] = fragment;
+
+        return $"Analiza {index + 1}";
     }
 
-    private RenderFragment? AddDataClicked(int index)
+    // Called by TabbedBar when creating a new data tab. Should return the tab name or null to cancel.
+    private string? AddDataClicked(int index)
     {
-        return builder =>
+        while (dataContents.Count <= index) dataContents.Add(null);
+
+        var fragment = (RenderFragment?)(builder =>
         {
             builder.OpenComponent<DataSheetComponent>(0);
 
@@ -106,13 +128,10 @@
             });
 
             builder.CloseComponent();
-        };
+        });
+
+        dataContents[index] = fragment;
+
+        return $"Dane {index + 1}";
     }
-    private string getName(int index)
-    {
-        return $"Analiza {index + 1}";
-    }
-
-
-
 }

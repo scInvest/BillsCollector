@@ -11,34 +11,22 @@
         <button class="clear-btn" title="Brak" @onclick="ClearSelection">×</button>
     </div>
 
-    @* Content rendering removed - will be handled externally *@
+    @* Content is handled outside; this component only manages tab names and selection index *@
 </div>
 
 @code {
     private List<string> tabs = new();
 
-    // Public list of render fragments (can be set by parent)
-    [Parameter]
-    public List<RenderFragment?> Contents { get; set; } = new();
-
     // Public selected index
     public int? SelectedIndex { get; private set; } = null;
 
-    // Public accessor for the currently selected fragment
-    public RenderFragment? SelectedContent => SelectedIndex.HasValue && SelectedIndex.Value >= 0 && SelectedIndex.Value < Contents.Count ? Contents[SelectedIndex.Value] : null;
-
     /// <summary>
-    /// Optional callback invoked when a new tab is added. The int parameter is the new tab index.
-    /// The callback should return a RenderFragment which will be rendered as the tab content.
-    /// If not provided, a default content fragment is used.
+    /// Callback invoked when the user requests adding a new tab. The int parameter is the new tab index.
+    /// The callback should return the name for the new tab. Returning null cancels the operation.
     /// </summary>
-    /// <returns>A RenderFragment to be used as the content of the new tab. NUll means cancel.</returns>
     [Parameter]
-    public Func<int, RenderFragment?> AddTabCallback { get; set; } = null!;
+    public Func<int, string?> AddTabCallback { get; set; } = null!;
 
-
-    [Parameter]
-    public Func<int, string?> AddTabNameCallback { get; set; } = null!;
     /// <summary>
     /// Event invoked when selection changes. The argument is the new selected index (or null).
     /// </summary>
@@ -47,54 +35,41 @@
 
     protected override void OnInitialized()
     {
-        // leave selection empty by default
         SelectedIndex = null;
     }
 
     private void AddTab()
     {
-        AddTab(null, null, true);
-    }
-
-    public void AddTab(RenderFragment? fragment, string? name, bool select)
-    {
-        var newIndex = tabs.Count;
-
-        if (AddTabCallback is not null)
-        {
-            try
-            {
-                if (fragment is null)
-                {
-                    fragment = AddTabCallback(newIndex);
-                }
-                if (fragment == null)
-                {
-                    return;
-                }
-                if (name is null)
-                {
-                    name = AddTabNameCallback != null ? AddTabNameCallback(newIndex) : "Tab " + newIndex;
-                }
-                tabs.Add(name);
-            }
-            catch
-            {
-                // swallow callback exceptions and fall back to default content
-                fragment = null;
-            }
-            Contents.Add(fragment ?? DefaultContentFragment(newIndex + 1));
-            if (select)
-            {
-                SelectedIndex = tabs.Count - 1;
-                _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
-            }
-            StateHasChanged();
-        }
-        else
+        if (AddTabCallback is null)
         {
             throw new InvalidOperationException("AddTabCallback must be provided to add tabs.");
         }
+
+        var newIndex = tabs.Count;
+        string? name;
+        try
+        {
+            name = AddTabCallback(newIndex);
+        }
+        catch
+        {
+            // swallow exceptions from callback and cancel
+            return;
+        }
+
+        // callback can cancel by returning null
+        if (name == null)
+        {
+            return;
+        }
+
+        tabs.Add(name);
+
+        // select newly added tab
+        SelectedIndex = tabs.Count - 1;
+        _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
+
+        StateHasChanged();
     }
 
     public void Select(int? index)
@@ -104,7 +79,7 @@
 
     private void Select(int? index, bool @event)
     {
-        if (index== null || index >= 0 && index < tabs.Count)
+        if (index == null || (index >= 0 && index < tabs.Count))
         {
             SelectedIndex = index;
             if (@event)
@@ -121,11 +96,4 @@
         _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
         StateHasChanged();
     }
-
-    private RenderFragment DefaultContentFragment(int number) => builder =>
-    {
-        builder.OpenElement(0, "p");
-        builder.AddContent(1, $"Content {number}");
-        builder.CloseElement();
-    };
 }
