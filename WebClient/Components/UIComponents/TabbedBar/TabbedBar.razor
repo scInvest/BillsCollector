@@ -4,7 +4,7 @@
         @for (int i = 0; i < tabs.Count; i++)
         {
             int index = i; // capture loop variable for lambda
-             <button class="tab @(SelectedIndex.HasValue && i == SelectedIndex.Value ? "active" : "")" @onclick="() => Select(index)">@tabs[index]</button>
+                           <button class="tab @(SelectedIndex.HasValue && i == SelectedIndex.Value ? "active" : "")" @onclick="() => Select(index, true)">@tabs[index]</button>
         }
 
         <button class="add-btn" title="Dodaj zakładkę" @onclick="AddTab">+</button>
@@ -32,9 +32,13 @@
     /// The callback should return a RenderFragment which will be rendered as the tab content.
     /// If not provided, a default content fragment is used.
     /// </summary>
+    /// <returns>A RenderFragment to be used as the content of the new tab. NUll means cancel.</returns>
     [Parameter]
-    public Func<int, RenderFragment>? AddTabCallback { get; set; }
+    public Func<int, RenderFragment?> AddTabCallback { get; set; } = null!;
 
+
+    [Parameter]
+    public Func<int, string?> AddTabNameCallback { get; set; } = null!;
     /// <summary>
     /// Event invoked when selection changes. The argument is the new selected index (or null).
     /// </summary>
@@ -43,52 +47,70 @@
 
     protected override void OnInitialized()
     {
-        // start with two tabs
-        tabs.Add("Tab 1");
-        tabs.Add("Tab 2");
-
-        // initialize contents with default fragments if none provided
-        if (Contents.Count == 0)
-        {
-            Contents.Add(DefaultContentFragment(1));
-            Contents.Add(DefaultContentFragment(2));
-        }
-
         // leave selection empty by default
         SelectedIndex = null;
     }
 
-    public void AddTab()
+    private void AddTab()
+    {
+        AddTab(null, null, true);
+    }
+
+    public void AddTab(RenderFragment? fragment, string? name, bool select)
     {
         var newIndex = tabs.Count;
-        tabs.Add($"Tab {newIndex + 1}");
 
-        RenderFragment? fragment = null;
         if (AddTabCallback is not null)
         {
             try
             {
-                fragment = AddTabCallback(newIndex);
+                if (fragment is null)
+                {
+                    fragment = AddTabCallback(newIndex);
+                }
+                if (fragment == null)
+                {
+                    return;
+                }
+                if (name is null)
+                {
+                    name = AddTabNameCallback != null ? AddTabNameCallback(newIndex) : "Tab " + newIndex;
+                }
+                tabs.Add(name);
             }
             catch
             {
                 // swallow callback exceptions and fall back to default content
                 fragment = null;
             }
+            Contents.Add(fragment ?? DefaultContentFragment(newIndex + 1));
+            if (select)
+            {
+                SelectedIndex = tabs.Count - 1;
+                _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
+            }
+            StateHasChanged();
         }
-
-        Contents.Add(fragment ?? DefaultContentFragment(newIndex + 1));
-        SelectedIndex = tabs.Count - 1;
-        _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
-        StateHasChanged();
+        else
+        {
+            throw new InvalidOperationException("AddTabCallback must be provided to add tabs.");
+        }
     }
 
-    private void Select(int index)
+    public void Select(int? index)
     {
-        if (index >= 0 && index < tabs.Count)
+        Select(index, false);
+    }
+
+    private void Select(int? index, bool @event)
+    {
+        if (index== null || index >= 0 && index < tabs.Count)
         {
             SelectedIndex = index;
-            _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
+            if (@event)
+            {
+                _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
+            }
         }
         this.StateHasChanged();
     }

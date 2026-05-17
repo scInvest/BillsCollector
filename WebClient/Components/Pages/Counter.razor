@@ -21,20 +21,98 @@
 <div class="tabbed-row">
     <div class="tabbed-panel">
         <div class="panel-title">Analiza</div>
-        <TabbedBar></TabbedBar>
+        <TabbedBar OnSelectionChanged="OnSelectedIndexChanged" AddTabNameCallback="getName" @ref="analiticBar"  AddTabCallback="AddAnalyticViewClicked"></TabbedBar>
     </div>
 
-    <div class="tabbed-panel">
+    <div class="tabbed-panel" >
         <div class="panel-title">Dane</div>
-        <TabbedBar></TabbedBar>
+        <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged" AddTabNameCallback="getName" @ref="dataBar" AddTabCallback="AddDataClicked"></TabbedBar>
     </div>
 </div>
-<DataSheetComponent>
 
-</DataSheetComponent>
-
-
+<h1 @onclick="test" >CLIEM ME</h1>
+@DataSheet
 
 
+@code {
+    TabbedBar analiticBar = null!;
+    TabbedBar dataBar = null!;
+    private void OnSelectedIndexChanged(int? args)
+    {
+        this.dataBar.Select(null);
+        this.StateHasChanged();
+    }
+    private void OnSelectedIndexDataChanged(int? args)
+    {
+        this.analiticBar.Select(null);
+        this.StateHasChanged();
+    }
+    public RenderFragment? DataSheet => dataBar?.SelectedContent ?? EmptyView;
+
+    public RenderFragment? DataSheet2 { get; set; }
+    private void test(MouseEventArgs args)
+    {
+        DataSheet2 = builder =>
+        {
+            builder.OpenComponent<DataSheetComponent>(0);
+
+            //builder.AddAttribute(1, "Index", 3);
+
+            builder.AddComponentReferenceCapture(2, component =>
+            {
+                var @ref = (DataSheetComponent)component;
+                dataSheetComponents.Add(@ref);
+            });
+
+            builder.CloseComponent();
+        };
+    }
+    private RenderFragment EmptyView => builder =>
+    {
+        builder.AddMarkupContent(0, "<h1>Dodaj lub wybierz dane.</h1>");
+    };
+    List<DataSheetComponent> dataSheetComponents = new List<DataSheetComponent>();
+
+    private RenderFragment? AddAnalyticViewClicked(int index)
+    {
+        return builder =>
+        {   
+            builder.OpenComponent<DataSheetComponent>(0);
+
+           // builder.AddAttribute(1, "Index", index);
+
+            builder.AddComponentReferenceCapture(2, component =>
+            {
+                var @ref = (DataSheetComponent)component;
+                dataSheetComponents.Add(@ref);
+            });
+
+            builder.CloseComponent();
+        };
+    }
+
+    private RenderFragment? AddDataClicked(int index)
+    {
+        return builder =>
+        {
+            builder.OpenComponent<DataSheetComponent>(0);
+
+         //   builder.AddAttribute(1, "Index", index);
+
+            builder.AddComponentReferenceCapture(2, component =>
+            {
+                var @ref = (DataSheetComponent)component;
+                dataSheetComponents.Add(@ref);
+            });
+
+            builder.CloseComponent();
+        };
+    }
+    private string getName(int index)
+    {
+        return $"Analiza {index + 1}";
+    }
 
 
+
+}

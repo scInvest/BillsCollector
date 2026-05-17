@@ -25,10 +25,6 @@ namespace WebClient.Components.UIComponents.DataPicker
             }
         }
 
-        private async Task CreateNewSheet()
-        {
-            Dialog.Show("New Sheet");
-        }
         public TextInputModal    Dialog { get; set; }
     }
 }
