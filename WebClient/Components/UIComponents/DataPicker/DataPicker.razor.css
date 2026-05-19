@@ -129,6 +129,24 @@
   height: 20px;
 }
 
+/* Kaufland themed styling: white background, red border and red text */
+.data-picker.kaufland .data-picker-btn {
+  background: #ffffff; /* white background */
+  border: 2px solid #cc0000; /* Kaufland-like red border */
+  color: #cc0000; /* red text */
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(204,0,0,0.06);
+}
+
+.data-picker.kaufland .data-picker-btn:hover {
+  background: #fff1f1; /* very light red tint on hover */
+}
+
+.data-picker.kaufland .upload-icon {
+  width: 20px;
+  height: 20px;
+}
+
 /* Custom pale-green CSV picker: subtle, clean styling */
 .data-picker.csv-custom .data-picker-btn {
   background: #e9f8ec; /* pale green */
