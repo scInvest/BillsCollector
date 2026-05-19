@@ -30,108 +30,46 @@
     </div>
 </div>
 
-<h1 @onclick="test" >CLIEM ME</h1>
-@DataSheet
+@foreach (var item in dataSheetComponents)
+{
+    
+}
 
 
 @code {
+    Dictionary<string, DataSheetComponent> dataSheetComponents = new();
+    Dictionary<string, DataSheetComponent> dataSheetAnaliticalComponents = new();
+
     TabbedBar analiticBar = null!;
     TabbedBar dataBar = null!;
 
-    // store contents for each bar locally
-    private List<RenderFragment?> analyticContents = new();
-    private List<RenderFragment?> dataContents = new();
 
-    private void OnSelectedIndexChanged(int? args)
+    private void OnSelectedIndexChanged((int index, string key)? selection)
     {
         // when analytic selection changes, clear data selection
         this.dataBar.Select(null);
         this.StateHasChanged();
     }
-    private void OnSelectedIndexDataChanged(int? args)
+    private void OnSelectedIndexDataChanged((int index, string key)? selection)
     {
         // when data selection changes, clear analytic selection
         this.analiticBar.Select(null);
         this.StateHasChanged();
     }
 
-    public RenderFragment? DataSheet =>
-        (dataBar?.SelectedIndex.HasValue == true && dataBar.SelectedIndex.Value >= 0 && dataBar.SelectedIndex.Value < dataContents.Count)
-        ? dataContents[dataBar.SelectedIndex.Value]
-        : EmptyView;
-
-    public RenderFragment? DataSheet2 { get; set; }
-    private void test(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
-    {
-        DataSheet2 = builder =>
-        {
-            builder.OpenComponent<DataSheetComponent>(0);
-
-            //builder.AddAttribute(1, "Index", 3);
-
-            builder.AddComponentReferenceCapture(2, component =>
-            {
-                var @ref = (DataSheetComponent)component;
-                dataSheetComponents.Add(@ref);
-            });
-
-            builder.CloseComponent();
-        };
-    }
     private RenderFragment EmptyView => builder =>
     {
         builder.AddMarkupContent(0, "<h1>Dodaj lub wybierz dane.</h1>");
     };
-    List<DataSheetComponent> dataSheetComponents = new List<DataSheetComponent>();
 
-    // Called by TabbedBar when creating a new analytic tab. Should return the tab name or null to cancel.
-    private string? AddAnalyticViewClicked(int index)
+    private (string,string)? AddDataClicked(int index)
     {
-        // ensure list is large enough
-        while (analyticContents.Count <= index) analyticContents.Add(null);
+        var rtn = ("Data " + index, Guid.NewGuid().ToString());
 
-        var fragment = (RenderFragment?)(builder =>
-        {
-            builder.OpenComponent<DataSheetComponent>(0);
-
-           // builder.AddAttribute(1, "Index", index);
-
-            builder.AddComponentReferenceCapture(2, component =>
-            {
-                var @ref = (DataSheetComponent)component;
-                dataSheetComponents.Add(@ref);
-            });
-
-            builder.CloseComponent();
-        });
-
-        analyticContents[index] = fragment;
-
-        return $"Analiza {index + 1}";
     }
 
-    // Called by TabbedBar when creating a new data tab. Should return the tab name or null to cancel.
-    private string? AddDataClicked(int index)
+    private (string, string)? AddAnalyticViewClicked(int index)
     {
-        while (dataContents.Count <= index) dataContents.Add(null);
-
-        var fragment = (RenderFragment?)(builder =>
-        {
-            builder.OpenComponent<DataSheetComponent>(0);
-
-         //   builder.AddAttribute(1, "Index", index);
-
-            builder.AddComponentReferenceCapture(2, component =>
-            {
-                var @ref = (DataSheetComponent)component;
-                dataSheetComponents.Add(@ref);
-            });
-
-            builder.CloseComponent();
-        });
-
-        dataContents[index] = fragment;
-
-        return $"Dane {index + 1}";
+        return ("Analiza " + index, Guid.NewGuid().ToString());
     }
 }

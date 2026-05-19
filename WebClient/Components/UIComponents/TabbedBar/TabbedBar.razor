@@ -15,23 +15,40 @@
 </div>
 
 @code {
-    private List<string> tabs = new();
+    private List<(string Title, string Key)> tabs = new();
 
     // Public selected index
     public int? SelectedIndex { get; private set; } = null;
+
+    public (int Index, string Title, string Key)? Selection
+    {
+        get
+        {
+            if (SelectedIndex.HasValue)
+            {
+                var data = tabs[SelectedIndex.Value];
+                return (SelectedIndex.Value, data.Title, data.Key);
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+    public IReadOnlyList<(string Title, string Key)> Tabs => tabs;
 
     /// <summary>
     /// Callback invoked when the user requests adding a new tab. The int parameter is the new tab index.
     /// The callback should return the name for the new tab. Returning null cancels the operation.
     /// </summary>
     [Parameter]
-    public Func<int, string?> AddTabCallback { get; set; } = null!;
+    public Func<int, (string Title, string Key)?> AddTabCallback { get; set; } = null!;
 
     /// <summary>
     /// Event invoked when selection changes. The argument is the new selected index (or null).
     /// </summary>
     [Parameter]
-    public EventCallback<int?> OnSelectionChanged { get; set; }
+    public EventCallback<(int Index, string Key)?> OnSelectionChanged { get; set; }
 
     protected override void OnInitialized()
     {
@@ -46,10 +63,10 @@
         }
 
         var newIndex = tabs.Count;
-        string? name;
+        (string Title, string Key)? input;
         try
         {
-            name = AddTabCallback(newIndex);
+            input = AddTabCallback(newIndex);
         }
         catch
         {
@@ -58,16 +75,17 @@
         }
 
         // callback can cancel by returning null
-        if (name == null)
+        if (input == null)
         {
             return;
         }
 
-        tabs.Add(name);
+        tabs.Add(input.Value);
 
         // select newly added tab
         SelectedIndex = tabs.Count - 1;
-        _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
+        var data = tabs[SelectedIndex.Value];
+        _ = OnSelectionChanged.InvokeAsync((tabs.Count - 1, data.Key));
 
         StateHasChanged();
     }
@@ -84,7 +102,8 @@
             SelectedIndex = index;
             if (@event)
             {
-                _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
+                var data = index.HasValue ? (index.Value, tabs[index.Value].Key) : default;
+                _ = OnSelectionChanged.InvokeAsync(data);
             }
         }
         this.StateHasChanged();
@@ -93,7 +112,7 @@
     private void ClearSelection()
     {
         SelectedIndex = null;
-        _ = OnSelectionChanged.InvokeAsync(SelectedIndex);
+        _ = OnSelectionChanged.InvokeAsync(null);
         StateHasChanged();
     }
 }
