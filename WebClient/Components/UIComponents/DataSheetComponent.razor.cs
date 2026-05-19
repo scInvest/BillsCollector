@@ -8,6 +8,16 @@ using WebClient.Components.UIServices;
 
 namespace WebClient.Components.UIComponents
 {
+
+    /// <summary>
+    /// Current grid frame work is weak, and in version v0.1xxx for multiple years. 
+    /// It will be required to replace the grid framework with a more robust one, so all mid level -> low lever operation should be done via interface.
+    /// </summary>
+    public interface IDataSheetComponent : IFocusableObject
+    {
+        public string ID { get; set; }
+
+    }
     public partial class DataSheetComponent : ComponentBase, IFocusableObject
     {
         private ExcelBorderPicker? borderPicker;

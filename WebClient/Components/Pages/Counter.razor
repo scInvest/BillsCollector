@@ -66,12 +66,33 @@
 
     public string? SelectedSheet => analiticBar?.Selection?.Key ?? dataBar?.Selection?.Key;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // select first tab by default
+
+            var allDataSheet = AddItemToCollection("Wszytko", this.dataSheetAnaliticalComponents);
+            this.analiticBar.AddTab(allDataSheet);
+            
+            var rtn = AddItemToCollection("Data", this.dataSheetComponents);
+            this.dataBar.AddTab(rtn);
+        }
+        base.OnAfterRender(firstRender);
+    }
+
     private void OnSelectedIndexChanged((int index, string key)? selection)
     {
         // when analytic selection changes, clear data selection
         this.dataBar.Select(null);
         this.StateHasChanged();
     }
+
     private void OnSelectedIndexDataChanged((int index, string key)? selection)
     {
         // when data selection changes, clear analytic selection
@@ -84,15 +105,23 @@
         builder.AddMarkupContent(0, "<h1>Dodaj lub wybierz dane.</h1>");
     };
 
+    // Shared helper that creates a new entry title/key, adds it to the provided collection and returns the tuple.
+    private (string, string)? AddItemToCollection(string name, Dictionary<string, object> collection)
+    {
+        var rtn = (name, Guid.NewGuid().ToString());
+        collection.Add(rtn.Item2, rtn.Item1);
+        return rtn;
+    }
+
     private (string Title, string Key)? AddDataClicked(int index)
     {
-        var rtn = ("Data " + index, Guid.NewGuid().ToString());
-        this.dataSheetComponents.Add(rtn.Item2, rtn.Item1);
+        var rtn = AddItemToCollection("Data " + index, this.dataSheetComponents);
         return rtn;
     }
 
     private (string, string)? AddAnalyticViewClicked(int index)
     {
-        return ("Analiza " + index, Guid.NewGuid().ToString());
+        var rtn = AddItemToCollection("Analiza " + index, this.dataSheetAnaliticalComponents);
+        return rtn;
     }
 }

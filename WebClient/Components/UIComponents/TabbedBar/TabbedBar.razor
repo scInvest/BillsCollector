@@ -8,7 +8,6 @@
         }
 
         <button class="add-btn" title="Dodaj zakładkę" @onclick="AddTab">+</button>
-        <button class="clear-btn" title="Brak" @onclick="ClearSelection">×</button>
     </div>
 
     @* Content is handled outside; this component only manages tab names and selection index *@
@@ -54,8 +53,12 @@
     {
         SelectedIndex = null;
     }
-
     private void AddTab()
+    {
+        AddTab(null);
+    }
+
+    public void AddTab((string title, string key)? input)
     {
         if (AddTabCallback is null)
         {
@@ -63,15 +66,10 @@
         }
 
         var newIndex = tabs.Count;
-        (string Title, string Key)? input;
-        try
+
+        if (input == null)
         {
             input = AddTabCallback(newIndex);
-        }
-        catch
-        {
-            // swallow exceptions from callback and cancel
-            return;
         }
 
         // callback can cancel by returning null
@@ -107,12 +105,5 @@
             }
         }
         this.StateHasChanged();
-    }
-
-    private void ClearSelection()
-    {
-        SelectedIndex = null;
-        _ = OnSelectionChanged.InvokeAsync(null);
-        StateHasChanged();
     }
 }
