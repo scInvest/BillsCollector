@@ -30,19 +30,41 @@
     </div>
 </div>
 
-@foreach (var item in dataSheetComponents)
+@if (SelectedSheet is null)
 {
-    
+    <div class="empty-message">
+        <h1>Dodaj lub wybierz dane.</h1>
+    </div>
 }
 
+@* Keep all components instantiated but hide those that are not the selected sheet. *@
+@foreach (var item in dataSheetComponents)
+{
+    var key = item.Key;
+    var isVisible = SelectedSheet == key;
+    <div style="@($"display:{(isVisible ? "block" : "none")}")">
+        <DataSheetComponent ID="@key" @key="key"></DataSheetComponent>
+    </div>
+}
+
+@foreach (var item in dataSheetAnaliticalComponents)
+{
+    var key = item.Key;
+    var isVisible = SelectedSheet == key;
+    <div style="@($"display:{(isVisible ? "block" : "none")}")">
+        <DataSheetComponent ID="@key" @key="key"></DataSheetComponent>
+    </div>
+}
 
 @code {
-    Dictionary<string, DataSheetComponent> dataSheetComponents = new();
-    Dictionary<string, DataSheetComponent> dataSheetAnaliticalComponents = new();
+    Dictionary<string, object> dataSheetComponents = new();
+    Dictionary<string, object> dataSheetAnaliticalComponents = new();
 
     TabbedBar analiticBar = null!;
     TabbedBar dataBar = null!;
 
+
+    public string? SelectedSheet => analiticBar?.Selection?.Key ?? dataBar?.Selection?.Key;
 
     private void OnSelectedIndexChanged((int index, string key)? selection)
     {
@@ -62,10 +84,11 @@
         builder.AddMarkupContent(0, "<h1>Dodaj lub wybierz dane.</h1>");
     };
 
-    private (string,string)? AddDataClicked(int index)
+    private (string Title, string Key)? AddDataClicked(int index)
     {
         var rtn = ("Data " + index, Guid.NewGuid().ToString());
-
+        this.dataSheetComponents.Add(rtn.Item2, rtn.Item1);
+        return rtn;
     }
 
     private (string, string)? AddAnalyticViewClicked(int index)

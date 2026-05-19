@@ -29,6 +29,8 @@ namespace WebClient.Components.UIComponents
             this.sheet.SheetDirty += Sheet_SheetDirty;
         }
 
+        [Parameter]
+        public string ID { get; set; }
         private void Sheet_SheetDirty(object? sender, BlazorDatasheet.Core.Events.Visual.DirtySheetEventArgs e)
         {
         }
