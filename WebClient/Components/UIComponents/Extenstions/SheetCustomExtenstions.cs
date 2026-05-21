@@ -20,6 +20,7 @@ namespace WebClient.Components.UIComponents.Extenstions
                     var y = region.Top + j;
                     var cell = sheet.Cells[y, x];
                     updateAction(cell);
+                    Console.WriteLine(  x +"  " + y);
                 }
             }
             sheet.EndBatchUpdates();

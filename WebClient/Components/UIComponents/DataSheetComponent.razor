@@ -37,8 +37,9 @@
 <ExcelBorderPicker @ref="borderPicker" SelectedBorderChanged="HandleBorderChanged"></ExcelBorderPicker>
 </div>
 <div>
-<Datasheet @ref="datasheet"
-           Sheet="sheet" />
+<Datasheet UseAutoFill="true" UseAutoScroll="true" AutoFit="true" 
+    @ref="datasheet"
+    Sheet="sheet" />
 </div>
 @code {
 

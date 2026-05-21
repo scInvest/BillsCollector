@@ -2,6 +2,8 @@
 using BlazorDatasheet.Core.Data;
 using BlazorDatasheet.Core.Events.Selection;
 using BlazorDatasheet.Core.Formats;
+using BlazorDatasheet.DataStructures.Geometry;
+using BlazorDatasheet.Render.Headings;
 using Microsoft.AspNetCore.Components;
 using WebClient.Components.UIComponents.Extenstions;
 using WebClient.Components.UIServices;
@@ -18,6 +20,55 @@ namespace WebClient.Components.UIComponents
         public string ID { get; set; }
 
     }
+    /// <summary>
+    /// Current grid frame work is weak, and in version v0.1xxx for multiple years. 
+    /// It will be required to replace the grid framework with a more robust one, so all mid level -> low lever operation should be done via interface.
+    /// </summary>
+    public interface IDataSheetLogic
+    {
+        public void CreateBillSummaryTable_Empty();
+    }
+    public partial class DataSheetComponent : ComponentBase, IFocusableObject
+    {
+        class DataSheetLogic : IDataSheetLogic
+        {
+            private readonly Datasheet datasheet;
+            private readonly Sheet _sheet;
+            private readonly DataSheetComponent dataSheetComponent;
+            private IRegion? _headerRegion;
+
+            public DataSheetLogic(Datasheet datasheet, Sheet sheet, DataSheetComponent dataSheetComponent)
+            {
+                this.datasheet = datasheet;
+                _sheet = sheet;
+                this.dataSheetComponent = dataSheetComponent;
+            }
+
+            public void CreateBillSummaryTable_Empty()
+            {
+                var headers = new string[]
+                 {
+                "",  "Rodzaj", "Źródło", "Data", "Nazwa(oryginalna)", "Nazwa",
+                "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
+                "Kategoria", "Kategoria", "Kategoria", "Tagi", "ID", "Metadane",
+                 };
+                for (int col = 0; col < headers.Length; col++)
+                {
+                    _sheet.Cells.SetValue(0, col, headers[col]);
+                }
+                _sheet.Cells.SetValue(1, 0, "Suma");
+
+                _headerRegion = new Region(0, 1, 0,headers.Length );
+                var  headerRegionRow1 = new Region(0, 0, 0, headers.Length);
+                dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, _headerRegion);
+                dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.ThickOutsideBorders, _headerRegion);
+                dataSheetComponent.SetColorChanged("#DDDDDD", headerRegionRow1);
+                var bodyRegion = new Region(2, 110, 0, headers.Length);
+                dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, bodyRegion);
+            }
+
+        }
+    }
     public partial class DataSheetComponent : ComponentBase, IFocusableObject
     {
         private ExcelBorderPicker? borderPicker;
@@ -32,15 +83,26 @@ namespace WebClient.Components.UIComponents
 
         protected override void OnInitialized()
         {
-            sheet = new Sheet(20, 10);
+          //  this.datasheet.StickyHeaders = true;
+
+            sheet = new Sheet(120, 18);
             sheet.Selection.CellsSelected += Selection_CellsSelected;
-            sheet.Cells.SetValue(0, 0, "Hello");
             this.SheetFocusManger.Register(this);
             this.sheet.SheetDirty += Sheet_SheetDirty;
+            this.Logic = new DataSheetLogic(datasheet, sheet, this);
+            this.Logic.CreateBillSummaryTable_Empty();
         }
-
+        protected override void OnAfterRender(bool firstRender)
+        {
+            RenderFragment<HeadingContext> @default = this.datasheet.RowHeaderTemplate;
+            var x = @default(new HeadingContext(1, "sdf"));
+            this.datasheet.RowHeaderTemplate = (_) => @default(new HeadingContext(1, "Row"));   
+            base.OnAfterRender(firstRender);
+        }
         [Parameter]
         public string ID { get; set; }
+        internal IDataSheetLogic Logic { get; private set; }
+
         private void Sheet_SheetDirty(object? sender, BlazorDatasheet.Core.Events.Visual.DirtySheetEventArgs e)
         {
         }
@@ -51,12 +113,17 @@ namespace WebClient.Components.UIComponents
         }
         private void Selection_CellsSelected(object? sender, CellsSelectedEventArgs e)
         {
-           this.Focus?.Invoke(this, EventArgs.Empty);
+            this.Focus?.Invoke(this, EventArgs.Empty);
         }
 
         private void HandleColorChanged(string color)
         {
-            sheet.BatchUpdateRegion(sheet.Selection.ActiveRegion, cell =>
+            SetColorChanged(color, sheet.Selection.ActiveRegion);
+        }
+
+        public void SetColorChanged(string color, IRegion? region)
+        {
+            sheet.BatchUpdateRegion(region, cell =>
             {
                 var formatCopy = cell.Format.Clone();
                 formatCopy.BackgroundColor = color;
@@ -66,17 +133,25 @@ namespace WebClient.Components.UIComponents
 
         private void HandleForeGroundColorChange(string color)
         {
-            sheet.BatchUpdateRegion(sheet.Selection.ActiveRegion, cell =>
+            SetForeGroundColorChange(color, sheet.Selection.ActiveRegion);
+        }
+
+        public void SetForeGroundColorChange(string color, IRegion? region)
+        {
+            sheet.BatchUpdateRegion(region, cell =>
             {
                 var formatCopy = cell.Format.Clone();
                 formatCopy.ForegroundColor = color;
                 cell.Format = formatCopy;
             });
         }
-
-        private void HandleBorderChanged(ExcelBorderPicker.BorderOption args)
+        private void HandleBorderChanged(ExcelBorderPicker.BorderOption borderType)
         {
-            sheet.BatchUpdateRegion(sheet.Selection.ActiveRegion, cell =>
+            SetBorderChanged(borderType, sheet.Selection.ActiveRegion);
+        }
+        public void SetBorderChanged(ExcelBorderPicker.BorderOption args, IRegion? region)
+        {
+            sheet.BatchUpdateRegion(region, cell =>
             {
                 var formatCopy = cell.Format.Clone();
 
@@ -133,6 +208,6 @@ namespace WebClient.Components.UIComponents
             });
         }
 
- 
+
     }
 }
