@@ -39,6 +39,7 @@
 <div>
 <Datasheet UseAutoFill="true" UseAutoScroll="true" AutoFit="true" 
     @ref="datasheet"
+    MenuItems="@(ContextMenuItems ?? BuildDefaultMenuItems)"
     Sheet="sheet" />
 </div>
 @code {

@@ -5,6 +5,7 @@ using BlazorDatasheet.Core.Formats;
 using BlazorDatasheet.DataStructures.Geometry;
 using BlazorDatasheet.Render.Headings;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 using WebClient.Components.UIComponents.Extenstions;
 using WebClient.Components.UIServices;
 
@@ -30,6 +31,8 @@ namespace WebClient.Components.UIComponents
     }
     public partial class DataSheetComponent : ComponentBase, IFocusableObject
     {
+        private const string POCHighlightColor = "#FFF2CC";
+
         class DataSheetLogic : IDataSheetLogic
         {
             private readonly Datasheet datasheet;
@@ -81,6 +84,12 @@ namespace WebClient.Components.UIComponents
 
         public event EventHandler Focus;
 
+        [Parameter]
+        public RenderFragment<Sheet>? ContextMenuItems { get; set; }
+
+        [Parameter]
+        public EventCallback<string> MenuItemInvoked { get; set; }
+
         protected override void OnInitialized()
         {
           //  this.datasheet.StickyHeaders = true;
@@ -102,6 +111,38 @@ namespace WebClient.Components.UIComponents
         [Parameter]
         public string ID { get; set; }
         internal IDataSheetLogic Logic { get; private set; }
+
+        private RenderFragment<Sheet> BuildDefaultMenuItems => currentSheet => builder =>
+        {
+            builder.OpenElement(0, "div");
+            builder.AddAttribute(1, "class", "datasheet-menu-poc");
+
+            builder.OpenElement(2, "button");
+            builder.AddAttribute(3, "type", "button");
+            builder.AddAttribute(4, "class", "datasheet-menu-poc-item");
+            builder.AddAttribute(5, "onclick", EventCallback.Factory.Create(this, () => HandleMenuItemInvoked(currentSheet, "highlight-selection")));
+            builder.AddContent(6, "POC: Highlight selection");
+            builder.CloseElement();
+
+            builder.OpenElement(7, "button");
+            builder.AddAttribute(8, "type", "button");
+            builder.AddAttribute(9, "class", "datasheet-menu-poc-item");
+            builder.AddAttribute(10, "onclick", EventCallback.Factory.Create(this, () => HandleMenuItemInvoked(currentSheet, "notify-host")));
+            builder.AddContent(11, "POC: Notify host");
+            builder.CloseElement();
+
+            builder.CloseElement();
+        };
+
+        private async Task HandleMenuItemInvoked(Sheet currentSheet, string action)
+        {
+            if (action == "highlight-selection")
+            {
+                SetColorChanged(POCHighlightColor, currentSheet.Selection.ActiveRegion);
+            }
+
+            await MenuItemInvoked.InvokeAsync(action);
+        }
 
         private void Sheet_SheetDirty(object? sender, BlazorDatasheet.Core.Events.Visual.DirtySheetEventArgs e)
         {

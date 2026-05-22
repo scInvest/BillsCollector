@@ -47,4 +47,25 @@
     height: 100%;
 }
 
+.datasheet-menu-poc {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px 0;
+}
+
+.datasheet-menu-poc-item {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    padding: 8px 12px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.datasheet-menu-poc-item:hover {
+    background: #f2f7ff;
+}
+
 

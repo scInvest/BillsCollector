@@ -37,13 +37,20 @@
     </div>
 }
 
+@if (!string.IsNullOrWhiteSpace(LastMenuAction))
+{
+    <div class="empty-message">
+        <p>Last datasheet menu action: @LastMenuAction</p>
+    </div>
+}
+
 @* Keep all components instantiated but hide those that are not the selected sheet. *@
 @foreach (var item in dataSheetComponents)
 {
     var key = item.Key;
     var isVisible = SelectedSheet == key;
     <div style="@($"display:{(isVisible ? "block" : "none")}")">
-        <DataSheetComponent ID="@key" @key="key"></DataSheetComponent>
+        <DataSheetComponent ID="@key" @key="key" MenuItemInvoked="HandleMenuItemInvoked"></DataSheetComponent>
     </div>
 }
 
@@ -52,7 +59,7 @@
     var key = item.Key;
     var isVisible = SelectedSheet == key;
     <div style="@($"display:{(isVisible ? "block" : "none")}")">
-        <DataSheetComponent ID="@key" @key="key"></DataSheetComponent>
+        <DataSheetComponent ID="@key" @key="key" MenuItemInvoked="HandleMenuItemInvoked"></DataSheetComponent>
     </div>
 }
 
@@ -62,6 +69,8 @@
 
     TabbedBar analiticBar = null!;
     TabbedBar dataBar = null!;
+
+    private string? LastMenuAction;
 
 
     public string? SelectedSheet => analiticBar?.Selection?.Key ?? dataBar?.Selection?.Key;
@@ -104,6 +113,13 @@
     {
         builder.AddMarkupContent(0, "<h1>Dodaj lub wybierz dane.</h1>");
     };
+
+    private Task HandleMenuItemInvoked(string action)
+    {
+        LastMenuAction = action;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
 
     // Shared helper that creates a new entry title/key, adds it to the provided collection and returns the tuple.
     private (string, string)? AddItemToCollection(string name, Dictionary<string, object> collection)
