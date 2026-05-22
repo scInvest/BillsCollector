@@ -27,7 +27,8 @@ namespace WebClient.Components.UIComponents
     /// </summary>
     public interface IDataSheetLogic
     {
-        public void CreateBillSummaryTable_Empty();
+        public void BillSummaryTable_CreateEmpty();
+        public string[] BillSummaryTable_Headers { get; }
     }
     public partial class DataSheetComponent : ComponentBase, IFocusableObject
     {
@@ -47,29 +48,29 @@ namespace WebClient.Components.UIComponents
                 this.dataSheetComponent = dataSheetComponent;
             }
 
-            public void CreateBillSummaryTable_Empty()
+            public void BillSummaryTable_CreateEmpty()
             {
-                var headers = new string[]
-                 {
-                "",  "Rodzaj", "Źródło", "Data", "Nazwa(oryginalna)", "Nazwa",
-                "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
-                "Kategoria", "Kategoria", "Kategoria", "Tagi", "ID", "Metadane",
-                 };
-                for (int col = 0; col < headers.Length; col++)
+                for (int col = 0; col < BillSummaryTable_Headers.Length; col++)
                 {
-                    _sheet.Cells.SetValue(0, col, headers[col]);
+                    _sheet.Cells.SetValue(0, col, BillSummaryTable_Headers[col]);
                 }
                 _sheet.Cells.SetValue(1, 0, "Suma");
 
-                _headerRegion = new Region(0, 1, 0,headers.Length );
-                var  headerRegionRow1 = new Region(0, 0, 0, headers.Length);
+                _headerRegion = new Region(0, 1, 0, BillSummaryTable_Headers.Length);
+                var headerRegionRow1 = new Region(0, 0, 0, BillSummaryTable_Headers.Length);
                 dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, _headerRegion);
                 dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.ThickOutsideBorders, _headerRegion);
                 dataSheetComponent.SetColorChanged("#DDDDDD", headerRegionRow1);
-                var bodyRegion = new Region(2, 110, 0, headers.Length);
+                var bodyRegion = new Region(2, 110, 0, BillSummaryTable_Headers.Length);
                 dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, bodyRegion);
             }
 
+            public string[] BillSummaryTable_Headers => new string[]
+            {
+                "",  "Rodzaj", "Źródło", "Data", "Nazwa(oryginalna)", "Nazwa",
+                "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
+                "Kategoria", "Kategoria", "Kategoria", "Tagi", "ID", "Metadane",
+            };
         }
     }
     public partial class DataSheetComponent : ComponentBase, IFocusableObject
@@ -84,6 +85,7 @@ namespace WebClient.Components.UIComponents
 
         public event EventHandler Focus;
 
+
         [Parameter]
         public RenderFragment<Sheet>? ContextMenuItems { get; set; }
 
@@ -92,22 +94,30 @@ namespace WebClient.Components.UIComponents
 
         protected override void OnInitialized()
         {
-          //  this.datasheet.StickyHeaders = true;
+            //  this.datasheet.StickyHeaders = true;
 
             sheet = new Sheet(120, 18);
             sheet.Selection.CellsSelected += Selection_CellsSelected;
             this.SheetFocusManger.Register(this);
             this.sheet.SheetDirty += Sheet_SheetDirty;
             this.Logic = new DataSheetLogic(datasheet, sheet, this);
-            this.Logic.CreateBillSummaryTable_Empty();
+            this.Logic.BillSummaryTable_CreateEmpty();
         }
+
         protected override void OnAfterRender(bool firstRender)
         {
-            RenderFragment<HeadingContext> @default = this.datasheet.RowHeaderTemplate;
+            var headers = this.Logic.BillSummaryTable_Headers;
+            RenderFragment<HeadingContext> @default = this.datasheet.ColumnHeaderTemplate;
             var x = @default(new HeadingContext(1, "sdf"));
-            this.datasheet.RowHeaderTemplate = (_) => @default(new HeadingContext(1, "Row"));   
+            this.datasheet.ColumnHeaderTemplate = (original) =>
+            {
+                var index = Math.Max(original.Index, 0);
+                index = Math.Min(index, headers.Length);
+                return @default(new HeadingContext(original.Index, headers[index]));
+            };
             base.OnAfterRender(firstRender);
         }
+
         [Parameter]
         public string ID { get; set; }
         internal IDataSheetLogic Logic { get; private set; }
