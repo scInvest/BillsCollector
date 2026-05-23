@@ -20,6 +20,8 @@ namespace WebClient.Components.UIComponents
     {
         public string ID { get; set; }
 
+        public string[] Headers { get; set; }
+
     }
     /// <summary>
     /// Current grid frame work is weak, and in version v0.1xxx for multiple years. 
@@ -29,40 +31,48 @@ namespace WebClient.Components.UIComponents
     {
         public void BillSummaryTable_CreateEmpty();
         public string[] BillSummaryTable_Headers { get; }
+
+
+
     }
-    public partial class DataSheetComponent : ComponentBase, IFocusableObject
+    public partial class DataSheetComponent : ComponentBase, IFocusableObject, IDataSheetComponent
     {
         private const string POCHighlightColor = "#FFF2CC";
+
+        string[] headers;
+        public string[] Headers { get => headers; set { headers = value; StateHasChanged(); } }
 
         class DataSheetLogic : IDataSheetLogic
         {
             private readonly Datasheet datasheet;
             private readonly Sheet _sheet;
-            private readonly DataSheetComponent dataSheetComponent;
+            private readonly DataSheetComponent parent;
             private IRegion? _headerRegion;
 
             public DataSheetLogic(Datasheet datasheet, Sheet sheet, DataSheetComponent dataSheetComponent)
             {
                 this.datasheet = datasheet;
                 _sheet = sheet;
-                this.dataSheetComponent = dataSheetComponent;
+                this.parent = dataSheetComponent;
             }
 
             public void BillSummaryTable_CreateEmpty()
             {
-                for (int col = 0; col < BillSummaryTable_Headers.Length; col++)
+                this.parent.Headers = BillSummaryTable_Headers;
+                var headers = BillSummaryTable_Headers;
+                for (int col = 0; col < headers.Length; col++)
                 {
-                    _sheet.Cells.SetValue(0, col, BillSummaryTable_Headers[col]);
+                    _sheet.Cells.SetValue(0, col, headers[col]);
                 }
                 _sheet.Cells.SetValue(1, 0, "Suma");
 
-                _headerRegion = new Region(0, 1, 0, BillSummaryTable_Headers.Length);
-                var headerRegionRow1 = new Region(0, 0, 0, BillSummaryTable_Headers.Length);
-                dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, _headerRegion);
-                dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.ThickOutsideBorders, _headerRegion);
-                dataSheetComponent.SetColorChanged("#DDDDDD", headerRegionRow1);
-                var bodyRegion = new Region(2, 110, 0, BillSummaryTable_Headers.Length);
-                dataSheetComponent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, bodyRegion);
+                _headerRegion = new Region(0, 1, 0, headers.Length);
+                var headerRegionRow1 = new Region(0, 0, 0, headers.Length);
+                parent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, _headerRegion);
+                parent.SetBorderChanged(ExcelBorderPicker.BorderOption.ThickOutsideBorders, _headerRegion);
+                parent.SetColorChanged("#DDDDDD", headerRegionRow1);
+                var bodyRegion = new Region(2, 110, 0, headers.Length);
+                parent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, bodyRegion);
             }
 
             public string[] BillSummaryTable_Headers => new string[]
@@ -71,6 +81,7 @@ namespace WebClient.Components.UIComponents
                 "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
                 "Kategoria", "Kategoria", "Kategoria", "Tagi", "ID", "Metadane",
             };
+
         }
     }
     public partial class DataSheetComponent : ComponentBase, IFocusableObject
@@ -106,14 +117,20 @@ namespace WebClient.Components.UIComponents
 
         protected override void OnAfterRender(bool firstRender)
         {
-            var headers = this.Logic.BillSummaryTable_Headers;
+            var headers = this.Headers;
             RenderFragment<HeadingContext> @default = this.datasheet.ColumnHeaderTemplate;
-            var x = @default(new HeadingContext(1, "sdf"));
+
             this.datasheet.ColumnHeaderTemplate = (original) =>
             {
-                var index = Math.Max(original.Index, 0);
-                index = Math.Min(index, headers.Length);
-                return @default(new HeadingContext(original.Index, headers[index]));
+                if (original.Index < 0 || original.Index >= headers.Length)
+                {
+                    return @default(original);
+                }
+                else
+                {
+                    return @default(new HeadingContext(original.Index, headers[original.Index]));
+
+                }
             };
             base.OnAfterRender(firstRender);
         }
@@ -124,24 +141,9 @@ namespace WebClient.Components.UIComponents
 
         private RenderFragment<Sheet> BuildDefaultMenuItems => currentSheet => builder =>
         {
-            builder.OpenElement(0, "div");
-            builder.AddAttribute(1, "class", "datasheet-menu-poc");
-
-            builder.OpenElement(2, "button");
-            builder.AddAttribute(3, "type", "button");
-            builder.AddAttribute(4, "class", "datasheet-menu-poc-item");
-            builder.AddAttribute(5, "onclick", EventCallback.Factory.Create(this, () => HandleMenuItemInvoked(currentSheet, "highlight-selection")));
-            builder.AddContent(6, "POC: Highlight selection");
-            builder.CloseElement();
-
-            builder.OpenElement(7, "button");
-            builder.AddAttribute(8, "type", "button");
-            builder.AddAttribute(9, "class", "datasheet-menu-poc-item");
-            builder.AddAttribute(10, "onclick", EventCallback.Factory.Create(this, () => HandleMenuItemInvoked(currentSheet, "notify-host")));
-            builder.AddContent(11, "POC: Notify host");
-            builder.CloseElement();
-
-            builder.CloseElement();
+            builder.OpenComponent<DataSheetContextMenu>(0);
+            builder.AddAttribute(1, nameof(DataSheetContextMenu.CurrentSheet), currentSheet);
+            builder.CloseComponent();
         };
 
         private async Task HandleMenuItemInvoked(Sheet currentSheet, string action)

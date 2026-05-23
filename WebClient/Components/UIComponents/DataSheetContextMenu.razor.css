@@ -1,0 +1,30 @@
+.sheet-context-menu {
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+    padding: 4px 0;
+}
+
+.sheet-context-menu__item {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    padding: 8px 12px;
+    cursor: pointer;
+    font: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sheet-context-menu__item:hover {
+    background: #f2f7ff;
+}
+
+.sheet-context-menu__icon {
+    width: 16px;
+    text-align: center;
+    color: #666;
+}

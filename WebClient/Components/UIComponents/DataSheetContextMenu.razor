@@ -1,0 +1,17 @@
+﻿@using BlazorDatasheet.Core.Data
+
+<div class="sheet-context-menu">
+    <button type="button"
+            class="sheet-context-menu__item"
+            @onclick="HandleRename">
+        <span class="sheet-context-menu__icon" aria-hidden="true">✎</span>
+        <span>Rename</span>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public Sheet? CurrentSheet { get; set; }
+
+    private Task HandleRename() => Task.CompletedTask;
+}
