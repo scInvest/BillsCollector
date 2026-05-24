@@ -6,6 +6,7 @@ using BlazorDatasheet.DataStructures.Geometry;
 using BlazorDatasheet.Render.Headings;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.JSInterop;
 using WebClient.Components.UIComponents.Extenstions;
 using WebClient.Components.UIServices;
 
@@ -167,8 +168,8 @@ namespace WebClient.Components.UIComponents
         {
             // no action needed.
         }
-        // Add a '+' handler: add a row and a column at the end of the sheet
-        private void AddPlus()
+        // Add a '+' handler: add a row and a column at the end of the sheet and scroll to them
+        private async Task AddPlus()
         {
             try
             {
@@ -179,6 +180,16 @@ namespace WebClient.Components.UIComponents
                 // Insert one column at the end
                 var colIndex = Math.Max(0, sheet.NumCols);
                 sheet.Columns.InsertAt(colIndex, 1);
+
+                // Scroll datasheet view to the newly added bottom-right cell (preserve behavior)
+                if (datasheet != null)
+                {
+                    var region = new BlazorDatasheet.DataStructures.Geometry.Region(rowIndex, colIndex);
+                    await datasheet.ScrollToContainRegion(region);
+                }
+
+                // Then scroll to the bottom plus button so it remains clickable
+                await ScrollToButton("ds-btn-plus-bottom");
             }
             catch (Exception)
             {
@@ -186,8 +197,8 @@ namespace WebClient.Components.UIComponents
             }
         }
 
-        // Add a '-' handler: remove last row and last column if possible
-        private void RemoveMinus()
+        // Add a '-' handler: remove last row and last column if possible and scroll to new bottom-right
+        private async Task RemoveMinus()
         {
             try
             {
@@ -200,15 +211,89 @@ namespace WebClient.Components.UIComponents
                 {
                     sheet.Columns.RemoveAt(sheet.NumCols - 1, 1);
                 }
+
+                // Scroll to the new last cell
+                if (datasheet != null)
+                {
+                    var lastRow = Math.Max(0, sheet.NumRows - 1);
+                    var lastCol = Math.Max(0, sheet.NumCols - 1);
+                    var region = new BlazorDatasheet.DataStructures.Geometry.Region(lastRow, lastCol);
+                    await datasheet.ScrollToContainRegion(region);
+                }
+
+                // Then scroll to bottom minus button to keep it clickable
+                await ScrollToButton("ds-btn-minus-bottom");
             }
             catch (Exception)
             {
                 // swallow errors
             }
         }
+
+        // Top-right buttons: only modify columns (add/remove at end)
+        private async Task AddColumnTopRight()
+        {
+            try
+            {
+                var colIndex = Math.Max(0, sheet.NumCols);
+                sheet.Columns.InsertAt(colIndex, 1);
+
+                if (datasheet != null)
+                {
+                    var region = new BlazorDatasheet.DataStructures.Geometry.Region(0, colIndex);
+                    await datasheet.ScrollToContainRegion(region);
+                }
+
+                // Scroll to top plus button (to the right) so it's clickable
+                await ScrollToButton("ds-btn-plus-top");
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private async Task RemoveColumnTopRight()
+        {
+            try
+            {
+                if (sheet.NumCols > 0)
+                    sheet.Columns.RemoveAt(sheet.NumCols - 1, 1);
+
+                if (datasheet != null)
+                {
+                    var lastCol = Math.Max(0, sheet.NumCols - 1);
+                    var region = new BlazorDatasheet.DataStructures.Geometry.Region(0, lastCol);
+                    await datasheet.ScrollToContainRegion(region);
+                }
+
+                // Scroll to top minus button
+                await ScrollToButton("ds-btn-minus-top");
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         private void Selection_CellsSelected(object? sender, CellsSelectedEventArgs e)
         {
             this.Focus?.Invoke(this, EventArgs.Empty);
+        }
+
+        private async Task ScrollToButton(string id)
+        {
+            try
+            {
+                // ensure UI updated
+                await InvokeAsync(StateHasChanged);
+                // slight delay to allow DOM to settle
+                await Task.Delay(10);
+                // scroll the element into view using eval to access DOM
+                await JS.InvokeVoidAsync("eval", $"document.getElementById('{id}')?.scrollIntoView({{behavior:'auto',block:'nearest',inline:'nearest'}})");
+            }
+            catch
+            {
+                // ignore errors
+            }
         }
 
         private void HandleColorChanged(string color)

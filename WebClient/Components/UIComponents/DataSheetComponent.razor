@@ -6,6 +6,7 @@
 @using WebClient.Components.UIServices
 
 @inject SheetFocusMangerService SheetFocusManger
+@inject IJSRuntime JS
 
 <div class="ribbon">
 <ExcelFontColorPicker @ref="colorPickerFont" Context="selectedColor" SelectedColorChanged="HandleForeGroundColorChange">
@@ -37,11 +38,25 @@
 <ExcelBorderPicker @ref="borderPicker" SelectedBorderChanged="HandleBorderChanged"></ExcelBorderPicker>
 </div>
 
-<div>
-<Datasheet UseAutoFill="true" UseAutoScroll="true" AutoFit="true" 
-    @ref="datasheet"
-    MenuItems="@(ContextMenuItems ?? BuildDefaultMenuItems)"
-    Sheet="sheet" />
+<!-- Layout: datasheet on the left, top-right buttons placed to the right of the grid (not overlay) -->
+<div style="display:flex; align-items:flex-start; gap:8px; width:100%; box-sizing:border-box;">
+    <div style="flex:0 0 auto;">
+        <Datasheet UseAutoFill="true" UseAutoScroll="true" AutoFit="true" 
+            @ref="datasheet"
+            MenuItems="@(ContextMenuItems ?? BuildDefaultMenuItems)"
+            Sheet="sheet" />
+    </div>
+
+    @if (ShowAddRemoveButtons)
+    {
+        <!-- Buttons placed to the right of the datasheet, aligned to its top -->
+        <div style="display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; margin-top:4px;">
+            <div style="display:flex; gap:8px;">
+                <button id="ds-btn-plus-top" class="btn" style="width:36px; height:32px; padding:0; font-size:16px; line-height:1; border:2px solid #9e9e9e; border-radius:6px; background:#fafafa; cursor:pointer;" @onclick="AddColumnTopRight">+</button>
+                <button id="ds-btn-minus-top" class="btn" style="width:36px; height:32px; padding:0; font-size:16px; line-height:1; border:2px solid #9e9e9e; border-radius:6px; background:#fafafa; cursor:pointer;" @onclick="RemoveColumnTopRight">-</button>
+            </div>
+        </div>
+    }
 </div>
 
 @if (ShowAddRemoveButtons)
@@ -49,8 +64,8 @@
     <!-- Bottom compact toolbar: buttons flush-left, no container border -->
     <div style="display:flex; justify-content:flex-start; width:100%; box-sizing:border-box; margin-top:6px; padding:0;">
         <div style="display:flex; gap:8px; align-items:center; padding:0; margin:0;">
-            <button class="btn" style="width:36px; height:32px; padding:0; font-size:16px; line-height:1; border:2px solid #9e9e9e; border-radius:6px; background:#fafafa; cursor:pointer;" @onclick="AddPlus">+</button>
-            <button class="btn" style="width:36px; height:32px; padding:0; font-size:16px; line-height:1; border:2px solid #9e9e9e; border-radius:6px; background:#fafafa; cursor:pointer;" @onclick="RemoveMinus">-</button>
+            <button id="ds-btn-plus-bottom" class="btn" style="width:36px; height:32px; padding:0; font-size:16px; line-height:1; border:2px solid #9e9e9e; border-radius:6px; background:#fafafa; cursor:pointer;" @onclick="AddPlus">+</button>
+            <button id="ds-btn-minus-bottom" class="btn" style="width:36px; height:32px; padding:0; font-size:16px; line-height:1; border:2px solid #9e9e9e; border-radius:6px; background:#fafafa; cursor:pointer;" @onclick="RemoveMinus">-</button>
         </div>
     </div>
 }
