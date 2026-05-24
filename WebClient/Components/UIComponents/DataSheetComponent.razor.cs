@@ -59,20 +59,6 @@ namespace WebClient.Components.UIComponents
             public void BillSummaryTable_CreateEmpty()
             {
                 this.parent.Headers = BillSummaryTable_Headers;
-                var headers = BillSummaryTable_Headers;
-                for (int col = 0; col < headers.Length; col++)
-                {
-                    _sheet.Cells.SetValue(0, col, headers[col]);
-                }
-                _sheet.Cells.SetValue(1, 0, "Suma");
-
-                _headerRegion = new Region(0, 1, 0, headers.Length);
-                var headerRegionRow1 = new Region(0, 0, 0, headers.Length);
-                parent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, _headerRegion);
-                parent.SetBorderChanged(ExcelBorderPicker.BorderOption.ThickOutsideBorders, _headerRegion);
-                parent.SetColorChanged("#DDDDDD", headerRegionRow1);
-                var bodyRegion = new Region(2, 110, 0, headers.Length);
-                parent.SetBorderChanged(ExcelBorderPicker.BorderOption.AllBorders, bodyRegion);
             }
 
             public string[] BillSummaryTable_Headers => new string[]
@@ -176,7 +162,7 @@ namespace WebClient.Components.UIComponents
 
         public void SetColorChanged(string color, IRegion? region)
         {
-            sheet.BatchUpdateRegion(region, cell =>
+            sheet.BatchUpdateRegion(region, (cell, x, y) =>
             {
                 var formatCopy = cell.Format.Clone();
                 formatCopy.BackgroundColor = color;
@@ -191,7 +177,7 @@ namespace WebClient.Components.UIComponents
 
         public void SetForeGroundColorChange(string color, IRegion? region)
         {
-            sheet.BatchUpdateRegion(region, cell =>
+            sheet.BatchUpdateRegion(region, (cell, x, y) =>
             {
                 var formatCopy = cell.Format.Clone();
                 formatCopy.ForegroundColor = color;
@@ -204,7 +190,15 @@ namespace WebClient.Components.UIComponents
         }
         public void SetBorderChanged(ExcelBorderPicker.BorderOption args, IRegion? region)
         {
-            sheet.BatchUpdateRegion(region, cell =>
+            if (region == null)
+                return;
+
+            int left = region.Left;
+            int top = region.Top;
+            int right = region.Left + region.Width - 1;
+            int bottom = region.Top + region.Height - 1;
+
+            sheet.BatchUpdateRegion(region, (cell, x, y) =>
             {
                 var formatCopy = cell.Format.Clone();
 
@@ -224,17 +218,25 @@ namespace WebClient.Components.UIComponents
                         formatCopy.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
                         break;
                     case ExcelBorderPicker.BorderOption.OutsideBorders:
-                        // approximate outside borders by setting all sides for each cell
-                        formatCopy.BorderTop = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
-                        formatCopy.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
-                        formatCopy.BorderLeft = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
-                        formatCopy.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+                        // set borders only on the outer edges of the region
+                        if (y == top)
+                            formatCopy.BorderTop = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+                        if (y == bottom)
+                            formatCopy.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+                        if (x == left)
+                            formatCopy.BorderLeft = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+                        if (x == right)
+                            formatCopy.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
                         break;
                     case ExcelBorderPicker.BorderOption.ThickOutsideBorders:
-                        formatCopy.BorderTop = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
-                        formatCopy.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
-                        formatCopy.BorderLeft = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
-                        formatCopy.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
+                        if (y == top)
+                            formatCopy.BorderTop = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
+                        if (y == bottom)
+                            formatCopy.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
+                        if (x == left)
+                            formatCopy.BorderLeft = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
+                        if (x == right)
+                            formatCopy.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
                         break;
                     case ExcelBorderPicker.BorderOption.BottomBorder:
                         formatCopy.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };

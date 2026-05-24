@@ -6,7 +6,7 @@ namespace WebClient.Components.UIComponents.Extenstions
     public static class SheetCustomExtenstions
     {
 
-        public static void BatchUpdateRegion(this Sheet sheet, IRegion? region, Action<SheetCell> updateAction)
+        public static void BatchUpdateRegion(this Sheet sheet, IRegion? region, Action<SheetCell, int, int> updateAction)
         {
             if (region == null)
                 return;
@@ -19,7 +19,7 @@ namespace WebClient.Components.UIComponents.Extenstions
                     var x = region.Left + i;
                     var y = region.Top + j;
                     var cell = sheet.Cells[y, x];
-                    updateAction(cell);
+                    updateAction(cell, x, y);
                     Console.WriteLine(  x +"  " + y);
                 }
             }
