@@ -2,35 +2,32 @@
 {
     public class DialogService
     {
-        // Handler registered by a component that knows how to show an alert with optional title.
-        // It should accept text and optional title and return a Task.
-        private Func<string, string?, Task>? _alertHandler;
+        private IAlertComponent? _alertComponent;
 
-        // Register the alert handler (called by the alert component on initialization)
-        public void RegisterAlertHandler(Func<string, string?, Task> handler)
+        // Register the alert component (called by the alert component on initialization)
+        public void RegisterAlertComponent(IAlertComponent component)
         {
-            _alertHandler = handler;
+            _alertComponent = component;
         }
 
-        // Unregister the alert handler (called by the alert component on dispose)
-        public void UnregisterAlertHandler()
+        // Unregister the alert component (called by the alert component on dispose)
+        public void UnregisterAlertComponent()
         {
-            _alertHandler = null;
+            _alertComponent = null;
         }
 
-        // Show an alert using the registered handler if available. No-op if none registered.
+        // Show an alert using the registered component if available. No-op if none registered.
         public Task ShowAlert(string text) => ShowAlert(text, null);
 
         // Overload allowing title to be provided.
         public async Task ShowAlert(string text, string? title)
         {
-            if (_alertHandler != null)
+            if (_alertComponent != null)
             {
-                await _alertHandler.Invoke(text, title);
+                await _alertComponent.ShowAlert(text, title);
             }
             else
             {
-                // No registered component to show JS alert. Silently ignore or consider logging.
                 await Task.CompletedTask;
             }
         }
