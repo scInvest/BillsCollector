@@ -29,6 +29,22 @@
         await JS.InvokeVoidAsync("open", dataUrl, "_blank", "noopener,noreferrer").AsTask();
     }
 
+    public async Task<bool> Confirm(string text)
+    {
+        return await JS.InvokeAsync<bool>("confirm", text).AsTask();
+    }
+
+    public async Task<bool> Confirm(string text, string? title)
+    {
+        if (string.IsNullOrEmpty(title))
+            return await Confirm(text);
+
+        // For titled confirm, open a small window that asks and use postMessage or prompt back
+        // Simpler: prefix title to message and use confirm. (Custom modal would be better.)
+        var combined = $"{title}\n\n{text}";
+        return await JS.InvokeAsync<bool>("confirm", combined).AsTask();
+    }
+
     public void Dispose()
     {
         DialogService.UnregisterAlertComponent();

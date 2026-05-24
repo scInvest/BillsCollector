@@ -31,5 +31,18 @@
                 await Task.CompletedTask;
             }
         }
+
+        // Ask a yes/no question. Defaults to false if no component registered.
+        public Task<bool> Confirm(string text) => Confirm(text, null);
+
+        public async Task<bool> Confirm(string text, string? title)
+        {
+            if (_alertComponent != null)
+            {
+                return await _alertComponent.Confirm(text, title);
+            }
+
+            return false;
+        }
     }
 }
