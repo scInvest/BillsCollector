@@ -169,7 +169,7 @@ namespace WebClient.Components.UIComponents
             // no action needed.
         }
         // Add a '+' handler: add a row and a column at the end of the sheet and scroll to them
-        private async Task AddPlus()
+        private async Task AddRowAndColumnEnd()
         {
             try
             {
@@ -189,7 +189,7 @@ namespace WebClient.Components.UIComponents
                 }
 
                 // Then scroll to the bottom plus button so it remains clickable
-                await ScrollToButton("ds-btn-plus-bottom");
+                await ScrollToButton("ds-btn-rowcol-plus-bottom");
             }
             catch (Exception)
             {
@@ -198,7 +198,7 @@ namespace WebClient.Components.UIComponents
         }
 
         // Add a '-' handler: remove last row and last column if possible and scroll to new bottom-right
-        private async Task RemoveMinus()
+        private async Task RemoveRowAndColumnEnd()
         {
             try
             {
@@ -222,7 +222,7 @@ namespace WebClient.Components.UIComponents
                 }
 
                 // Then scroll to bottom minus button to keep it clickable
-                await ScrollToButton("ds-btn-minus-bottom");
+                await ScrollToButton("ds-btn-rowcol-minus-bottom");
             }
             catch (Exception)
             {
@@ -231,7 +231,7 @@ namespace WebClient.Components.UIComponents
         }
 
         // Top-right buttons: only modify columns (add/remove at end)
-        private async Task AddColumnTopRight()
+        private async Task AddColumnEnd()
         {
             try
             {
@@ -245,14 +245,14 @@ namespace WebClient.Components.UIComponents
                 }
 
                 // Scroll to top plus button (to the right) so it's clickable
-                await ScrollToButton("ds-btn-plus-top");
+                await ScrollToButton("ds-btn-col-plus-top");
             }
             catch (Exception)
             {
             }
         }
 
-        private async Task RemoveColumnTopRight()
+        private async Task RemoveColumnEnd()
         {
             try
             {
@@ -267,7 +267,7 @@ namespace WebClient.Components.UIComponents
                 }
 
                 // Scroll to top minus button
-                await ScrollToButton("ds-btn-minus-top");
+                await ScrollToButton("ds-btn-col-minus-top");
             }
             catch (Exception)
             {
@@ -283,12 +283,10 @@ namespace WebClient.Components.UIComponents
         {
             try
             {
-                // ensure UI updated
-                await InvokeAsync(StateHasChanged);
                 // slight delay to allow DOM to settle
                 await Task.Delay(10);
                 // scroll the element into view using eval to access DOM
-                await JS.InvokeVoidAsync("eval", $"document.getElementById('{id}')?.scrollIntoView({{behavior:'auto',block:'nearest',inline:'nearest'}})");
+                await Js.InvokeVoidAsync("eval", $"document.getElementById('{id}')?.scrollIntoView({{behavior:'auto',block:'nearest',inline:'nearest'}})");
             }
             catch
             {
