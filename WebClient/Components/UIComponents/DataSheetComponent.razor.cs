@@ -216,6 +216,31 @@ namespace WebClient.Components.UIComponents
                         formatCopy.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
                         formatCopy.BorderLeft = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
                         formatCopy.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+
+                        // Workaround: ensure left/top visible by setting neighbor borders
+                        if (x == left && x > 0)
+                        {
+                            try
+                            {
+                                var neighbor = sheet.Cells[y, x - 1];
+                                var neighborFormat = neighbor.Format.Clone();
+                                neighborFormat.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+                                neighbor.Format = neighborFormat;
+                            }
+                            catch { }
+                        }
+
+                        if (y == top && y > 0)
+                        {
+                            try
+                            {
+                                var neighbor = sheet.Cells[y - 1, x];
+                                var neighborFormat = neighbor.Format.Clone();
+                                neighborFormat.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+                                neighbor.Format = neighborFormat;
+                            }
+                            catch { }
+                        }
                         break;
                     case ExcelBorderPicker.BorderOption.OutsideBorders:
                         // set borders only on the outer edges of the region
@@ -232,19 +257,27 @@ namespace WebClient.Components.UIComponents
                         // For left edge cells, also set the right border of the cell to the left (if exists).
                         if (x == left && x > 0)
                         {
-                            var neighbor = sheet.Cells[y, x - 1];
-                            var neighborFormat = neighbor.Format.Clone();
-                            neighborFormat.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
-                            neighbor.Format = neighborFormat;
+                            try
+                            {
+                                var neighbor = sheet.Cells[y, x - 1];
+                                var neighborFormat = neighbor.Format.Clone();
+                                neighborFormat.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+                                neighbor.Format = neighborFormat;
+                            }
+                            catch { }
                         }
 
                         // For top edge cells, also set the bottom border of the cell above (if exists).
                         if (y == top && y > 0)
                         {
-                            var neighbor = sheet.Cells[y - 1, x];
-                            var neighborFormat = neighbor.Format.Clone();
-                            neighborFormat.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
-                            neighbor.Format = neighborFormat;
+                            try
+                            {
+                                var neighbor = sheet.Cells[y - 1, x];
+                                var neighborFormat = neighbor.Format.Clone();
+                                neighborFormat.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
+                                neighbor.Format = neighborFormat;
+                            }
+                            catch { }
                         }
                         break;
                     case ExcelBorderPicker.BorderOption.ThickOutsideBorders:
@@ -260,18 +293,26 @@ namespace WebClient.Components.UIComponents
                         // Workaround for top/left missing lines: set neighbor borders if neighbor index exists.
                         if (x == left && x > 0)
                         {
-                            var neighbor = sheet.Cells[y, x - 1];
-                            var neighborFormat = neighbor.Format.Clone();
-                            neighborFormat.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
-                            neighbor.Format = neighborFormat;
+                            try
+                            {
+                                var neighbor = sheet.Cells[y, x - 1];
+                                var neighborFormat = neighbor.Format.Clone();
+                                neighborFormat.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
+                                neighbor.Format = neighborFormat;
+                            }
+                            catch { }
                         }
 
                         if (y == top && y > 0)
                         {
-                            var neighbor = sheet.Cells[y - 1, x];
-                            var neighborFormat = neighbor.Format.Clone();
-                            neighborFormat.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
-                            neighbor.Format = neighborFormat;
+                            try
+                            {
+                                var neighbor = sheet.Cells[y - 1, x];
+                                var neighborFormat = neighbor.Format.Clone();
+                                neighborFormat.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = Math.Max(1, selectedBorderThickness + 1) };
+                                neighbor.Format = neighborFormat;
+                            }
+                            catch { }
                         }
                         break;
                     case ExcelBorderPicker.BorderOption.BottomBorder:
@@ -287,10 +328,58 @@ namespace WebClient.Components.UIComponents
                         formatCopy.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "black", Width = selectedBorderThickness };
                         break;
                     case ExcelBorderPicker.BorderOption.NoBorder:
+                        // clear borders on this cell
                         formatCopy.BorderTop = new BlazorDatasheet.Core.Formats.Border() { Color = "transparent", Width = 0 };
                         formatCopy.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "transparent", Width = 0 };
                         formatCopy.BorderLeft = new BlazorDatasheet.Core.Formats.Border() { Color = "transparent", Width = 0 };
                         formatCopy.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "transparent", Width = 0 };
+
+                        // Also clear corresponding borders on neighboring cells so lines disappear visually
+                        // left neighbor: clear its right border
+                        if (x > 0)
+                        {
+                            try
+                            {
+                                var neighbor = sheet.Cells[y, x - 1];
+                                var neighborFormat = neighbor.Format.Clone();
+                                neighborFormat.BorderRight = new BlazorDatasheet.Core.Formats.Border() { Color = "transparent", Width = 0 };
+                                neighbor.Format = neighborFormat;
+                            }
+                            catch { }
+                        }
+
+                        // right neighbor: clear its left border
+                        try
+                        {
+                            var neighbor = sheet.Cells[y, x + 1];
+                            var neighborFormat = neighbor.Format.Clone();
+                            neighborFormat.BorderLeft = new BlazorDatasheet.Core.Formats.Border() { Color = "transparent", Width = 0 };
+                            neighbor.Format = neighborFormat;
+                        }
+                        catch { }
+
+                        // top neighbor: clear its bottom border
+                        if (y > 0)
+                        {
+                            try
+                            {
+                                var neighbor = sheet.Cells[y - 1, x];
+                                var neighborFormat = neighbor.Format.Clone();
+                                neighborFormat.BorderBottom = new BlazorDatasheet.Core.Formats.Border() { Color = "transparent", Width = 0 };
+                                neighbor.Format = neighborFormat;
+                            }
+                            catch { }
+                        }
+
+                        // bottom neighbor: clear its top border
+                        try
+                        {
+                            var neighbor = sheet.Cells[y + 1, x];
+                            var neighborFormat = neighbor.Format.Clone();
+                            neighborFormat.BorderTop = new BlazorDatasheet.Core.Formats.Border() { Color = "transparent", Width = 0 };
+                            neighbor.Format = neighborFormat;
+                        }
+                        catch { }
                         break;
                     default:
                         break;
