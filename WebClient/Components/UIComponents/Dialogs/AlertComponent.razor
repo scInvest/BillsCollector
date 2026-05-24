@@ -1,19 +1,28 @@
 @using Microsoft.JSInterop
-@inject WebClient.Components.UIServices.DialogService DialogService
+@using System.Net
+@inject UIServices.DialogService DialogService
 @inject IJSRuntime JS
 @implements IDisposable
 
-@* This component's only purpose is to register itself with DialogService
-   and show a JS alert when requested. It renders nothing visible. *@
-
 @code {
-    private Func<string, Task>? _handler;
+    private Func<string, string?, Task>? _handler;
 
     protected override void OnInitialized()
     {
-        _handler = async (text) =>
+        _handler = async (text, title) =>
         {
-            await JS.InvokeVoidAsync("alert", text).AsTask();
+            if (string.IsNullOrEmpty(title))
+            {
+                await JS.InvokeVoidAsync("alert", text).AsTask();
+            }
+            else
+            {
+                // Simple way to show a titled window: open a small popup with title and message.
+                // Note: browser popup blockers may block this; for production consider a custom modal.
+                var html = $"<html><head><title>{WebUtility.HtmlEncode(title)}</title></head><body><pre>{WebUtility.HtmlEncode(text)}</pre></body></html>";
+                var dataUrl = "data:text/html;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(html));
+                await JS.InvokeVoidAsync("open", dataUrl, "_blank", "noopener,noreferrer").AsTask();
+            }
         };
 
         DialogService.RegisterAlertHandler(_handler);

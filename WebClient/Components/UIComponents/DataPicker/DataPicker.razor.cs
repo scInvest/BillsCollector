@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using WebClient.Components.UIComponents.Dialogs;
+using WebClient.Components.UIServices;
 
 namespace WebClient.Components.UIComponents.DataPicker
 {
     public partial class DataPicker : ComponentBase
     {
+
         private List<string> files = new List<string>();
         private string? content;
 
@@ -68,7 +70,8 @@ namespace WebClient.Components.UIComponents.DataPicker
                 }
             }
 
-           await DialogService.ShowAlert(string.Join("\n", errors));
+           // Use the overload to provide a window title for the alert
+           await DialogService.ShowAlert(string.Join("\n", errors), "Import plików");
         }
 
         public TextInputModal Dialog { get; set; }
