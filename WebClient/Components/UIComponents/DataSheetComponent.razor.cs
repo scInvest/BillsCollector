@@ -89,6 +89,23 @@ namespace WebClient.Components.UIComponents
         [Parameter]
         public EventCallback<string> MenuItemInvoked { get; set; }
 
+        // Controls visibility of the add/remove (+/-) buttons. Default true.
+        private bool showAddRemoveButtons = true;
+        [Parameter]
+        public bool ShowAddRemoveButtons
+        {
+            get => showAddRemoveButtons;
+            set
+            {
+                if (showAddRemoveButtons != value)
+                {
+                    showAddRemoveButtons = value;
+                    // ensure component re-renders when this value changes
+                    InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+
         protected override void OnInitialized()
         {
             //  this.datasheet.StickyHeaders = true;
@@ -149,6 +166,45 @@ namespace WebClient.Components.UIComponents
         public void RemoveFocus()
         {
             // no action needed.
+        }
+        // Add a '+' handler: add a row and a column at the end of the sheet
+        private void AddPlus()
+        {
+            try
+            {
+                // Insert one row at the end
+                var rowIndex = Math.Max(0, sheet.NumRows);
+                sheet.Rows.InsertAt(rowIndex, 1);
+
+                // Insert one column at the end
+                var colIndex = Math.Max(0, sheet.NumCols);
+                sheet.Columns.InsertAt(colIndex, 1);
+            }
+            catch (Exception)
+            {
+                // swallow - sheet API may throw for invalid ops
+            }
+        }
+
+        // Add a '-' handler: remove last row and last column if possible
+        private void RemoveMinus()
+        {
+            try
+            {
+                if (sheet.NumRows > 0)
+                {
+                    sheet.Rows.RemoveAt(sheet.NumRows - 1, 1);
+                }
+
+                if (sheet.NumCols > 0)
+                {
+                    sheet.Columns.RemoveAt(sheet.NumCols - 1, 1);
+                }
+            }
+            catch (Exception)
+            {
+                // swallow errors
+            }
         }
         private void Selection_CellsSelected(object? sender, CellsSelectedEventArgs e)
         {
