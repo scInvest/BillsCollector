@@ -286,7 +286,7 @@ namespace WebClient.Components.UIComponents
                 // slight delay to allow DOM to settle
                 await Task.Delay(10);
                 // scroll the element into view using eval to access DOM
-                await Js.InvokeVoidAsync("eval", $"document.getElementById('{id}')?.scrollIntoView({{behavior:'auto',block:'nearest',inline:'nearest'}})");
+                await JS.InvokeVoidAsync("eval", $"document.getElementById('{id}')?.scrollIntoView({{behavior:'auto',block:'nearest',inline:'nearest'}})");
             }
             catch
             {

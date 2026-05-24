@@ -1,0 +1,26 @@
+@using Microsoft.JSInterop
+@inject WebClient.Components.UIServices.DialogService DialogService
+@inject IJSRuntime JS
+@implements IDisposable
+
+@* This component's only purpose is to register itself with DialogService
+   and show a JS alert when requested. It renders nothing visible. *@
+
+@code {
+    private Func<string, Task>? _handler;
+
+    protected override void OnInitialized()
+    {
+        _handler = async (text) =>
+        {
+            await JS.InvokeVoidAsync("alert", text).AsTask();
+        };
+
+        DialogService.RegisterAlertHandler(_handler);
+    }
+
+    public void Dispose()
+    {
+        DialogService.UnregisterAlertHandler();
+    }
+}

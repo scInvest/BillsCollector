@@ -9,12 +9,15 @@
 @using MudBlazor
 @using WebClient.Components.UIComponents
 @using WebClient.Components.UIComponents.DataPicker
+@using WebClient.Components.UIComponents.Dialogs
 @using WebClient.Components.UIComponents.TabbedBar
 
 @rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
 
+    <!-- Alert component registers with DialogService to show JS alerts -->
+    <AlertComponent />
 <DataPicker>
 
 </DataPicker>

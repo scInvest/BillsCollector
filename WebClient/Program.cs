@@ -13,7 +13,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddBlazorDatasheet();
 builder.Services.AddMudServices();
-builder.Services.AddScoped<SheetFocusMangerService>(); 
+builder.Services.AddScoped<SheetFocusMangerService>();
+builder.Services.AddScoped<DialogService>();
 
 var app = builder.Build();
 
