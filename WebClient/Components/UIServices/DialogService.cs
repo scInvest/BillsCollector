@@ -3,6 +3,7 @@
     public class DialogService
     {
         private IAlertComponent? _alertComponent;
+        private ITextInputComponent? _textInputComponent;
 
         // Register the alert component (called by the alert component on initialization)
         public void RegisterAlertComponent(IAlertComponent component)
@@ -43,6 +44,28 @@
             }
 
             return false;
+        }
+
+        // Text input component registration
+        public void RegisterTextInputComponent(ITextInputComponent component)
+        {
+            _textInputComponent = component;
+        }
+
+        public void UnregisterTextInputComponent()
+        {
+            _textInputComponent = null;
+        }
+
+        // Show the text input modal and return entered text or null if cancelled
+        public async Task<string?> ShowTextInput(string initialText = "", string? title = null)
+        {
+            if (_textInputComponent != null)
+            {
+                return await _textInputComponent.ShowAsync(initialText, title);
+            }
+
+            return null;
         }
     }
 }

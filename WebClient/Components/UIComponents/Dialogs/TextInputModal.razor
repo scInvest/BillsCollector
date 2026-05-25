@@ -1,4 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components
+@using WebClient.Components.UIServices
+@implements ITextInputComponent
+@implements IDisposable
 
 <div class="timodal-backdrop" style="@(Visible ? "display:block" : "display:none")">
     <div class="timodal">
@@ -17,28 +20,39 @@
 </div>
 
 @code {
+    [Inject]
+    public DialogService DialogService { get; set; } = null!;
+
     // Parameter to control initial visibility; component is initialized hidden by default
-    [Parameter]
     public bool Visible { get; set; } = false;
 
-    [Parameter]
     public string Title { get; set; } = "Wpisz tekst";
-
-    [Parameter]
-    public EventCallback<string> OnOk { get; set; }
-
-    [Parameter]
-    public EventCallback OnCancel { get; set; }
 
     // Current input value
     public string InputText { get; set; } = string.Empty;
 
-    // Show the modal (call from parent via @ref)
-    public void Show(string initialText = "")
+    private TaskCompletionSource<string?>? _tcs;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        DialogService.RegisterTextInputComponent(this);
+    }
+
+    public void Dispose()
+    {
+        DialogService.UnregisterTextInputComponent();
+    }
+
+    // Show the modal (call from parent via DialogService.ShowTextInput)
+    public Task<string?> ShowAsync(string initialText = "", string? title = null)
     {
         InputText = initialText ?? string.Empty;
+        Title = title ?? "Wpisz tekst";
         Visible = true;
+        _tcs = new TaskCompletionSource<string?>();
         StateHasChanged();
+        return _tcs.Task;
     }
 
     // Hide the modal
@@ -50,25 +64,28 @@
 
     private async Task OnOkClicked()
     {
-        if (OnOk.HasDelegate)
+        var tcs = _tcs;
+        if (tcs != null && !tcs.Task.IsCompleted)
         {
-            await OnOk.InvokeAsync(InputText);
+            tcs.SetResult(InputText);
         }
         Hide();
+        await Task.CompletedTask;
     }
 
     private async Task OnCancelClicked()
     {
-        if (OnCancel.HasDelegate)
+        var tcs = _tcs;
+        if (tcs != null && !tcs.Task.IsCompleted)
         {
-            await OnCancel.InvokeAsync();
+            tcs.SetResult(null);
         }
         Hide();
+        await Task.CompletedTask;
     }
 
     private Task OnCloseClicked()
     {
-        // treat close same as cancel
         return OnCancelClicked();
     }
 }
