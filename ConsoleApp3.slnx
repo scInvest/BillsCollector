@@ -1,4 +1,9 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
   <Folder Name="/Clients/">
     <Project Path="WebClient/WebClient.csproj" Id="90975d18-e468-4a98-ac72-e1394c82b994" />
   </Folder>
@@ -11,4 +16,5 @@
   <Project Path="CostAnalizerApp.Interfaces/CostAnalizerApp.Interfaces.csproj" Id="40edc16a-225d-44e3-9246-dfb44b709ecb" />
   <Project Path="CostAnalizerApp/CostAnalizerApp.csproj" />
   <Project Path="DataSrouce/DataSource.csproj" />
+  <Project Path="SharedCode/SharedCode.csproj" Id="084d268a-411c-4ecd-a549-de7aac418c41" />
 </Solution>

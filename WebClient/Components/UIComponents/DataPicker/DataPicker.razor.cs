@@ -1,6 +1,8 @@
 ﻿using BlazorDatasheet.Core.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using WebClient.Components.UIComponents.Dialogs;
 using WebClient.Components.UIServices;
 
@@ -9,14 +11,8 @@ namespace WebClient.Components.UIComponents.DataPicker
     public partial class DataPicker : ComponentBase
     {
 
-        private List<string> files = new List<string>();
-        private string? content;
-
-        public Dictionary<FileData, string> Files { get; set; }
-
         [Parameter]
-        public EventCallback<Sheet> OnNewSheet { get; set; }
-
+        public DataPickerViewModel ViewModel { get; set; }
 
         private async Task HandleFileSelected_Biedronka(InputFileChangeEventArgs e)
         {
@@ -52,26 +48,33 @@ namespace WebClient.Components.UIComponents.DataPicker
         private async Task FileSelected(InputFileChangeEventArgs e, FileType fileType)
         {
             var files = e.GetMultipleFiles();
-            List<string> errors = files.Select(f => f.Name).ToList();
+            var filesToProcess = ReadFilesLazy(files, fileType);
+            var result = await ViewModel.Handle_UserInput_DataAdded(filesToProcess, fileType);
+            if (result != null && !result.IsSuccess)
+            {
+                await DialogService.ShowAlert(result.Error ?? "Błąd nieznany", "Błąd importu");
+            }
+        }
+
+        private async IAsyncEnumerable<(Stream stream, string fileName)> ReadFilesLazy(
+            IReadOnlyList<IBrowserFile> files,
+            FileType fileType,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
             foreach (var file in files)
             {
+                Stream? stream = null;
                 try
                 {
-                    using var stream = file.OpenReadStream();
-                    using var reader = new StreamReader(stream);
-                    content = await reader.ReadToEndAsync();
-                    var key = new FileData { FileName = file.Name, Type = fileType };
-                    Files.Add(key, content);
-                    throw new Exception($"File {file.Name} of type {fileType} loaded successfully with content length {content.Length}");
+                    stream = file.OpenReadStream();
                 }
-                catch (Exception ex)
+                catch
                 {
-                    errors.Add($"Error reading file {file.Name}: {ex.Message}");
+                    continue;
                 }
-            }
 
-           // Use the overload to provide a window title for the alert
-           await DialogService.ShowAlert(string.Join("\n", errors), "Import plików");
+                yield return (stream, file.Name);
+            }
         }
 
         public TextInputModal Dialog { get; set; }
