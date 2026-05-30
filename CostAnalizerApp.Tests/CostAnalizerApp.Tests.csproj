@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="10.0.8" />
     <PackageReference Include="MSTest" Version="4.0.1" />
   </ItemGroup>
 
@@ -17,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CostAnalizerApp\CostAnalizerApp.csproj" />
+    <ProjectReference Include="..\WebClient\WebClient.csproj" />
   </ItemGroup>
 
 </Project>
