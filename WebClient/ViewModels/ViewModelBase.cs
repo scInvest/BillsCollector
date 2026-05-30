@@ -84,11 +84,6 @@ namespace WebClient.ViewModels
             }
         }
 
-        private void RefreshInternal()
-        {
-            RefreshInternal(Propagate.This);
-        }
-
         public void Refresh()
         {
             Refresh(Propagate.This);
