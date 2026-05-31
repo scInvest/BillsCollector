@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
 using WebClient.Components.UIComponents.Extenstions;
 using WebClient.Components.UIServices;
+using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents
 {
@@ -17,62 +18,9 @@ namespace WebClient.Components.UIComponents
     /// Current grid frame work is weak, and in version v0.1xxx for multiple years. 
     /// It will be required to replace the grid framework with a more robust one, so all mid level -> low lever operation should be done via interface.
     /// </summary>
-    public interface IDataSheetComponent : IFocusableObject
+public partial class DataSheetComponent : ComponentBase, IFocusableObject, IRefreshableComponent
     {
-        public string ID { get; set; }
 
-        public string[] Headers { get; set; }
-
-    }
-    /// <summary>
-    /// Current grid frame work is weak, and in version v0.1xxx for multiple years. 
-    /// It will be required to replace the grid framework with a more robust one, so all mid level -> low lever operation should be done via interface.
-    /// </summary>
-    public interface IDataSheetLogic
-    {
-        public void BillSummaryTable_CreateEmpty();
-        public string[] BillSummaryTable_Headers { get; }
-
-
-
-    }
-    public partial class DataSheetComponent : ComponentBase, IFocusableObject, IDataSheetComponent
-    {
-        private const string POCHighlightColor = "#FFF2CC";
-
-        string[] headers;
-        public string[] Headers { get => headers; set { headers = value; StateHasChanged(); } }
-
-        class DataSheetLogic : IDataSheetLogic
-        {
-            private readonly Datasheet datasheet;
-            private readonly Sheet _sheet;
-            private readonly DataSheetComponent parent;
-            private IRegion? _headerRegion;
-
-            public DataSheetLogic(Datasheet datasheet, Sheet sheet, DataSheetComponent dataSheetComponent)
-            {
-                this.datasheet = datasheet;
-                _sheet = sheet;
-                this.parent = dataSheetComponent;
-            }
-
-            public void BillSummaryTable_CreateEmpty()
-            {
-                this.parent.Headers = BillSummaryTable_Headers;
-            }
-
-            public string[] BillSummaryTable_Headers => new string[]
-            {
-                "",  "Rodzaj", "Źródło", "Data", "Nazwa(oryginalna)", "Nazwa",
-                "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
-                "Kategoria", "Kategoria", "Kategoria", "Tagi", "ID", "Metadane",
-            };
-
-        }
-    }
-    public partial class DataSheetComponent : ComponentBase, IFocusableObject
-    {
         private ExcelBorderPicker? borderPicker;
         private ExcelFontColorPicker? colorPickerFont;
         private ExcelFontColorPicker? colorPickerFill;
@@ -115,14 +63,17 @@ namespace WebClient.Components.UIComponents
             sheet.Selection.CellsSelected += Selection_CellsSelected;
             this.SheetFocusManger.Register(this);
             this.sheet.SheetDirty += Sheet_SheetDirty;
-            this.Logic = new DataSheetLogic(datasheet, sheet, this);
+            this.Logic = new DataSheetLogicViewModel(this, datasheet, sheet);
             this.Logic.BillSummaryTable_CreateEmpty();
         }
-
+        RenderFragment<HeadingContext> @default;
         protected override void OnAfterRender(bool firstRender)
         {
-            var headers = this.Headers;
-            RenderFragment<HeadingContext> @default = this.datasheet.ColumnHeaderTemplate;
+            var headers = this.Logic.Headers;
+            if (@default == null)
+            {
+                @default = this.datasheet.ColumnHeaderTemplate;
+            }
 
             this.datasheet.ColumnHeaderTemplate = (original) =>
             {
@@ -141,7 +92,7 @@ namespace WebClient.Components.UIComponents
 
         [Parameter]
         public string ID { get; set; }
-        internal IDataSheetLogic Logic { get; private set; }
+        internal DataSheetLogicViewModel Logic { get; private set; }
 
         private RenderFragment<Sheet> BuildDefaultMenuItems => currentSheet => builder =>
         {
@@ -149,16 +100,6 @@ namespace WebClient.Components.UIComponents
             builder.AddAttribute(1, nameof(DataSheetContextMenu.CurrentSheet), currentSheet);
             builder.CloseComponent();
         };
-
-        private async Task HandleMenuItemInvoked(Sheet currentSheet, string action)
-        {
-            if (action == "highlight-selection")
-            {
-                SetColorChanged(POCHighlightColor, currentSheet.Selection.ActiveRegion);
-            }
-
-            await MenuItemInvoked.InvokeAsync(action);
-        }
 
         private void Sheet_SheetDirty(object? sender, BlazorDatasheet.Core.Events.Visual.DirtySheetEventArgs e)
         {
@@ -531,6 +472,9 @@ namespace WebClient.Components.UIComponents
             });
         }
 
-
+        public void Refresh()
+        {
+            this.StateHasChanged();
+        }
     }
 }

@@ -120,6 +120,10 @@ namespace WebClient.ViewModels
 
             if ((propagate & Propagate.This) != 0)
             {
+                if(Component == null)
+                {
+                    throw new InvalidOperationException("Component is null.");
+                }
                 if (Component is IRefreshableComponent refreshable)
                 {
                     refreshable.Refresh();
@@ -149,6 +153,15 @@ namespace WebClient.ViewModels
             RefreshInternal(propagate);
         }
 
+        private void OnPropertyChangedTrigger(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            OnPropertyChangedTrigger(propertyName ?? string.Empty);
+        }
 
         public void Dispose()
         {
