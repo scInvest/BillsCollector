@@ -11,7 +11,7 @@ using WebClient.Components.UIComponents.Extenstions;
 using WebClient.Components.UIServices;
 using WebClient.ViewModels;
 
-namespace WebClient.Components.UIComponents
+namespace WebClient.Components.UIComponents.SheetUI
 {
 
     /// <summary>

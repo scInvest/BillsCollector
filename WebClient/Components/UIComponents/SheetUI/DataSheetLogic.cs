@@ -4,7 +4,7 @@ using BlazorDatasheet.DataStructures.Geometry;
 using Microsoft.AspNetCore.Components;
 using WebClient.ViewModels;
 
-namespace WebClient.Components.UIComponents
+namespace WebClient.Components.UIComponents.SheetUI
 {
     public class DataSheetLogicViewModel : ViewModelBase, IDataSheetLogic
     {

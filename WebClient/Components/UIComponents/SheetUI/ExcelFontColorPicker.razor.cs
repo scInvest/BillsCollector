@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using WebClient.Components.UIServices;
 
-namespace WebClient.Components.UIComponents
+namespace WebClient.Components.UIComponents.SheetUI
 {
     public partial class ExcelFontColorPicker : ComponentBase, IFocusableObject
     {

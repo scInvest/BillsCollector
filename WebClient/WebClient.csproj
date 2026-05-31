@@ -16,4 +16,8 @@
     <ProjectReference Include="..\SharedCode\SharedCode.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\UIComponents\NewFolder\" />
+  </ItemGroup>
+
 </Project>
