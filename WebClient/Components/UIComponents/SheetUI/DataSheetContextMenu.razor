@@ -1,5 +1,9 @@
 ﻿@using BlazorDatasheet.Core.Data
-
+@using BlazorDatasheet.Menu
+@using BlazorDatasheet.Services
+@inject IMenuService MenuService
+@inherits SheetMenuItem
+    
 <div class="sheet-context-menu">
     <button type="button"
             class="sheet-context-menu__item"
@@ -13,5 +17,12 @@
     [Parameter]
     public Sheet? CurrentSheet { get; set; }
 
-    private Task HandleRename() => Task.CompletedTask;
+    private async Task HandleRename()
+    {
+
+        var s = CurrentSheet.Selection;
+        this.CurrentSheet.Selection.Activate(0, 0);
+        await MenuService.CloseMenu(this.MenuId, closeParent: true);
+       
+    }
 }
