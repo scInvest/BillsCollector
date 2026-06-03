@@ -17,8 +17,8 @@ namespace WebClient.ViewModels.Tests
 
         private class TestViewModel : ViewModelBase
         {
-            public TestViewModel(ComponentBase component) : base(component) { }
-            public TestViewModel(ComponentBase component, IEnumerable<ViewModelBase> children, ViewModelBase parent = null) : base(component, children, parent) { }
+            public TestViewModel(ComponentBase component) : base(() => component) { }
+            public TestViewModel(ComponentBase component, IEnumerable<ViewModelBase> children, ViewModelBase parent = null) : base(() => component, children, parent) { }
         }
 
         [TestMethod]

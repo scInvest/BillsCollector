@@ -34,13 +34,15 @@ namespace WebClient.ViewModels
             WholeTree = 16
         }
 
-        public ViewModelBase(ComponentBase component, IEnumerable<ViewModelBase>? children = null, ViewModelBase? parent = null)
+        private readonly Func<ComponentBase> _getComponent;
+
+        public ViewModelBase(Func<ComponentBase> getComponent, IEnumerable<ViewModelBase>? children = null, ViewModelBase? parent = null)
         {
-            if (component == null)
+            if (getComponent == null)
             {
-                throw new ArgumentNullException(nameof(component));
+                throw new ArgumentNullException(nameof(getComponent));
             }
-            Component = component;
+            _getComponent = getComponent;
             _children = children != null ? new List<ViewModelBase>(children) : new List<ViewModelBase>();
             foreach (var child in _children)
             {
@@ -52,11 +54,11 @@ namespace WebClient.ViewModels
             }
         }
 
-        public ViewModelBase(ComponentBase component, IEnumerable<ViewModelBase> children)
-            : this(component, children, null) { }
+        public ViewModelBase(Func<ComponentBase> getComponent, IEnumerable<ViewModelBase> children)
+            : this(getComponent, children, null) { }
 
-        public ViewModelBase(ComponentBase component, ViewModelBase parent)
-            : this(component, null, parent) { }
+        public ViewModelBase(Func<ComponentBase> getComponent, ViewModelBase parent)
+            : this(getComponent, null, parent) { }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -64,7 +66,7 @@ namespace WebClient.ViewModels
 
         public IReadOnlyList<ViewModelBase> Children => _children;
 
-        public ComponentBase Component { get; }
+        public ComponentBase Component => _getComponent();
 
         public void BeginUpdate()
         {

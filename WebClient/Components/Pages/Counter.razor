@@ -12,16 +12,17 @@
 @using WebClient.Components.UIComponents.Dialogs
 @using WebClient.Components.UIComponents.SheetUI
 @using WebClient.Components.UIComponents.TabbedBar
+@using WebClient.ViewModels
 
 @rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
 
-    <!-- Alert component registers with DialogService to show JS alerts -->
-    <AlertComponent />
+<!-- Alert component registers with DialogService to show JS alerts -->
+<AlertComponent />
 
 <!-- sekcja 1-->
-<DataPicker>
+<DataPicker @ref="dataPicker">
 
 </DataPicker>
 <!-- sekcja koniec-->
@@ -35,7 +36,7 @@
         <TabbedBar OnSelectionChanged="OnSelectedIndexChanged" @ref="analiticBar" AddTabCallback="AddAnalyticViewClicked"></TabbedBar>
     </div>
 
-    <div class="tabbed-panel" >
+    <div class="tabbed-panel">
         <div class="panel-title">Dane</div>
         <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged" @ref="dataBar" AddTabCallback="AddDataClicked"></TabbedBar>
     </div>
@@ -74,22 +75,24 @@
     </div>
 }
 <!-- sekcja 3-->
-
 @code {
     Dictionary<string, object> dataSheetComponents = new();
     Dictionary<string, object> dataSheetAnaliticalComponents = new();
-
     TabbedBar analiticBar = null!;
     TabbedBar dataBar = null!;
 
     private string? LastMenuAction;
 
+    DataPicker dataPicker = null!;
+
+    public MainViewModel viewModel { get; set; }
 
     public string? SelectedSheet => analiticBar?.Selection?.Key ?? dataBar?.Selection?.Key;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        viewModel = new MainViewModel(() => this.dataPicker);
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -100,7 +103,7 @@
 
             var allDataSheet = AddItemToCollection("Wszytko", this.dataSheetAnaliticalComponents);
             this.analiticBar.AddTab(allDataSheet);
-            
+
             var rtn = AddItemToCollection("Data", this.dataSheetComponents);
             this.dataBar.AddTab(rtn);
         }

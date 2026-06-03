@@ -10,9 +10,9 @@ namespace WebClient.Components.UIComponents.SheetUI
     {
         private readonly Datasheet datasheet;
         private readonly Sheet _sheet;
-        public DataSheetLogicViewModel(ComponentBase component, Datasheet datasheet, Sheet sheet)
-            : base(component)
-        {
+        public DataSheetLogicViewModel(Func<ComponentBase> getComponent, Datasheet datasheet, Sheet sheet)
+            : base(getComponent)
+        {   
             this.datasheet = datasheet;
             _sheet = sheet;
         }

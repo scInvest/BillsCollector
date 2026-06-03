@@ -63,7 +63,7 @@ public partial class DataSheetComponent : ComponentBase, IFocusableObject, IRefr
             sheet.Selection.CellsSelected += Selection_CellsSelected;
             this.SheetFocusManger.Register(this);
             this.sheet.SheetDirty += Sheet_SheetDirty;
-            this.Logic = new DataSheetLogicViewModel(this, datasheet, sheet);
+            this.Logic = new DataSheetLogicViewModel(() => this, datasheet, sheet);
             this.Logic.BillSummaryTable_CreateEmpty();
         }
         RenderFragment<HeadingContext> @default;

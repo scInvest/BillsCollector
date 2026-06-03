@@ -16,8 +16,8 @@ namespace WebClient.Components.UIComponents.DataPicker
         public event Action<FileType>? UserInputBeforeDataAdded;
         public event Action<IEnumerable<KeyValuePair<string, string>>, FileType>? UserInputAfterDataAdded;
 
-        public DataPickerViewModel(ComponentBase component)
-            : base(component)
+        public DataPickerViewModel(Func<ComponentBase> getComponent)
+            : base(getComponent)
         {
         }
 

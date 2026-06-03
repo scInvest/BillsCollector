@@ -7,9 +7,10 @@ namespace WebClient.ViewModels
     {
         public DataPickerViewModel DataPickerViewModel { get; set; }
 
-        public MainViewModel(Microsoft.AspNetCore.Components.ComponentBase component) : base(component)
+        public MainViewModel(System.Func<Microsoft.AspNetCore.Components.ComponentBase> getComponent)
+            : base(getComponent)
         {
-            DataPickerViewModel = new DataPickerViewModel(component);
+            DataPickerViewModel = new DataPickerViewModel(getComponent);
         }
     }
 }
