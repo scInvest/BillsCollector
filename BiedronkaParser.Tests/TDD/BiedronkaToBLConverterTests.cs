@@ -19,7 +19,7 @@ namespace BiedronkaParser.Tests.TDD
         {
             BiedronkaToBLConverter biedronkaToBLConverter = new BiedronkaToBLConverter();
 
-            var datasource = new DataSrouce.API.Datasource();
+            var datasource = new DataSrouce.API.DatasourceAPI();
 
             var files = datasource.ParagonTestData.GetParagonFiles();
             var receipts = await datasource.ParagonTestData.ReadFiles(files);
@@ -64,7 +64,7 @@ namespace BiedronkaParser.Tests.TDD
         {
             BiedronkaToBLConverter biedronkaToBLConverter = new BiedronkaToBLConverter();
 
-            var datasource = new DataSrouce.API.Datasource();
+            var datasource = new DataSrouce.API.DatasourceAPI();
 
             var files = datasource.ParagonTestData.GetParagonFiles();
             var receipts = await datasource.ParagonTestData.ReadFiles(files);

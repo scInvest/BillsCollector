@@ -6,7 +6,7 @@
         [TestMethod]
         public void ParagonTestData_ShouldNotBeNull()
         {
-            var datasource = new DataSrouce.API.Datasource();
+            var datasource = new DataSrouce.API.DatasourceAPI();
 
             Assert.IsNotNull(datasource.ParagonTestData);
         }
@@ -14,7 +14,7 @@
         [TestMethod]
         public void ParagonTestData_ShouldFindFiles()
         {
-            var datasource = new DataSrouce.API.Datasource();
+            var datasource = new DataSrouce.API.DatasourceAPI();
 
             var files = datasource.ParagonTestData.GetParagonFiles();
 
@@ -26,7 +26,7 @@
         [TestMethod]
         public async Task ReadFiles_ShouldReadAllFilesInParallel()
         {
-            var datasource = new DataSrouce.API.Datasource();
+            var datasource = new DataSrouce.API.DatasourceAPI();
 
             var files = datasource.ParagonTestData.GetParagonFiles();
             var receipts = await datasource.ParagonTestData.ReadFiles(files);

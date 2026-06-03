@@ -7,7 +7,7 @@ namespace Integrations.Biedronka
     {
         public ISpendingCase ConvertToStandardFromat(ReceiptDto receipt)
         {
-            var result = new ISpendingCaseReciptV1(receipt, 0);
+            var result = new SpendingCaseReciptV1(receipt, 0);
 
             return result;
         }

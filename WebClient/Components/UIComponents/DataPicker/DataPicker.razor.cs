@@ -1,6 +1,7 @@
 ﻿using BlazorDatasheet.Core.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using SharedCode;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using WebClient.Components.UIComponents.Dialogs;
@@ -47,31 +48,29 @@ namespace WebClient.Components.UIComponents.DataPicker
 
         private async Task FileSelected(InputFileChangeEventArgs e, FileType fileType)
         {
-            var files = e.GetMultipleFiles();
-            var filesToProcess = ReadFilesLazy(files, fileType);
-            var result = await ViewModel.Handle_UserInput_DataAdded(filesToProcess, fileType);
-            if (result != null && !result.IsSuccess)
+            try
             {
-                await DialogService.ShowAlert(result.Error ?? "Błąd nieznany", "Błąd importu");
+                var files = e.GetMultipleFiles();
+                var filesToProcess = ReadFilesLazy(files);
+                var result = await ViewModel.Handle_UserInput_DataAdded(filesToProcess, fileType);
+                if (result != null && !result.IsSuccess)
+                {
+                    await DialogService.ShowAlert(result.Error ?? "Błąd nieznany", "Błąd importu");
+                }
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowAlert(ex.Message ?? "Błąd nieznany", "Błąd importu");
             }
         }
 
         private async IAsyncEnumerable<(Stream stream, string fileName)> ReadFilesLazy(
-            IReadOnlyList<IBrowserFile> files,
-            FileType fileType,
-            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+            IReadOnlyList<IBrowserFile> files)
         {
             foreach (var file in files)
             {
                 Stream? stream = null;
-                try
-                {
-                    stream = file.OpenReadStream();
-                }
-                catch
-                {
-                    continue;
-                }
+                stream = file.OpenReadStream();
 
                 yield return (stream, file.Name);
             }

@@ -3,10 +3,10 @@ using Integrations.Biedronka.BiedronkaImport.Dto;
 
 namespace Integrations.Biedronka
 {
-    class ISpendingCaseReciptV1 : ISpendingCase
+    class SpendingCaseReciptV1 : ISpendingCase
     {
         private readonly List<ISpendingCase> _childs = new List<ISpendingCase>();
-        public ISpendingCaseReciptV1(ReceiptDto receipt, int processingIndex)
+        public SpendingCaseReciptV1(ReceiptDto receipt, int processingIndex)
         {
             Receipt = receipt;
             Date = ExtractDateFromReceipt(receipt);
