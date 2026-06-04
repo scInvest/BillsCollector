@@ -19,36 +19,36 @@ namespace WebClient.Components.UIComponents.DataPicker
 
         private async Task HandleFileSelected_Biedronka(InputFileChangeEventArgs e)
         {
-            await FileSelected(e, FileType.Biedronka);
+            await FileSelected(e, SpendingFileType.BiedronkaJson);
         }
 
         // New handlers for each FileType so pickers are routed correctly
         private async Task HandleFileSelected_MBank(InputFileChangeEventArgs e)
         {
-            await FileSelected(e, FileType.MBank);
+            await FileSelected(e, SpendingFileType.MBankCsv);
         }
 
         private async Task HandleFileSelected_Allegro(InputFileChangeEventArgs e)
         {
-            await FileSelected(e, FileType.Allegro);
+            await FileSelected(e, SpendingFileType.Allegro);
         }
 
         private async Task HandleFileSelected_Kaufland(InputFileChangeEventArgs e)
         {
-            await FileSelected(e, FileType.Kaufland);
+            await FileSelected(e, SpendingFileType.Kaufland);
         }
 
         private async Task HandleFileSelected_CsvCustom(InputFileChangeEventArgs e)
         {
-            await FileSelected(e, FileType.CsvCustom);
+            await FileSelected(e, SpendingFileType.CsvCustom);
         }
 
         private async Task HandleFileSelected_Zabka(InputFileChangeEventArgs e)
         {
-            await FileSelected(e, FileType.Zabka);
+            await FileSelected(e, SpendingFileType.Zabka);
         }
 
-        private async Task FileSelected(InputFileChangeEventArgs e, FileType fileType)
+        private async Task FileSelected(InputFileChangeEventArgs e, SpendingFileType fileType)
         {
             try
             {

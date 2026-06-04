@@ -1,16 +1,20 @@
-﻿using System;
+﻿using DataSrouce.API;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CostAnalizerApp
 {
 
-    internal class CostAnalizerApplication
-    {     
-    }
-
-    internal class CostAnalizerState
+    public class CostAnalizerApplication
     {
 
+        public SessionData Data { get; } = new SessionData();
+
+        public void AddData()
+        {
+
+        }
     }
+
 }

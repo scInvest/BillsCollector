@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using SharedCode;
 using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents.DataPicker
@@ -13,15 +14,15 @@ namespace WebClient.Components.UIComponents.DataPicker
         // Business logic reference (to be injected)
         public object BusinessLogic { get; set; }
 
-        public event Action<FileType>? UserInputBeforeDataAdded;
-        public event Action<IEnumerable<KeyValuePair<string, string>>, FileType>? UserInputAfterDataAdded;
+        public event Action<SpendingFileType>? UserInputBeforeDataAdded;
+        public event Action<IEnumerable<KeyValuePair<string, string>>, SpendingFileType>? UserInputAfterDataAdded;
 
         public DataPickerViewModel(Func<ComponentBase> getComponent)
             : base(getComponent)
         {
         }
 
-        public async Task<SharedCode.Result> Handle_UserInput_DataAdded(IAsyncEnumerable<(Stream stream, string fileName)> streams, FileType fileType)
+        public async Task<SharedCode.Result> Handle_UserInput_DataAdded(IAsyncEnumerable<(Stream stream, string fileName)> streams, SpendingFileType fileType)
         {
             UserInputBeforeDataAdded?.Invoke(fileType);
             ConcurrentBag<string> errors = new ConcurrentBag<string>();

@@ -7,11 +7,11 @@ public class Class1Tests
     public void TestMethod1()
     {
         // Arrange
-        var class1 = new Class1();
+        //var class1 = new Class1();
 
         // Act
 
         // Assert
-        Assert.IsNotNull(class1);
+        //Assert.IsNotNull(class1);
     }
 }

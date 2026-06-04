@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CostAnalizerApp.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -7,22 +8,35 @@ using System.Text;
 
 namespace DataSrouce.API
 {
+
+    ///<summary>
+    /// Entry point containtg all data.
+    ///</summary>
+    /// <remarks>
+    /// This class is on purpose simplistic to allow replace it will real data storage.
+    /// </remarks>
     public class SessionData
     {
-
-        public void AddBiedronkaData(string key, object value)
-        {
-            BiedronkaData[key] = value;
-        }
         public DataCollection BiedronkaData { get; set; } = new DataCollection();
     }
 
 
-    public class DataCollection : IReadOnlyDictionary<string, object>
+    /// <Remarks>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// This class is on purpose simplistic to allow replace it will real data storage.
+    /// </remarks>
+    public class DataCollection : IReadOnlyDictionary<string, ISpendingCase>
     {
-        private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
+        private readonly Dictionary<string, ISpendingCase> _data = new Dictionary<string, ISpendingCase>();
 
-        public object this[string key]
+        public void Clear()
+        {
+            _data.Clear();
+        }
+
+        public ISpendingCase this[string key]
         {
             get => _data[key];
             set => _data[key] = value;
@@ -30,7 +44,7 @@ namespace DataSrouce.API
 
         public IEnumerable<string> Keys => _data.Keys;
 
-        public IEnumerable<object> Values => _data.Values;
+        public IEnumerable<ISpendingCase> Values => _data.Values;
 
         public int Count => _data.Count;
 
@@ -39,12 +53,12 @@ namespace DataSrouce.API
             return _data.ContainsKey(key);
         }
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, ISpendingCase>> GetEnumerator()
         {
             return _data.GetEnumerator();
         }
 
-        public bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
+        public bool TryGetValue(string key, [MaybeNullWhen(false)] out ISpendingCase value)
         {
             return _data.TryGetValue(key, out value);
         }

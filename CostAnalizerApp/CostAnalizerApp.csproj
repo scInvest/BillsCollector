@@ -6,4 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BiedronkaParser\Integrations.csproj" />
+    <ProjectReference Include="..\CostAnalizerApp.Interfaces\CostAnalizerApp.Interfaces.csproj" />
+    <ProjectReference Include="..\DataSrouce\DataSource.csproj" />
+    <ProjectReference Include="..\SharedCode\SharedCode.csproj" />
+  </ItemGroup>
+
 </Project>
