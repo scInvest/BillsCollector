@@ -13,7 +13,9 @@ namespace WebClient.Components.UIComponents.DataPicker
     {
 
         [Parameter]
-        public DataPickerViewModel ViewModel { get; set; }
+        public Func<DataPickerViewModel> ViewModelCallBack { get; set; }
+
+        public DataPickerViewModel ViewModel => ViewModelCallBack();
 
         private async Task HandleFileSelected_Biedronka(InputFileChangeEventArgs e)
         {
