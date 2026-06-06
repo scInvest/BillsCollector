@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components
-<div class="tabbed-bar">
+@using Microsoft.AspNetCore.Components.Web
+<div class="tabbed-bar" @onclick:stopPropagation="false" @onclick="() => { if (contextMenuVisible) HideContextMenu(); }">
     <div class="tabs">
         @for (int i = 0; i < tabs.Count; i++)
         {
@@ -11,13 +12,27 @@
                     @ondrop:preventDefault="true"
                     @ondragover ="()=> OnDragOver()"
                     @ondrop="() => OnDrop(index)"
-                    @onclick="() => Select(index, true)">
+                    @onclick="() => Select(index, true)"
+                    @oncontextmenu:preventDefault="true"
+                    @oncontextmenu="(e) => ShowContextMenu(e, index)">
                 @tabs[index].Title
             </button>
         }
 
         <button class="add-btn" title="Dodaj zakładkę" @onclick="AddTab">+</button>
     </div>
+
+    @if (contextMenuVisible)
+    {
+        <div class="tab-context-menu" style="position:fixed; left:@(contextMenuLeft)px; top:@(contextMenuTop)px; z-index:1000;">
+            <button class="context-menu-item" @onclick="() => { Rename(); HideContextMenu(); }">
+                <span>✏️</span> Rename
+            </button>
+            <button class="context-menu-item context-menu-item-danger" @onclick="() => { Delete(); HideContextMenu(); }">
+                <span>🗑️</span> Delete
+            </button>
+        </div>
+    }
 
     @* Content is handled outside; this component only manages tab names and selection index *@
 </div>
@@ -244,5 +259,45 @@
         }
 
         StateHasChanged();
+    }
+
+    // Context menu state
+    private bool contextMenuVisible = false;
+    private int contextMenuLeft = 0;
+    private int contextMenuTop = 0;
+    private int? contextMenuTabIndex = null;
+
+    private void ShowContextMenu(MouseEventArgs e, int index)
+    {
+        contextMenuTabIndex = index;
+        contextMenuLeft = (int)e.ClientX;
+        contextMenuTop = (int)e.ClientY;
+        contextMenuVisible = true;
+        StateHasChanged();
+    }
+
+    private void HideContextMenu()
+    {
+        contextMenuVisible = false;
+        contextMenuTabIndex = null;
+        StateHasChanged();
+    }
+
+    private void Rename()
+    {
+        if (contextMenuTabIndex.HasValue && contextMenuTabIndex.Value >= 0 && contextMenuTabIndex.Value < tabs.Count)
+        {
+            // Placeholder for rename functionality
+            // Can be implemented with a dialog/modal for user input
+        }
+    }
+
+    private void Delete()
+    {
+        if (contextMenuTabIndex.HasValue && contextMenuTabIndex.Value >= 0 && contextMenuTabIndex.Value < tabs.Count)
+        {
+            var key = tabs[contextMenuTabIndex.Value].Key;
+            Remove(key);
+        }
     }
 }
