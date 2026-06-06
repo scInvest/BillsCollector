@@ -106,4 +106,42 @@
         }
         this.StateHasChanged();
     }
+
+    /// <summary>
+    /// Remove a tab by its key. If the removed tab was selected, selection is cleared
+    /// and OnSelectionChanged is invoked with null. If a tab before the current selection
+    /// is removed, the SelectedIndex is adjusted accordingly.
+    /// </summary>
+    /// <param name="key">Tab key to remove</param>
+    public void Remove(string key)
+    {
+        if (string.IsNullOrEmpty(key))
+            return;
+
+        var index = tabs.FindIndex(t => t.Key == key);
+        if (index < 0)
+            return;
+
+        // remove the tab
+        tabs.RemoveAt(index);
+
+        if (SelectedIndex.HasValue)
+        {
+            if (SelectedIndex.Value == index)
+            {
+                // removed currently selected tab -> clear selection
+                SelectedIndex = null;
+                _ = OnSelectionChanged.InvokeAsync(default((int, string)?));
+            }
+            else if (SelectedIndex.Value > index)
+            {
+                // shift selection left by one to keep pointing to same logical tab
+                SelectedIndex = SelectedIndex.Value - 1;
+                var data = tabs[SelectedIndex.Value];
+                _ = OnSelectionChanged.InvokeAsync((SelectedIndex.Value, data.Key));
+            }
+        }
+
+        StateHasChanged();
+    }
 }

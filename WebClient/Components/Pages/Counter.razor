@@ -18,6 +18,7 @@
 
 @using CostAnalizerApp
 @inject CostAnalizerApplication CostAnalizer
+@implements IRefreshableComponent
 
 <PageTitle>Counter</PageTitle>
 
@@ -94,7 +95,10 @@
             }
         }
     }
-
+    public void Refresh()
+    {
+        this.StateHasChanged();
+    }
     public event Action<string>? BeforeSheetAdded;
     public event Action<string>? SheetAdded;
 
@@ -128,7 +132,7 @@
         Data
     }
 
-    public SharedCode.Result<(string Title, string Key)?> AddSheet(SheetGroup sheetGroup, string title, string? id = null)
+    public SharedCode.Result<(string Title, string Key)?> AddSheet(SheetGroup sheetGroup, string title, string? id)
     {
         Dictionary<string, object> sheets = sheetGroup == SheetGroup.Analitical ? this.dataSheetAnaliticalComponents : this.dataSheetComponents;
         TabbedBar bar = sheetGroup == SheetGroup.Analitical ? this.analiticBar : this.dataBar;
@@ -142,6 +146,38 @@
         bar.AddTab(item.Value);
 
         return SharedCode.Result<(string Title, string Key)?>.Success(item);
+    }
+
+    /// <summary>
+    /// Remove a sheet by its id. Removes entry from whichever collection contains it
+    /// (data or analytic), removes any instantiated DataSheetComponent and removes
+    /// the corresponding tab from the TabbedBar.
+    /// </summary>
+    /// <param name="id">Sheet id (key)</param>
+    public void RemoveSheet(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return;
+
+        // Try remove from data sheets
+        if (this.dataSheetComponents.ContainsKey(id))
+        {
+            this.dataSheetComponents.Remove(id);
+            this.dataBar?.Remove(id);
+            this.dataSheetComponentInstances.Remove(id);
+            StateHasChanged();
+            return;
+        }
+
+        // Try remove from analytic sheets
+        if (this.dataSheetAnaliticalComponents.ContainsKey(id))
+        {
+            this.dataSheetAnaliticalComponents.Remove(id);
+            this.analiticBar?.Remove(id);
+            this.dataSheetComponentInstances.Remove(id);
+            StateHasChanged();
+            return;
+        }
     }
     protected override void OnAfterRender(bool firstRender)
     {
@@ -173,7 +209,7 @@
     }
 
     // Shared helper that creates a new entry title/key, adds it to the provided collection and returns the tuple.
-    private (string Title, string Key)? AddItemToCollection(string name, Dictionary<string, object> collection, string? id = null)
+    private (string Title, string Key)? AddItemToCollection(string name, Dictionary<string, object> collection, string? id)
     {
         id = id ?? Guid.NewGuid().ToString();
         var rtn = (Title: name, Key: id);
@@ -184,7 +220,7 @@
 
     private (string Title, string Key)? UserInput_AddDataClicked(int index)
     {
-        var rtn = AddItemToCollection("Data " + index, this.dataSheetComponents);
+        var rtn = AddItemToCollection("Data " + index, this.dataSheetComponents, null);
         this.ViewModel.UserInput_AddDataClicked();
 
         return rtn;
@@ -192,7 +228,7 @@
 
     private (string, string)? UserInput_AddAnalyticViewClicked(int index)
     {
-        var rtn = AddItemToCollection("Analiza " + index, this.dataSheetAnaliticalComponents);
+        var rtn = AddItemToCollection("Analiza " + index, this.dataSheetAnaliticalComponents, null);
         this.ViewModel.UserInput_AddAnalyticAdded();
         return rtn;
     }

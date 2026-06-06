@@ -15,7 +15,7 @@ namespace WebClient.ViewModels
 
     public class MainViewModel : ViewModelBase
     {
-        private HashSet<ExistingSheets> sheetPendingToCreate = new();
+        private Dictionary<string, ExistingSheets> sheetPendingToCreate = new();
         private List<ExistingSheets> sheets = new List<ExistingSheets>();
 
         public DataPickerViewModel DataPickerViewModel { get; set; }
@@ -30,29 +30,52 @@ namespace WebClient.ViewModels
         {
             DataPickerViewModel = new DataPickerViewModel(getDatPicker, mainApp);
             DataPickerViewModel.UserInputBeforeDataAdded += DataPickerViewModel_UserInputBeforeDataAdded;
+            DataPickerViewModel.UserInputAfterDataAdded += DataPickerViewModel_UserInputAfterDataAdded;
             CostAnalizerApp = mainApp;
             this.MainPage.BeforeSheetAdded += MainPage_BeforeSheetAdded;
             this.MainPage.SheetAdded += MainPage_SheetAdded; ;
         }
 
-        private void MainPage_SheetAdded(string obj)
+        private void DataPickerViewModel_UserInputAfterDataAdded(SharedCode.SpendingFileType type)
         {
+            var id = Guid.NewGuid().ToString();
+            var title = type.ToString();
+            var sheetKey = new ExistingSheets { Id = id, spendingFileType = type, Title = title };
+            sheetPendingToCreate.Add(id, sheetKey);
+
+            if (this.sheets.Any(X => X.spendingFileType == type))
+            {
+                var items = this.sheets.Where(X => X.spendingFileType == type);
+                foreach (var item in items)
+                {
+                    this.MainPage.RemoveSheet(item.Id);
+                }
+            }
+
+            MainPage.AddSheet(Counter.SheetGroup.Data, title, id);
+
+            base.Refresh();
+        }
+
+        private void MainPage_SheetAdded(string id)
+        {
+            if (sheetPendingToCreate.ContainsKey(id))
+            {
+                var toBeAdded = sheetPendingToCreate[id];
+                sheetPendingToCreate.Remove(id);
+                this.sheets.Add(toBeAdded);
+            }
 
         }
 
         private void MainPage_BeforeSheetAdded(string id)
         {
+
         }
 
         private void DataPickerViewModel_UserInputBeforeDataAdded(SharedCode.SpendingFileType type)
         {
-            var id = Guid.NewGuid().ToString();
-            var title = type.ToString();
-            sheetPendingToCreate.Add(new ExistingSheets { Id = id, spendingFileType = type, Title = title });
 
-            MainPage.AddSheet(Counter.SheetGroup.Data, title, id);
-
-            base.Refresh();
         }
 
         public void UserInput_AddAnalyticAdded()
