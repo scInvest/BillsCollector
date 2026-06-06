@@ -1,5 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
+@using WebClient.Components.UIServices
+@inject DialogService DialogService
+@inject SheetFocusMangerService FocusManager;
+@implements IFocusableObject;
+
 <div class="tabbed-bar" @onclick:stopPropagation="false" @onclick="() => { if (contextMenuVisible) HideContextMenu(); }">
     <div class="tabs">
         @for (int i = 0; i < tabs.Count; i++)
@@ -7,28 +12,28 @@
             int index = i; // capture loop variable for lambda
             <button class="tab @(SelectedIndex.HasValue && i == SelectedIndex.Value ? "active" : "")"
                     draggable="true"
-                    @ondragstart="() => OnDragStart(index)"
+                    @ondragstart="() => { TriggerFocus(); OnDragStart(index);}"
                     @ondragover:preventDefault="true"
                     @ondrop:preventDefault="true"
-                    @ondragover ="()=> OnDragOver()"
-                    @ondrop="() => OnDrop(index)"
-                    @onclick="() => Select(index, true)"
+                    @ondragover ="() => { TriggerFocus(); OnDragOver(); }"
+                    @ondrop="() => { TriggerFocus(); OnDrop(index); }"
+                    @onclick="() => { TriggerFocus(); Select(index, true); }"
                     @oncontextmenu:preventDefault="true"
-                    @oncontextmenu="(e) => ShowContextMenu(e, index)">
+                    @oncontextmenu="(e) => { TriggerFocus(); ShowContextMenu(e, index); }">
                 @tabs[index].Title
             </button>
         }
 
-        <button class="add-btn" title="Dodaj zakładkę" @onclick="AddTab">+</button>
+        <button class="add-btn" title="Dodaj zakładkę" @onclick="() => { TriggerFocus(); AddTab(); }">+</button>
     </div>
 
     @if (contextMenuVisible)
     {
         <div class="tab-context-menu" style="position:fixed; left:@(contextMenuLeft)px; top:@(contextMenuTop)px; z-index:1000;">
-            <button class="context-menu-item" @onclick="() => { Rename(); HideContextMenu(); }">
+            <button class="context-menu-item" @onclick="() => { TriggerFocus(); Rename(); HideContextMenu(); }">
                 <span>✏️</span> Rename
             </button>
-            <button class="context-menu-item context-menu-item-danger" @onclick="() => { Delete(); HideContextMenu(); }">
+            <button class="context-menu-item context-menu-item-danger" @onclick="() => { TriggerFocus(); Delete(); HideContextMenu(); }">
                 <span>🗑️</span> Delete
             </button>
         </div>
@@ -42,6 +47,20 @@
 
     // Public selected index
     public int? SelectedIndex { get; private set; } = null;
+
+    // IFocusableObject implementation
+    public event EventHandler? Focus;
+
+    public void RemoveFocus()
+    {
+        HideContextMenu();
+        StateHasChanged();
+    }
+
+    public void TriggerFocus()
+    {
+        Focus?.Invoke(this, EventArgs.Empty);
+    }
 
     public (int Index, string Title, string Key)? Selection
     {
@@ -82,6 +101,7 @@
     protected override void OnInitialized()
     {
         SelectedIndex = null;
+        FocusManager.Register(this);
     }
     private void AddTab()
     {
@@ -273,6 +293,7 @@
         contextMenuLeft = (int)e.ClientX;
         contextMenuTop = (int)e.ClientY;
         contextMenuVisible = true;
+        TriggerFocus();
         StateHasChanged();
     }
 
@@ -283,12 +304,20 @@
         StateHasChanged();
     }
 
-    private void Rename()
+    private async void Rename()
     {
         if (contextMenuTabIndex.HasValue && contextMenuTabIndex.Value >= 0 && contextMenuTabIndex.Value < tabs.Count)
         {
-            // Placeholder for rename functionality
-            // Can be implemented with a dialog/modal for user input
+            var index = contextMenuTabIndex.Value;
+            var currentTitle = tabs[index].Title;
+            var newTitle = await DialogService.ShowTextInput(currentTitle, "Rename Tab");
+
+            if (newTitle != null && !string.IsNullOrWhiteSpace(newTitle))
+            {
+                var tabItem = tabs[index];
+                tabs[index] = (newTitle, tabItem.Key);
+                StateHasChanged();
+            }
         }
     }
 
