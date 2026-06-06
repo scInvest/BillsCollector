@@ -21,7 +21,7 @@ namespace WebClient.Components.UIComponents.DataPicker
         public object BusinessLogic { get; set; }
 
         public event Action<SpendingFileType>? UserInputBeforeDataAdded;
-        public event Action<IEnumerable<KeyValuePair<string, string>>, SpendingFileType>? UserInputAfterDataAdded;
+        public event Action<SpendingFileType>? UserInputAfterDataAdded;
 
         public DataPickerViewModel(
             Func<Microsoft.AspNetCore.Components.ComponentBase> getComponent,
@@ -37,7 +37,7 @@ namespace WebClient.Components.UIComponents.DataPicker
         {
             UserInputBeforeDataAdded?.Invoke(fileType);
             ConcurrentBag<string> errors = new ConcurrentBag<string>();
-            ConcurrentDictionary<string, string> contents = new ConcurrentDictionary<string, string>();
+            ConcurrentBag<bool> conter = new ConcurrentBag<bool>();
 
             try
             {
@@ -54,7 +54,7 @@ namespace WebClient.Components.UIComponents.DataPicker
                     {
                         using var reader = new System.IO.StreamReader(stream);
                         var content = await reader.ReadToEndAsync();
-                        contents.TryAdd(fileName, content);
+                        conter.Add(true);
 
                         ISpendingCase file = Intergrations.ReadBiedronkaJson(content);
                         CostAnalizerApplication.AddData(fileName, file);
@@ -83,13 +83,13 @@ namespace WebClient.Components.UIComponents.DataPicker
                 return SharedCode.Result<string>.Failure(message);
             }
 
-            if (!contents.Any())
+            if (!conter.Any())
             {
                 return SharedCode.Result<string>.Failure("Brak danych do dodania.");
             }
 
-            UserInputAfterDataAdded?.Invoke(contents, fileType);
-            return SharedCode.Result<string>.Success("Pomylślnie wczytano "+ contents.Count + " plików");
+            UserInputAfterDataAdded?.Invoke(fileType);
+            return SharedCode.Result<string>.Success("Pomylślnie wczytano "+ conter.Count + " plików");
         }
     }
 }

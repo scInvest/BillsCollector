@@ -30,16 +30,19 @@
 </DataPicker>
 <!-- sekcja koniec-->
 <!-- sekcja 2-->
-<h1>VIZUALIZACJE</h1>
+<h1 style="@(((analiticBar != null && analiticBar.Tabs.Count > 0) || (dataBar != null && dataBar.Tabs.Count > 0)) ? "display:block" : "display:none")">
+    VIZUALIZACJE
+    </h1>
 <!-- sekcja koniec-->
 <!-- sekcja 3-->
-<div class="tabbed-row">
-    <div class="tabbed-panel">
+
+<div class="tabbed-row" style="@(((analiticBar != null && analiticBar.Tabs.Count > 0) || (dataBar != null && dataBar.Tabs.Count > 0)) ? "display:block" : "display:none")">
+    <div class="tabbed-panel" s)">
         <div class="panel-title">Analiza</div>
         <TabbedBar OnSelectionChanged="OnSelectedIndexChanged" @ref="analiticBar" AddTabCallback="UserInput_AddAnalyticViewClicked"></TabbedBar>
     </div>
 
-    <div class="tabbed-panel">
+    <div class="tabbed-panel"">
         <div class="panel-title">Dane</div>
         <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged" @ref="dataBar" AddTabCallback="UserInput_AddDataClicked"></TabbedBar>
     </div>
@@ -111,7 +114,16 @@
     public SharedCode.Result<object> AddPage(SheetGroup sheetGroup, string title)
     {
         Dictionary<string, object> sheets = sheetGroup == SheetGroup.Analitical ? this.dataSheetAnaliticalComponents : this.dataSheetComponents;
-        AddItemToCollection("Wszytko", sheets);
+        TabbedBar bar = sheetGroup == SheetGroup.Analitical ? this.analiticBar : this.dataBar;
+        var item = AddItemToCollection("Wszytko", sheets);
+        
+        if(item == null)
+        {
+            throw new ArgumentNullException();
+        }
+
+        bar.AddTab(item.Value);
+
         return SharedCode.Result<object>.Success(this);
     }
     protected override void OnAfterRender(bool firstRender)
@@ -144,10 +156,10 @@
     }
 
     // Shared helper that creates a new entry title/key, adds it to the provided collection and returns the tuple.
-    private (string, string)? AddItemToCollection(string name, Dictionary<string, object> collection)
+    private (string Title, string Key)? AddItemToCollection(string name, Dictionary<string, object> collection)
     {
-        var rtn = (name, Guid.NewGuid().ToString());
-        collection.Add(rtn.Item2, rtn.Item1);
+        var rtn = (Title: name, Key: Guid.NewGuid().ToString());
+        collection.Add(rtn.Key, rtn.Title);
         return rtn;
     }
 

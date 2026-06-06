@@ -10,7 +10,7 @@ namespace WebClient.ViewModels
     {
         public DataPickerViewModel DataPickerViewModel { get; set; }
         public Func<CostAnalizerApplication> CostAnalizerApp { get; }
-        public Counter MainPagelo => (base.Component as Counter)!;
+        public Counter MainPage => (base.Component as Counter)!;
 
         public MainViewModel(
             System.Func<Microsoft.AspNetCore.Components.ComponentBase> getComponent,
@@ -19,7 +19,14 @@ namespace WebClient.ViewModels
             : base(getComponent)
         {
             DataPickerViewModel = new DataPickerViewModel(getDatPicker, mainApp);
+            DataPickerViewModel.UserInputBeforeDataAdded += DataPickerViewModel_UserInputBeforeDataAdded;
             CostAnalizerApp = mainApp;
+        }
+
+        private void DataPickerViewModel_UserInputBeforeDataAdded(SharedCode.SpendingFileType type)
+        {
+            MainPage.AddPage(Counter.SheetGroup.Data, type.ToString());
+            base.Refresh();
         }
     }
 }
