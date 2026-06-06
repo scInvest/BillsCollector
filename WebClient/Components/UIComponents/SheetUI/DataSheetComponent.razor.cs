@@ -63,13 +63,13 @@ public partial class DataSheetComponent : ComponentBase, IFocusableObject, IRefr
             sheet.Selection.CellsSelected += Selection_CellsSelected;
             this.SheetFocusManger.Register(this);
             this.sheet.SheetDirty += Sheet_SheetDirty;
-            this.Logic = new DataSheetLogicViewModel(() => this, datasheet, sheet);
-            this.Logic.BillSummaryTable_CreateEmpty();
+            this.LogicViewModel = new DataSheetLogicViewModel(() => this, datasheet, sheet);
+            //this.Logic.BillSummaryTable_CreateEmpty();
         }
         RenderFragment<HeadingContext> @default;
         protected override void OnAfterRender(bool firstRender)
         {
-            var headers = this.Logic.Headers;
+            var headers = this.LogicViewModel.Headers;
             if (@default == null)
             {
                 @default = this.datasheet.ColumnHeaderTemplate;
@@ -77,7 +77,7 @@ public partial class DataSheetComponent : ComponentBase, IFocusableObject, IRefr
 
             this.datasheet.ColumnHeaderTemplate = (original) =>
             {
-                if (original.Index < 0 || original.Index >= headers.Length)
+                if (headers == null || original.Index < 0 || original.Index >= headers.Length)
                 {
                     return @default(original);
                 }
@@ -92,7 +92,8 @@ public partial class DataSheetComponent : ComponentBase, IFocusableObject, IRefr
 
         [Parameter]
         public string ID { get; set; }
-        internal DataSheetLogicViewModel Logic { get; private set; }
+
+        public DataSheetLogicViewModel LogicViewModel { get; private set; } = null!;
 
         private RenderFragment<Sheet> BuildDefaultMenuItems => currentSheet => builder =>
         {

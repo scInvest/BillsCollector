@@ -2,11 +2,30 @@ using CostAnalizerApp;
 using System.Diagnostics.Metrics;
 using WebClient.Components.Pages;
 using WebClient.Components.UIComponents.DataPicker;
+using WebClient.Components.UIComponents.SheetUI;
 using WebClient.ViewModels;
 
 namespace WebClient.ViewModels
 {
-    record ExistingSheets
+    class ExistingSheetsCreated : ExistingSheets
+    {
+        public DataSheetComponent DataSheet { get; set; }
+
+        // Konstruktor przyjmujący instancję bazową (template) i opcjonalnie przypisujący komponent DataSheet.
+        public ExistingSheetsCreated(ExistingSheets template, DataSheetComponent dataSheet = null)
+        {
+            if (template != null)
+            {
+                this.spendingFileType = template.spendingFileType;
+                this.Title = template.Title;
+                this.Id = template.Id;
+            }
+
+            this.DataSheet = dataSheet;
+        }
+    }
+
+    class ExistingSheets
     {
         public SharedCode.SpendingFileType spendingFileType { get; set; }
         public string Title { get; set; }
@@ -16,7 +35,7 @@ namespace WebClient.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private Dictionary<string, ExistingSheets> sheetPendingToCreate = new();
-        private List<ExistingSheets> sheets = new List<ExistingSheets>();
+        private List<ExistingSheetsCreated> sheets = new List<ExistingSheetsCreated>();
 
         public DataPickerViewModel DataPickerViewModel { get; set; }
         public Func<CostAnalizerApplication> CostAnalizerApp { get; }
@@ -57,13 +76,14 @@ namespace WebClient.ViewModels
             base.Refresh();
         }
 
-        private void MainPage_SheetAdded(string id)
+        private void MainPage_SheetAdded(string id, DataSheetComponent sheetComponent)
         {
             if (sheetPendingToCreate.ContainsKey(id))
             {
                 var toBeAdded = sheetPendingToCreate[id];
                 sheetPendingToCreate.Remove(id);
-                this.sheets.Add(toBeAdded);
+                var sheet = new ExistingSheetsCreated(toBeAdded, sheetComponent);
+                this.sheets.Add(sheet);
             }
 
         }

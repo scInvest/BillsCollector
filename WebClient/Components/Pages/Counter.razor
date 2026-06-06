@@ -91,7 +91,7 @@
             if (!dataSheetComponentInstances.ContainsKey(value.ID))
             {
                 dataSheetComponentInstances.Add(value.ID, value);
-                SheetAdded?.Invoke(value.ID);
+                SheetAdded?.Invoke(value.ID, value);
             }
         }
     }
@@ -100,7 +100,7 @@
         this.StateHasChanged();
     }
     public event Action<string>? BeforeSheetAdded;
-    public event Action<string>? SheetAdded;
+    public event Action<string, DataSheetComponent>? SheetAdded;
 
     Dictionary<string, DataSheetComponent> dataSheetComponentInstances = new();
     Dictionary<string, object> dataSheetComponents = new();
