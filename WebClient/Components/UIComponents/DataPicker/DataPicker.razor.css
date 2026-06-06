@@ -113,10 +113,10 @@
     #ff7a00 25%, #ff7a00 50%,
     #8b0000 50%, #8b0000 75%,
     #2ecc71 75%, #2ecc71 100%);
-  border: 2px solid #ffffff; /* white border to match other buttons */
+  border: 3px solid #ff7a00; /* orange border */
   color: #ffffff; /* white text */
   font-weight: 700;
-  box-shadow: none; /* remove blur to keep edges crisp */
+  box-shadow: none;
   background-repeat: no-repeat;
 }
 
