@@ -10,7 +10,11 @@
             <button class="timodal-close" @onclick="OnCloseClicked" aria-label="Close">✕</button>
         </div>
         <div class="timodal-body">
-            <textarea class="timodal-textarea" @bind="InputText" placeholder="Wpisz tekst..."></textarea>
+            @if (!string.IsNullOrEmpty(HintText))
+            {
+                <div class="timodal-hint">@HintText</div>
+            }
+            <textarea class="timodal-textarea" @ref="TextareaElement" @bind="InputText" placeholder="Wpisz tekst..."></textarea>
         </div>
         <div class="timodal-footer">
             <button class="timodal-btn timodal-btn-secondary" @onclick="OnCancelClicked">Anuluj</button>
@@ -23,6 +27,9 @@
     [Inject]
     public DialogService DialogService { get; set; } = null!;
 
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; } = null!;
+
     // Parameter to control initial visibility; component is initialized hidden by default
     public bool Visible { get; set; } = false;
 
@@ -31,7 +38,11 @@
     // Current input value
     public string InputText { get; set; } = string.Empty;
 
+    // Hint text displayed in the modal
+    public string HintText { get; set; } = string.Empty;
+
     private TaskCompletionSource<string?>? _tcs;
+    private ElementReference TextareaElement;
 
     protected override void OnInitialized()
     {
@@ -45,14 +56,21 @@
     }
 
     // Show the modal (call from parent via DialogService.ShowTextInput)
-    public Task<string?> ShowAsync(string initialText = "", string? title = null)
+    public async Task<string?> ShowAsync(string initialText = "", string? title = null, string hintText = "")
     {
         InputText = initialText ?? string.Empty;
         Title = title ?? "Wpisz tekst";
+        HintText = hintText ?? string.Empty;
         Visible = true;
         _tcs = new TaskCompletionSource<string?>();
         StateHasChanged();
-        return _tcs.Task;
+
+        // Allow the DOM to update, then focus and select text
+        await Task.Delay(50);
+        await TextareaElement.FocusAsync();
+        await JSRuntime.InvokeVoidAsync("eval", "document.querySelector('.timodal-textarea').select()");
+
+        return await _tcs.Task;
     }
 
     // Hide the modal

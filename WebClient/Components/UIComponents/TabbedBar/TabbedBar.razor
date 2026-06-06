@@ -310,7 +310,7 @@
         {
             var index = contextMenuTabIndex.Value;
             var currentTitle = tabs[index].Title;
-            var newTitle = await DialogService.ShowTextInput(currentTitle, "Rename Tab");
+            var newTitle = await DialogService.ShowTextInput(currentTitle, "Rename Tab", "Wpisz nowa nazwe dla '" + currentTitle+"'");
 
             if (newTitle != null && !string.IsNullOrWhiteSpace(newTitle))
             {

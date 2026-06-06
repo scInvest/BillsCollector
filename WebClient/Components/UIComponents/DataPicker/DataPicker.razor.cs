@@ -9,13 +9,22 @@ using WebClient.Components.UIServices;
 
 namespace WebClient.Components.UIComponents.DataPicker
 {
-    public partial class DataPicker : ComponentBase
+    public partial class DataPicker : ComponentBase, IFocusableObject
     {
+        [Inject]
+        private SheetFocusMangerService FocusManager { get; set; } = null!;
+
+        public event EventHandler? Focus;
 
         [Parameter]
         public Func<DataPickerViewModel> ViewModelCallBack { get; set; }
 
         public DataPickerViewModel ViewModel => ViewModelCallBack();
+
+        protected override void OnInitialized()
+        {
+            FocusManager.Register(this);
+        }
 
         private async Task HandleFileSelected_Biedronka(InputFileChangeEventArgs e)
         {
@@ -52,6 +61,8 @@ namespace WebClient.Components.UIComponents.DataPicker
         {
             try
             {
+                Focus?.Invoke(this, EventArgs.Empty);
+
                 var files = e.GetMultipleFiles();
                 var filesToProcess = ReadFilesLazy(files);
                 var result = await ViewModel.Handle_UserInput_DataAdded(filesToProcess, fileType);
@@ -84,6 +95,10 @@ namespace WebClient.Components.UIComponents.DataPicker
 
         public TextInputModal Dialog { get; set; } = null!;
 
+        public void RemoveFocus()
+        {
+            // nic
+        }
     }
 }
 

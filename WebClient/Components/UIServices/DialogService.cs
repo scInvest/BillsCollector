@@ -58,11 +58,11 @@
         }
 
         // Show the text input modal and return entered text or null if cancelled
-        public async Task<string?> ShowTextInput(string initialText = "", string? title = null)
+        public async Task<string?> ShowTextInput(string initialText = "", string? title = null, string hintText = "")
         {
             if (_textInputComponent != null)
             {
-                return await _textInputComponent.ShowAsync(initialText, title);
+                return await _textInputComponent.ShowAsync(initialText, title, hintText);
             }
 
             return null;
