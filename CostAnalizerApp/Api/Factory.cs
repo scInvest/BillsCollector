@@ -4,6 +4,9 @@ using System.Text;
 
 namespace CostAnalizerApp.Api
 {
+    /// <summary>
+    /// Entry point
+    /// </summary>
     public class Factory
     {
 
@@ -11,7 +14,7 @@ namespace CostAnalizerApp.Api
         /// Entry point for the application logic
         /// </summary>
         /// <returns>Return Main BL object</returns>
-        public CostAnalizerApplication GetApplication()
+        public static CostAnalizerApplication GetApplication()
         {
             return new CostAnalizerApplication();
         }

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BiedronkaParser\Integrations.csproj" />
+    <ProjectReference Include="..\SharedCode\SharedCode.csproj" />
   </ItemGroup>
 
 </Project>

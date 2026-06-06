@@ -8,16 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\UIComponents\NewFolder\**" />
+    <Content Remove="Components\UIComponents\NewFolder\**" />
+    <EmbeddedResource Remove="Components\UIComponents\NewFolder\**" />
+    <None Remove="Components\UIComponents\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorDatasheet" Version="0.11.0" />
     <PackageReference Include="MudBlazor" Version="9.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CostAnalizerApp\CostAnalizerApp.csproj" />
     <ProjectReference Include="..\SharedCode\SharedCode.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Components\UIComponents\NewFolder\" />
   </ItemGroup>
 
 </Project>

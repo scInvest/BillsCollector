@@ -27,3 +27,34 @@
 .tabbed-panel .tabbed-bar {
   width: auto;
 }
+
+/* Top page header (first h1 in the component) */
+h1:first-of-type {
+  font-size: 2.4rem; /* większa czcionka dla nagłówka u góry strony */
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+/* Wiadomość pustej strony */
+.empty-message h1 {
+  font-size: 3rem; /* większa czcionka dla komunikatu "Dodaj dane by rozpocząć" */
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #1f2937; /* ciemniejszy kolor tekstu */
+}
+
+.empty-message p {
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+/* Wyśrodkowanie całego bloku .empty-message zarówno poziomo jak i pionowo */
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* pionowe wyśrodkowanie */
+  align-items: center;     /* poziome wyśrodkowanie */
+  min-height: 60vh;       /* zajmuje co najmniej 60% wysokości widoku */
+  padding: 1rem;
+  box-sizing: border-box;
+}

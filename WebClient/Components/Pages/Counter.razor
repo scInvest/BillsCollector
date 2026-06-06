@@ -16,6 +16,9 @@
 
 @rendermode InteractiveServer
 
+@using CostAnalizerApp
+@inject CostAnalizerApplication CostAnalizer
+
 <PageTitle>Counter</PageTitle>
 
 <!-- Alert component registers with DialogService to show JS alerts -->
@@ -33,19 +36,19 @@
 <div class="tabbed-row">
     <div class="tabbed-panel">
         <div class="panel-title">Analiza</div>
-        <TabbedBar OnSelectionChanged="OnSelectedIndexChanged" @ref="analiticBar" AddTabCallback="AddAnalyticViewClicked"></TabbedBar>
+        <TabbedBar OnSelectionChanged="OnSelectedIndexChanged" @ref="analiticBar" AddTabCallback="UserInput_AddAnalyticViewClicked"></TabbedBar>
     </div>
 
     <div class="tabbed-panel">
         <div class="panel-title">Dane</div>
-        <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged" @ref="dataBar" AddTabCallback="AddDataClicked"></TabbedBar>
+        <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged" @ref="dataBar" AddTabCallback="UserInput_AddDataClicked"></TabbedBar>
     </div>
 </div>
 
 @if (SelectedSheet is null)
 {
     <div class="empty-message">
-        <h1>Dodaj lub wybierz dane.</h1>
+        <h1>Dodaj dane by rozpocząć</h1>
     </div>
 }
 
@@ -92,20 +95,29 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        viewModel = new MainViewModel(() => this.dataPicker);
+        viewModel = new MainViewModel
+        (
+            () => this,
+            () => this.dataPicker,
+            () =>  CostAnalizer
+        );
+    }
+    public enum SheetGroup
+    {
+        Analitical,
+        Data
     }
 
+    public SharedCode.Result<object> AddPage(SheetGroup sheetGroup, string title)
+    {
+        Dictionary<string, object> sheets = sheetGroup == SheetGroup.Analitical ? this.dataSheetAnaliticalComponents : this.dataSheetComponents;
+        AddItemToCollection("Wszytko", sheets);
+        return SharedCode.Result<object>.Success(this);
+    }
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            // select first tab by default
-
-            var allDataSheet = AddItemToCollection("Wszytko", this.dataSheetAnaliticalComponents);
-            this.analiticBar.AddTab(allDataSheet);
-
-            var rtn = AddItemToCollection("Data", this.dataSheetComponents);
-            this.dataBar.AddTab(rtn);
         }
         base.OnAfterRender(firstRender);
     }
@@ -124,11 +136,6 @@
         this.StateHasChanged();
     }
 
-    private RenderFragment EmptyView => builder =>
-    {
-        builder.AddMarkupContent(0, "<h1>Dodaj lub wybierz dane.</h1>");
-    };
-
     private Task HandleMenuItemInvoked(string action)
     {
         LastMenuAction = action;
@@ -144,13 +151,13 @@
         return rtn;
     }
 
-    private (string Title, string Key)? AddDataClicked(int index)
+    private (string Title, string Key)? UserInput_AddDataClicked(int index)
     {
         var rtn = AddItemToCollection("Data " + index, this.dataSheetComponents);
         return rtn;
     }
 
-    private (string, string)? AddAnalyticViewClicked(int index)
+    private (string, string)? UserInput_AddAnalyticViewClicked(int index)
     {
         var rtn = AddItemToCollection("Analiza " + index, this.dataSheetAnaliticalComponents);
         return rtn;

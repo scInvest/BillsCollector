@@ -1,5 +1,7 @@
 using BlazorDatasheet.Extensions;
 using BlazorDatasheet.Services;
+using CostAnalizerApp;
+using CostAnalizerApp.Api;
 using MudBlazor.Services;
 using System.ComponentModel.Design;
 using WebClient.Components;
@@ -15,6 +17,7 @@ builder.Services.AddBlazorDatasheet();
 builder.Services.AddMudServices();
 builder.Services.AddScoped<SheetFocusMangerService>();
 builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<CostAnalizerApplication>(x => Factory.GetApplication());
 
 var app = builder.Build();
 

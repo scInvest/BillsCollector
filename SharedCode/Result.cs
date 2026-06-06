@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Collections.Concurrent;
 
 namespace SharedCode
 {
@@ -13,6 +17,66 @@ namespace SharedCode
             IsSuccess = isSuccess;
             Error = error;
         }
+
+    /// <summary>
+    /// Composite non-generic result that can aggregate multiple <see cref="Result"/> instances.
+    /// - IsSuccess is the logical OR of contained results' IsSuccess values (true if any result is success).
+    /// - Error is a joined string of all error messages. The first line contains a summary like "Errors: N".
+    /// </summary>
+    public class CompositeResult : Result
+    {
+        private readonly ConcurrentBag<Result> _results = new ConcurrentBag<Result>();
+        private readonly ConcurrentBag<string> _errors = new ConcurrentBag<string>();
+
+        public CompositeResult()
+            : base(true, null)
+        {
+        }
+
+        public void Add(Result result)
+        {
+            if (result == null) throw new ArgumentNullException(nameof(result));
+            _results.Add(result);
+            if (!string.IsNullOrEmpty(result.Error))
+            {
+                var e = result.Error!.Trim();
+                if (!string.IsNullOrEmpty(e)) _errors.Add(e);
+            }
+        }
+
+        public void AddRange(IEnumerable<Result> results)
+        {
+            if (results == null) throw new ArgumentNullException(nameof(results));
+            foreach (var r in results) Add(r);
+        }
+
+        /// <summary>
+        /// Snapshot of current results. This creates an array snapshot of the underlying bag.
+        /// </summary>
+        public IReadOnlyList<Result> Results => _results.ToArray();
+
+        [MemberNotNullWhen(false, nameof(Error))]
+        public new bool IsSuccess
+        {
+            get
+            {
+                var arr = _results.ToArray();
+                if (arr.Length == 0) return true;
+                return arr.Any(r => r.IsSuccess);
+            }
+        }
+
+        public new string? Error
+        {
+            get
+            {
+                var errors = _errors.ToArray();
+                if (errors.Length == 0) return null;
+                var header = $"Errors: {errors.Length}";
+                return string.Join(Environment.NewLine, new[] { header }.Concat(errors));
+            }
+        }
+    }
 
         public static Result Success() => new Result(true, null);
         public static Result Failure(string error) => new Result(false, error);

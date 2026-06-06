@@ -55,9 +55,13 @@ namespace WebClient.Components.UIComponents.DataPicker
                 var files = e.GetMultipleFiles();
                 var filesToProcess = ReadFilesLazy(files);
                 var result = await ViewModel.Handle_UserInput_DataAdded(filesToProcess, fileType);
-                if (result != null && !result.IsSuccess)
+                if (result == null || !result.IsSuccess)
                 {
-                    await DialogService.ShowAlert(result.Error ?? "Błąd nieznany", "Błąd importu");
+                    await DialogService.ShowAlert(result?.Error ?? "Błąd nieznany", "Błąd importu");
+                }
+                else
+                {
+                    await DialogService.ShowAlert(result.Value);
                 }
             }
             catch (Exception ex)
@@ -78,7 +82,7 @@ namespace WebClient.Components.UIComponents.DataPicker
             }
         }
 
-        public TextInputModal Dialog { get; set; }
+        public TextInputModal Dialog { get; set; } = null!;
 
     }
 }

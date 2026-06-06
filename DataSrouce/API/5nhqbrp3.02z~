@@ -24,11 +24,11 @@ namespace DataSrouce.API
         {
             switch (fileType)
             {
-                case SpendingFileType.BiedronkaJson:
+                case SpendingFileType.Biedronka:
                     BiedronkaData.Clear();
-                    return Result.Success();
+                    break;
                 default:
-                    return Result.Failure("Unsupported file type: " + fileType);
+                    throw new ArgumentException("Unsupported file type: " + fileType);
             }
         }
     }
