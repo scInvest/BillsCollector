@@ -1,5 +1,7 @@
 ﻿namespace WebClient.Components.UIServices
 {
+    using SharedCode;
+
     public class DialogService
     {
         private IAlertComponent? _alertComponent;
@@ -58,11 +60,11 @@
         }
 
         // Show the text input modal and return entered text or null if cancelled
-        public async Task<string?> ShowTextInput(string initialText = "", string? title = null, string hintText = "")
+        public async Task<string?> ShowTextInput(string initialText = "", string? title = null, string hintText = "", Func<string, Result>? validation = null)
         {
             if (_textInputComponent != null)
             {
-                return await _textInputComponent.ShowAsync(initialText, title, hintText);
+                return await _textInputComponent.ShowAsync(initialText, title, hintText, validation);
             }
 
             return null;

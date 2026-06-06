@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components
 @using WebClient.Components.UIServices
+@using SharedCode
 @implements ITextInputComponent
 @implements IDisposable
 
@@ -14,7 +15,11 @@
             {
                 <div class="timodal-hint">@HintText</div>
             }
-            <textarea class="timodal-textarea" @ref="TextareaElement" @bind="InputText" placeholder="Wpisz tekst..."></textarea>
+            @if (!string.IsNullOrEmpty(ValidationError))
+            {
+                <div class="timodal-error">@ValidationError</div>
+            }
+            <textarea class="timodal-textarea@(!string.IsNullOrEmpty(ValidationError) ? " error" : "")" @ref="TextareaElement" @bind="InputText" placeholder="Wpisz tekst..."></textarea>
         </div>
         <div class="timodal-footer">
             <button class="timodal-btn timodal-btn-secondary" @onclick="OnCancelClicked">Anuluj</button>
@@ -41,8 +46,12 @@
     // Hint text displayed in the modal
     public string HintText { get; set; } = string.Empty;
 
+    // Validation error message
+    public string? ValidationError { get; set; } = null;
+
     private TaskCompletionSource<string?>? _tcs;
     private ElementReference TextareaElement;
+    private Func<string, Result>? _validationFunc;
 
     protected override void OnInitialized()
     {
@@ -56,11 +65,13 @@
     }
 
     // Show the modal (call from parent via DialogService.ShowTextInput)
-    public async Task<string?> ShowAsync(string initialText = "", string? title = null, string hintText = "")
+    public async Task<string?> ShowAsync(string initialText = "", string? title = null, string hintText = "", Func<string, Result>? validation = null)
     {
         InputText = initialText ?? string.Empty;
         Title = title ?? "Wpisz tekst";
         HintText = hintText ?? string.Empty;
+        ValidationError = null;
+        _validationFunc = validation;
         Visible = true;
         _tcs = new TaskCompletionSource<string?>();
         StateHasChanged();
@@ -82,6 +93,19 @@
 
     private async Task OnOkClicked()
     {
+        // If validation function is provided, validate the input
+        if (_validationFunc != null)
+        {
+            var validationResult = _validationFunc(InputText);
+            if (!validationResult.IsSuccess)
+            {
+                ValidationError = validationResult.Error;
+                StateHasChanged();
+                return;
+            }
+        }
+
+        // Validation passed, complete the task
         var tcs = _tcs;
         if (tcs != null && !tcs.Task.IsCompleted)
         {
