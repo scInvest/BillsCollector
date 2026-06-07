@@ -1,7 +1,9 @@
 .tabbed-row {
-  display: flex;
-  gap: 0; /* panels touch */
-  align-items: flex-start;
+    display: flex;
+    gap: 0; /* panels touch */
+    align-items: flex-start;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2px;
 }
 
 /* Panels take only the space they need */

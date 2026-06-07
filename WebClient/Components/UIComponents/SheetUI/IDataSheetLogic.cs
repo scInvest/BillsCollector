@@ -6,7 +6,6 @@ namespace WebClient.Components.UIComponents.SheetUI
     /// </summary>
     public interface IDataSheetLogic
     {
-        public void BillSummaryTable_CreateEmpty();
         public string[] Headers { get; set; }
         public string[] BillSummaryTable_Headers { get; }
     }

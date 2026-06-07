@@ -40,12 +40,18 @@
 <div class="tabbed-row" style="@(((analiticBar != null && analiticBar.Tabs.Count > 0) || (dataBar != null && dataBar.Tabs.Count > 0)) ? "" : "display:none")">
     <div class="tabbed-panel" )">
         <div class="panel-title">Analiza</div>
-        <TabbedBar OnSelectionChanged="OnSelectedIndexChanged" @ref="analiticBar" AddTabCallback="UserInput_AddAnalyticViewClicked"></TabbedBar>
+        <TabbedBar OnSelectionChanged="OnSelectedIndexChanged"
+                   BeforeDeleteCallback="(x) => this.ViewModel.UserInput_SheetDeleted(x)"
+                   @ref="analiticBar"
+                   AddTabCallback="UserInput_AddAnalyticViewClicked"></TabbedBar>
     </div>
 
     <div class="tabbed-panel">
         <div class="panel-title">Dane</div>
-        <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged" @ref="dataBar" AddTabCallback="UserInput_AddDataClicked"></TabbedBar>
+        <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged"
+                   BeforeDeleteCallback="(x) => this.ViewModel.UserInput_SheetDeleted(x)"
+                   @ref="dataBar"
+                   AddTabCallback="UserInput_AddDataClicked"></TabbedBar>
     </div>
 </div>
 

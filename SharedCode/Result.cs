@@ -10,6 +10,10 @@ namespace SharedCode
     {
         [MemberNotNullWhen(false, nameof(Error))]
         public bool IsSuccess { get; }
+
+        [MemberNotNullWhen(true, nameof(Error))]
+        public bool IsFailed => !IsSuccess;
+
         public string? Error { get; }
 
         protected Result(bool isSuccess, string? error)
@@ -18,11 +22,15 @@ namespace SharedCode
             Error = error;
         }
 
-    /// <summary>
-    /// Composite non-generic result that can aggregate multiple <see cref="Result"/> instances.
-    /// - IsSuccess is the logical OR of contained results' IsSuccess values (true if any result is success).
-    /// - Error is a joined string of all error messages. The first line contains a summary like "Errors: N".
-    /// </summary>
+        /// <summary>
+        /// Composite non-generic result that can aggregate multiple <see cref="Result"/> instances.
+        /// - IsSuccess is the logical OR of contained results' IsSuccess values (true if any result is success).
+        /// - Error is a joined string of all error messages. The first line contains a summary like "Errors: N".
+        /// </summary>
+        public static Result Success() => new Result(true, null);
+        public static Result Failure(string error) => new Result(false, error);
+    }
+
     public class CompositeResult : Result
     {
         private readonly ConcurrentBag<Result> _results = new ConcurrentBag<Result>();
@@ -78,16 +86,17 @@ namespace SharedCode
         }
     }
 
-        public static Result Success() => new Result(true, null);
-        public static Result Failure(string error) => new Result(false, error);
-    }
-
     public class Result<T> : Result
     {
         private readonly T? _value;
 
         [MemberNotNullWhen(true, nameof(Value))]
         public new bool IsSuccess => base.IsSuccess;
+
+        [MemberNotNullWhen(true, nameof(Error))]
+        [MemberNotNullWhen(false, nameof(Value))]
+        public new bool IsFailed => !base.IsSuccess;
+
 
         public T? Value
         {
@@ -97,6 +106,14 @@ namespace SharedCode
             }
         }
 
+        public Result<T2> ToOtherError<T2>()
+        {
+            if (this.IsSuccess)
+            {
+                throw new InvalidOperationException("Result must be an error");
+            }
+            return Result<T2>.Failure(Error ?? "Unknown error");
+        }
         public Result(T value)
             : base(true, null)
         {

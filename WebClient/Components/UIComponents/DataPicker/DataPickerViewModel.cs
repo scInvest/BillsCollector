@@ -46,7 +46,12 @@ namespace WebClient.Components.UIComponents.DataPicker
                     UpdateType = UpdateType.Replace,
                     SpendingFileType = fileType
                 };
-                CostAnalizerApplication.BeginUpdate(updateOptions);
+                Result<SpendingDataBatchUpdate> batchUpdate = CostAnalizerApplication.BeginUpdate(updateOptions);
+                
+                if (batchUpdate.IsFailed)
+                {
+                    return batchUpdate.ToOtherError<string>();
+                }
 
                 await foreach ((Stream? stream, string? fileName) in streams)
                 {
@@ -57,7 +62,7 @@ namespace WebClient.Components.UIComponents.DataPicker
                         conter.Add(true);
 
                         ISpendingCase file = Intergrations.ReadBiedronkaJson(content);
-                        CostAnalizerApplication.AddData(fileName, file);
+                        batchUpdate.Value.AddData(fileName, file);
                     }
                     catch (Exception ex)
                     {
@@ -69,7 +74,7 @@ namespace WebClient.Components.UIComponents.DataPicker
                     }
                 }
 
-                CostAnalizerApplication.EndUpdate();
+                CostAnalizerApplication.EndUpdate(batchUpdate.Value);
 
             }
             catch (Exception ex)
@@ -89,7 +94,7 @@ namespace WebClient.Components.UIComponents.DataPicker
             }
 
             UserInputAfterDataAdded?.Invoke(fileType);
-            return SharedCode.Result<string>.Success("Pomylślnie wczytano "+ conter.Count + " plików");
+            return SharedCode.Result<string>.Success("Pomylślnie wczytano " + conter.Count + " plików");
         }
     }
 }

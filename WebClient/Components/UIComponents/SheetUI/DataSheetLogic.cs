@@ -6,7 +6,7 @@ using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents.SheetUI
 {
-    public class DataSheetLogicViewModel : ViewModelBase, IDataSheetLogic
+    public class DataSheetLogicViewModel : ViewModelBase
     {
         private readonly Datasheet datasheet;
         private readonly Sheet _sheet;
@@ -34,16 +34,29 @@ namespace WebClient.Components.UIComponents.SheetUI
             }
         }
 
-        public void BillSummaryTable_CreateEmpty()
+        private IDataSheetLogic? _dataSheetLogic;
+        public IDataSheetLogic? DataSheetLogic
         {
-            this.Headers = BillSummaryTable_Headers;
+            get => _dataSheetLogic;
+            set
+            {
+                if (_dataSheetLogic != value)
+                {
+                    this.BeginUpdate();
+                    this.Headers = value!.Headers;
+                    _dataSheetLogic = value;
+                    OnPropertyChanged();
+                    Refresh();
+                    this.EndUpdate();
+                }
+            }
         }
 
-        public string[] BillSummaryTable_Headers => new string[]
-        {
-            "",  "Rodzaj", "Źródło", "Data", "Nazwa(oryginalna)", "Nazwa",
-            "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
-            "Kategoria", "Kategoria", "Kategoria", "Tagi", "ID", "Metadane",
-        };
+        //public string[] BillSummaryTable_Headers => new string[]
+        //{
+        //    "",  "Rodzaj", "Źródło", "Data", "Nazwa(oryginalna)", "Nazwa",
+        //    "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
+        //    "Kategoria", "Kategoria", "Kategoria", "Tagi", "ID", "Metadane",
+        //};
     }
 }

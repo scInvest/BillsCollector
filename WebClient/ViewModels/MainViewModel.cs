@@ -1,3 +1,4 @@
+using BlazorDatasheet.Core.Data;
 using CostAnalizerApp;
 using SharedCode;
 using System.Diagnostics.Metrics;
@@ -17,9 +18,10 @@ namespace WebClient.ViewModels
         {
             if (template != null)
             {
-                this.spendingFileType = template.spendingFileType;
+                this.SpendingFileType = template.SpendingFileType;
                 this.Title = template.Title;
                 this.Id = template.Id;
+                this.DataSheet = dataSheet;
             }
 
             this.DataSheet = dataSheet;
@@ -28,18 +30,20 @@ namespace WebClient.ViewModels
 
     class ExistingSheets
     {
-        public SharedCode.SpendingFileType spendingFileType { get; set; }
+        public SharedCode.SpendingFileType? SpendingFileType { get; set; }
         public string Title { get; set; }
         public string Id { get; set; }
+        public Counter.SheetGroup Group { get; set; }
     }
 
     public class MainViewModel : ViewModelBase
     {
         private Dictionary<string, ExistingSheets> sheetPendingToCreate = new();
         private List<ExistingSheetsCreated> sheets = new List<ExistingSheetsCreated>();
+        private Func<CostAnalizerApplication> costAnalizerApp;
 
         public DataPickerViewModel DataPickerViewModel { get; set; }
-        public Func<CostAnalizerApplication> CostAnalizerApp { get; }
+        public CostAnalizerApplication CostAnalizerApp => costAnalizerApp();
         public Counter MainPage => (base.Component as Counter)!;
 
         public MainViewModel(
@@ -51,30 +55,55 @@ namespace WebClient.ViewModels
             DataPickerViewModel = new DataPickerViewModel(getDatPicker, mainApp);
             DataPickerViewModel.UserInputBeforeDataAdded += DataPickerViewModel_UserInputBeforeDataAdded;
             DataPickerViewModel.UserInputAfterDataAdded += DataPickerViewModel_UserInputAfterDataAdded;
-            CostAnalizerApp = mainApp;
+            costAnalizerApp = mainApp;
             this.MainPage.BeforeSheetAdded += MainPage_BeforeSheetAdded;
             this.MainPage.SheetAdded += MainPage_SheetAdded; ;
         }
 
         private void DataPickerViewModel_UserInputAfterDataAdded(SharedCode.SpendingFileType type)
         {
+            if (this.sheets.Count == 0 && this.sheetPendingToCreate.Count == 0)
+            {
+                var titleAnalitic = "Wszystko";
+                var sheetAnaliticId = Guid.NewGuid().ToString();
+                var sheetAnaliticKey = new ExistingSheets
+                {
+                    Id = sheetAnaliticId,
+                    SpendingFileType = null,
+                    Title = titleAnalitic,
+                    Group = Counter.SheetGroup.Analitical
+                };
+                sheetPendingToCreate.Add(sheetAnaliticId, sheetAnaliticKey);
+                MainPage.AddSheet(Counter.SheetGroup.Analitical, titleAnalitic, sheetAnaliticId);
+            }
+
             var id = Guid.NewGuid().ToString();
             var title = type.ToString();
-            var sheetKey = new ExistingSheets { Id = id, spendingFileType = type, Title = title };
+            var sheetKey = new ExistingSheets
+            {
+                Id = id,
+                SpendingFileType = type,
+                Title = title,
+                Group = Counter.SheetGroup.Data
+            };
             sheetPendingToCreate.Add(id, sheetKey);
 
-            if (this.sheets.Any(X => X.spendingFileType == type))
+            RemoveExisting(type);
+            MainPage.AddSheet(Counter.SheetGroup.Data, title, id);
+
+            base.Refresh();
+        }
+
+        private void RemoveExisting(SpendingFileType type)
+        {
+            if (this.sheets.Any(X => X.SpendingFileType == type))
             {
-                var items = this.sheets.Where(X => X.spendingFileType == type);
+                var items = this.sheets.Where(X => X.SpendingFileType == type);
                 foreach (var item in items)
                 {
                     this.MainPage.RemoveSheet(item.Id);
                 }
             }
-
-            MainPage.AddSheet(Counter.SheetGroup.Data, title, id);
-
-            base.Refresh();
         }
 
         private void MainPage_SheetAdded(string id, DataSheetComponent sheetComponent)
@@ -110,6 +139,13 @@ namespace WebClient.ViewModels
 
         public Result UserInput_SheetDeleted((string Key, string Title) sheetData)
         {
+            var fileType = sheets.Find(x => x.Id == sheetData.Key).SpendingFileType;
+
+            sheets.RemoveAll(x => x.Id == sheetData.Key);
+            if (fileType != null)
+            {
+                this.CostAnalizerApp.RemoveData((SpendingFileType)fileType);
+            }
             return Result.Success();
         }
     }
