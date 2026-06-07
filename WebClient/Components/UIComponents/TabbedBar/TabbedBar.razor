@@ -34,7 +34,7 @@
             <button class="context-menu-item" @onclick="() => { TriggerFocus(); Rename(); HideContextMenu(); }">
                 <span>✏️</span> Rename
             </button>
-            <button class="context-menu-item context-menu-item-danger" @onclick="() => { TriggerFocus(); Delete(); HideContextMenu(); }">
+            <button class="context-menu-item context-menu-item-danger" @onclick="async () => { TriggerFocus(); await Delete(); HideContextMenu(); }">
                 <span>🗑️</span> Delete
             </button>
         </div>
@@ -98,6 +98,13 @@
     /// </summary>
     [Parameter]
     public EventCallback<(int From, int To)> OnOrderChanged { get; set; }
+
+    /// <summary>
+    /// Callback invoked before a tab is deleted. Receives the tab key (ID) and title (name) as input.
+    /// Should return a Result indicating success or failure. If failure is returned, the deletion is cancelled.
+    /// </summary>
+    [Parameter]
+    public Func<(string Key, string Title), Result>? BeforeDeleteCallback { get; set; }
 
     protected override void OnInitialized()
     {
@@ -324,7 +331,6 @@
 
     private Result ValidateTabName(string name)
     {
-        return Result.Failure("Nazwa nie może być pusta");
 
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -344,12 +350,32 @@
         return Result.Success();
     }
 
-    private void Delete()
+    private async Task Delete()
     {
         if (contextMenuTabIndex.HasValue && contextMenuTabIndex.Value >= 0 && contextMenuTabIndex.Value < tabs.Count)
         {
-            var key = tabs[contextMenuTabIndex.Value].Key;
-            Remove(key);
+            var index = contextMenuTabIndex.Value;
+            var tabTitle = tabs[index].Title;
+            var tabKey = tabs[index].Key;
+            var confirmed = await DialogService.Confirm($"Czy na pewno chcesz usunąć zakładkę '{tabTitle}'?", "Potwierdzenie usunięcia");
+
+            if (confirmed)
+            {
+                // Call BeforeDeleteCallback if provided
+                if (BeforeDeleteCallback != null)
+                {
+                    var result = BeforeDeleteCallback((tabKey, tabTitle));
+                    if (!result.IsSuccess)
+                    {
+                        // Deletion cancelled by callback
+                        await DialogService.ShowAlert(result.Error ?? "Nie można usunąć tej zakładki.", "Błąd");
+                        return;
+                    }
+                }
+
+                var key = tabs[index].Key;
+                Remove(key);
+            }
         }
     }
 }

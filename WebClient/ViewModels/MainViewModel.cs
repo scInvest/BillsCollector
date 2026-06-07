@@ -1,4 +1,5 @@
 using CostAnalizerApp;
+using SharedCode;
 using System.Diagnostics.Metrics;
 using WebClient.Components.Pages;
 using WebClient.Components.UIComponents.DataPicker;
@@ -105,6 +106,11 @@ namespace WebClient.ViewModels
 
         public void UserInput_AddDataClicked()
         {
+        }
+
+        public Result UserInput_SheetDeleted((string Key, string Title) sheetData)
+        {
+            return Result.Success();
         }
     }
 }
