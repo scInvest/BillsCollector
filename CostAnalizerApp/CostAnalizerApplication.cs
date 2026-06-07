@@ -23,18 +23,20 @@ namespace CostAnalizerApp
         public SessionData Data { get; } = new SessionData();
 
         // Simple single-update guard
-        private bool _updateInProgress;
-        private UpdateType? _currentUpdateType;
-        private SpendingFileType? _currentSpendingFileType;
+        private UpdateOptions? _currentUpdateOptions;
 
-        public bool IsUpdateInProgress => _updateInProgress;
-        public UpdateType? CurrentUpdateType => _currentUpdateType;
-        public SpendingFileType? CurrentSpendingFileType => _currentSpendingFileType;
+        public bool IsUpdateInProgress => _currentUpdateOptions != null;
+        public UpdateOptions? CurrentUpdateOptions => _currentUpdateOptions;
 
         public void AddData(string fileName, ISpendingCase spendingCase)
         {
+
         }
 
+        public void RemoveData(SpendingFileType type)
+        {
+            Data.Clear(type);
+        }
 
         // Begin an update only if no other update is in progress. Saves update options and file type.
         public Result BeginUpdate(UpdateOptions options)
@@ -44,14 +46,12 @@ namespace CostAnalizerApp
                 return Result.Failure("Update options cannot be null");
             }
 
-            if (_updateInProgress)
+            if (_currentUpdateOptions != null)
             {
                 return Result.Failure("An update is already in progress");
             }
 
-            _updateInProgress = true;
-            _currentUpdateType = options.UpdateType;
-            _currentSpendingFileType = options.SpendingFileType;
+            _currentUpdateOptions = options;
 
             return Result.Success();
         }
@@ -59,14 +59,12 @@ namespace CostAnalizerApp
         // End the current update. Returns failure if no update was active.
         public Result EndUpdate()
         {
-            if (!_updateInProgress)
+            if (_currentUpdateOptions == null)
             {
                 return Result.Failure("No update in progress");
             }
 
-            _updateInProgress = false;
-            _currentUpdateType = null;
-            _currentSpendingFileType = null;
+            _currentUpdateOptions = null;
 
             return Result.Success();
         }
