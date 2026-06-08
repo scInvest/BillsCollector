@@ -23,8 +23,7 @@ namespace CostAnalizerApp
     {
         public UpdateOptions Options { get; }
 
-        private readonly Dictionary<string, ISpendingCase> _stagedCases
-            = new Dictionary<string, ISpendingCase>();
+        private readonly Dictionary<string, ISpendingCase> _stagedCases = new Dictionary<string, ISpendingCase>();
 
         public SpendingDataBatchUpdate(UpdateOptions options)
         {
@@ -43,23 +42,7 @@ namespace CostAnalizerApp
         public IReadOnlyDictionary<string, ISpendingCase> StagedCases => _stagedCases;
     }
 
-    public static class SpendingDataBatchUpdateFactory
-    {
-        public static Result<SpendingDataBatchUpdate> ValidateAndCreate(SpendingDataBatchUpdate? activeBatch, UpdateOptions? options)
-        {
-            if (options == null)
-            {
-                return Result<SpendingDataBatchUpdate>.Failure("Update options cannot be null");
-            }
 
-            if (activeBatch != null)
-            {
-                return Result<SpendingDataBatchUpdate>.Failure("An update is already in progress");
-            }
-
-            return Result<SpendingDataBatchUpdate>.Success(new SpendingDataBatchUpdate(options));
-        }
-    }
     public class CostAnalizerApplication
     {
         public SessionData Data { get; } = new SessionData();
@@ -106,14 +89,49 @@ namespace CostAnalizerApp
         // NOTE: commit logic intentionally not implemented here.
         public Result EndUpdate(SpendingDataBatchUpdate batch)
         {
-            if (batch == null) return Result.Failure("batch cannot be null");
-            if (_activeBatch == null) return Result.Failure("No update in progress");
-            if (!ReferenceEquals(batch, _activeBatch)) return Result.Failure("Batch does not match the active update");
+            if (batch == null)
+            {
+                return Result.Failure("batch cannot be null");
+            }
+            if (_activeBatch == null)
+            {
+                return Result.Failure("No update in progress");
+            }
+            if (!ReferenceEquals(batch, _activeBatch))
+            {
+                return Result.Failure("Batch does not match the active update");
+            }
+            // Commit staged cases according to the update options
+            try
+            {
+                var options = batch.Options ?? throw new ArgumentNullException(nameof(batch.Options));
 
-            // Detach active batch (no commit implemented)
-            _activeBatch = null;
+                switch (options.UpdateType)
+                {
+                    case UpdateType.Replace:
+                        // Replace means clear existing data for the file type and add staged cases
+                        var collection = this.Data.GetData(options.SpendingFileType);
+                        collection.Clear();
 
-            return Result.Failure("EndUpdate not implemented");
+                        foreach (var kv in batch.StagedCases)
+                        {
+                            collection[kv.Key] = kv.Value;
+                        }
+                        break;
+                    default:
+                        return Result.Failure($"Unsupported update type: {options.UpdateType}");
+                }
+
+                // Detach active batch after successful commit
+                _activeBatch = null;
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                // Detach active batch on error to avoid leaving stale state
+                _activeBatch = null;
+                return Result.Failure(ex.Message);
+            }
         }
 
         public void Clear(SpendingFileType fileType)

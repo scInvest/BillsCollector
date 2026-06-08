@@ -11,5 +11,7 @@ namespace Integrations.Biedronka
         public ISpendingCase? Parent { get; set; }
 
         public IReadOnlyList<ISpendingCase> Childs { get; set; }
+
+
     }
 }

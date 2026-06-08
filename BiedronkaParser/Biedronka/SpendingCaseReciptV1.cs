@@ -101,7 +101,8 @@ namespace Integrations.Biedronka
 
         }
         public DateTime Date { get; }
-        public string UserFriendlyName => TagsConsts.Biedronka + " " + Date.ToString("yyyy-MM-dd");
+        // Include time with seconds in the user friendly name
+        public string UserFriendlyName => TagsConsts.Biedronka + " " + Date.ToString("yyyy-MM-dd HH:mm:ss");
         public string Name => TagsConsts.Biedronka;
         public ReceiptDto Receipt { get; }
         public ISpendingTags Tags { get; }

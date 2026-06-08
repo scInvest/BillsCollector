@@ -93,7 +93,6 @@ namespace SharedCode
         [MemberNotNullWhen(true, nameof(Value))]
         public new bool IsSuccess => base.IsSuccess;
 
-        [MemberNotNullWhen(true, nameof(Error))]
         [MemberNotNullWhen(false, nameof(Value))]
         public new bool IsFailed => !base.IsSuccess;
 

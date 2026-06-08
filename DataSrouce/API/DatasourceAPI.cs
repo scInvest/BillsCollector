@@ -19,7 +19,16 @@ namespace DataSrouce.API
     public class SessionData
     {
         public DataCollection BiedronkaData { get; set; } = new DataCollection();
-
+        public DataCollection GetData(SpendingFileType fileType)
+        {
+            switch (fileType)
+            {
+                case SpendingFileType.BiedronkaJson:
+                    return BiedronkaData;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
         public Result Clear(SpendingFileType fileType)
         {
             switch (fileType)

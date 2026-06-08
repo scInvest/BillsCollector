@@ -5,10 +5,12 @@
 @using WebClient.Components.UIComponents.DataPicker
 @using WebClient.Components.UIServices
 
+
 @inject SheetFocusMangerService SheetFocusManger
 @inject IJSRuntime JS
 
 <div class="ribbon">
+    <DatasheetToolbar></DatasheetToolbar>
 <ExcelFontColorPicker @ref="colorPickerFont" Context="selectedColor" SelectedColorChanged="HandleForeGroundColorChange">
     <MainIcon>
         <div class="font-icon-wrapper">

@@ -6,13 +6,13 @@ using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents.SheetUI
 {
-    public class DataSheetLogicViewModel : ViewModelBase
+    public class DataSheetViewModel : ViewModelBase
     {
         private readonly Datasheet datasheet;
         private readonly Sheet _sheet;
 
         public Sheet SheetData => _sheet;
-        public DataSheetLogicViewModel(Func<ComponentBase> getComponent, Datasheet datasheet, Sheet sheet)
+        public DataSheetViewModel(Func<ComponentBase> getComponent, Datasheet datasheet, Sheet sheet)
             : base(getComponent)
         {   
             this.datasheet = datasheet;
@@ -45,18 +45,12 @@ namespace WebClient.Components.UIComponents.SheetUI
                     this.BeginUpdate();
                     this.Headers = value!.Headers;
                     _dataSheetLogic = value;
+                    value.Init(this, datasheet, _sheet);
                     OnPropertyChanged();
                     Refresh();
                     this.EndUpdate();
                 }
             }
         }
-
-        //public string[] BillSummaryTable_Headers => new string[]
-        //{
-        //    "",  "Rodzaj", "Źródło", "Data", "Nazwa(oryginalna)", "Nazwa",
-        //    "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
-        //    "Kategoria", "Kategoria", "Kategoria", "Tagi", "ID", "Metadane",
-        //};
     }
 }

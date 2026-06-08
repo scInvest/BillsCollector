@@ -22,6 +22,7 @@ namespace WebClient.ViewModels
                 this.Title = template.Title;
                 this.Id = template.Id;
                 this.DataSheet = dataSheet;
+                this.Logic = template.Logic;
             }
 
             this.DataSheet = dataSheet;
@@ -34,6 +35,7 @@ namespace WebClient.ViewModels
         public string Title { get; set; }
         public string Id { get; set; }
         public Counter.SheetGroup Group { get; set; }
+        public IDataSheetLogic Logic { get; set; }
     }
 
     public class MainViewModel : ViewModelBase
@@ -71,7 +73,8 @@ namespace WebClient.ViewModels
                     Id = sheetAnaliticId,
                     SpendingFileType = null,
                     Title = titleAnalitic,
-                    Group = Counter.SheetGroup.Analitical
+                    Group = Counter.SheetGroup.Analitical,
+                    Logic = new ShopProductsDataSheetLogic(type, this.CostAnalizerApp)
                 };
                 sheetPendingToCreate.Add(sheetAnaliticId, sheetAnaliticKey);
                 MainPage.AddSheet(Counter.SheetGroup.Analitical, titleAnalitic, sheetAnaliticId);
@@ -84,7 +87,8 @@ namespace WebClient.ViewModels
                 Id = id,
                 SpendingFileType = type,
                 Title = title,
-                Group = Counter.SheetGroup.Data
+                Group = Counter.SheetGroup.Data,
+                                    Logic = new ShopProductsDataSheetLogic(type, this.CostAnalizerApp)
             };
             sheetPendingToCreate.Add(id, sheetKey);
 
@@ -113,6 +117,7 @@ namespace WebClient.ViewModels
                 var toBeAdded = sheetPendingToCreate[id];
                 sheetPendingToCreate.Remove(id);
                 var sheet = new ExistingSheetsCreated(toBeAdded, sheetComponent);
+                sheetComponent.ViewModel.DataSheetLogic = toBeAdded.Logic;
                 this.sheets.Add(sheet);
             }
 
@@ -146,6 +151,7 @@ namespace WebClient.ViewModels
             {
                 this.CostAnalizerApp.RemoveData((SpendingFileType)fileType);
             }
+            this.Refresh();
             return Result.Success();
         }
     }
