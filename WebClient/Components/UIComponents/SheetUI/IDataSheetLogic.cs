@@ -128,8 +128,8 @@ namespace WebClient.Components.UIComponents.SheetUI
                 if (node.Node.Childs != null && node.Node.Childs.Count > 0)
                 {
                     // parent node: put aggregated total only (rounded)
-                    sheet.Cells.SetValue(row, 4, new CellValue(Math.Round(summary?.Total ?? 0.0, 2)));
-                    sheet.Cells.SetType(row, 4, "N2");
+                    sheet.Cells.SetValue(row, 4, new CellValue(Math.Round((decimal)(summary?.Total ?? 0.0), 2)));
+                    sheet.Cells.SetType(row, 4, "C2");
 
                     // leave individual fields empty
                     sheet.Cells.SetValue(row, 5, new CellValue(string.Empty));
@@ -157,12 +157,12 @@ namespace WebClient.Components.UIComponents.SheetUI
                 {
                     // leaf/child: put individual amounts (raw values); formatting via cell type
                     sheet.Cells.SetValue(row, 4, new CellValue(string.Empty));
-                    sheet.Cells.SetValue(row, 5, new CellValue(Math.Round(summary?.Cost ?? 0.0, 2)));
-                    sheet.Cells.SetType(row, 5, "N2");
-                    sheet.Cells.SetValue(row, 6, new CellValue(Math.Round(summary?.Discount ?? 0.0, 2)));
-                    sheet.Cells.SetType(row, 6, "N2");
-                    sheet.Cells.SetValue(row, 7, new CellValue(Math.Round(summary?.Total ?? 0.0, 2)));
-                    sheet.Cells.SetType(row, 7, "N2");
+                    sheet.Cells.SetValue(row, 5, new CellValue(Math.Round((decimal)(summary?.Cost ?? 0.0), 2)));
+                    sheet.Cells.SetType(row, 5, "C2");
+                    sheet.Cells.SetValue(row, 6, new CellValue(Math.Round((decimal)(summary?.Discount ?? 0.0), 2)));
+                    sheet.Cells.SetType(row, 6, "C2");
+                    sheet.Cells.SetValue(row, 7, new CellValue(Math.Round((decimal)(summary?.Total ?? 0.0), 2)));
+                    sheet.Cells.SetType(row, 7, "C2");
                 }
 
                 // Quantity and unit
@@ -171,8 +171,8 @@ namespace WebClient.Components.UIComponents.SheetUI
                     var qty = summary?.Quantity;
                         if (qty != null)
                         {
-                            sheet.Cells.SetValue(row, 8, new CellValue(Math.Round(qty.Amount, 2)));
-                            sheet.Cells.SetType(row, 8, "N2");
+                            sheet.Cells.SetValue(row, 8, new CellValue(Math.Round((decimal)qty.Amount, 2)));
+                            sheet.Cells.SetType(row, 8, "C2");
                             sheet.Cells.SetValue(row, 9, new CellValue(qty.Unit ?? string.Empty));
                         }
                     else
@@ -230,7 +230,7 @@ namespace WebClient.Components.UIComponents.SheetUI
                     var colLetter = ColIndexToLetter(col);
                     // use ROUND around SUM so the formula result is rounded to 2 decimal places
                     var formula = $"=SUM({colLetter}{firstDataExcelRow}:{colLetter}{lastDataExcelRow})";
-                    sheet.Cells.SetType(0, col, "N2");
+                    sheet.Cells.SetType(0, col, "C2");
                     sheet.Cells.SetFormula(0, col, formula);
                 }
 
