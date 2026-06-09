@@ -1,0 +1,70 @@
+@using Microsoft.JSInterop
+@implements IDisposable
+@inject IJSRuntime JS
+
+<div id="@ContainerId" style="@Style"></div>
+
+<script>
+    window.univerEnsureCreated = (containerId, workbookName) => {
+        const { createUniver } = window.UniverPresets;
+        const { LocaleType, mergeLocales } = window.UniverCore;
+        const { UniverSheetsCorePreset } = window.UniverPresetSheetsCore;
+
+        if (!createUniver || !LocaleType || !mergeLocales || !UniverSheetsCorePreset || !window.UniverPresetSheetsCoreEnUS) {
+            console.error('UniverJS scripts not loaded');
+            return;
+        }
+
+        const { univerAPI } = createUniver({
+            locale: LocaleType.EN_US,
+            locales: {
+                [LocaleType.EN_US]: mergeLocales(
+                    window.UniverPresetSheetsCoreEnUS
+                ),
+            },
+            presets: [
+                UniverSheetsCorePreset({
+                    container: containerId
+                }),
+            ],
+        });
+
+        univerAPI.createWorkbook({
+            name: workbookName || 'Mój arkusz'
+        });
+
+        window.__univerApi = univerAPI;
+    };
+
+    window.univerDispose = (containerId) => {
+        try {
+            // best-effort cleanup; Univer UMD doesn't guarantee a stable dispose API
+            if (window.__univerApi && typeof window.__univerApi.dispose === 'function') {
+                window.__univerApi.dispose();
+            }
+        } catch { }
+
+        window.__univerApi = null;
+        const el = document.getElementById(containerId);
+        if (el) el.innerHTML = '';
+    };
+</script>
+
+@code {
+    [Parameter] public string ContainerId { get; set; } = $"univer-{Guid.NewGuid():N}";
+    [Parameter] public string Style { get; set; } = "height: 800px; width: 100%;";
+    [Parameter] public string WorkbookName { get; set; } = "Mój arkusz";
+
+    public void Dispose()
+    {
+        _ = JS.InvokeVoidAsync("univerDispose", ContainerId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("univerEnsureCreated", ContainerId, WorkbookName);
+        }
+    }
+}
