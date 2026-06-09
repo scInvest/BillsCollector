@@ -1,8 +1,75 @@
 @page "/testing"
 @using WebClient.ViewModels
+@inject IJSRuntime JS
+@implements IDisposable
+
+@rendermode InteractiveServer
 
 <PageTitle>Testing</PageTitle>
 
 <h1>Testy</h1>
 
 <p>Strona testowa podobna do Counter.</p>
+
+<div id="univer-app" style="height: 800px; width: 100%;"></div>
+
+<script>
+    window.univerEnsureCreated = (containerId) => {
+        const { createUniver } = window.UniverPresets;
+        const { LocaleType, mergeLocales } = window.UniverCore;
+        const { UniverSheetsCorePreset } = window.UniverPresetSheetsCore;
+
+        if (!createUniver || !LocaleType || !mergeLocales || !UniverSheetsCorePreset || !window.UniverPresetSheetsCoreEnUS) {
+            console.error('UniverJS scripts not loaded');
+            return;
+        }
+
+        const { univerAPI } = createUniver({
+            locale: LocaleType.EN_US,
+            locales: {
+                [LocaleType.EN_US]: mergeLocales(
+                    window.UniverPresetSheetsCoreEnUS
+                ),
+            },
+            presets: [
+                UniverSheetsCorePreset({
+                    container: containerId
+                }),
+            ],
+        });
+
+        univerAPI.createWorkbook({
+            name: 'Mój arkusz'
+        });
+
+        window.__univerApi = univerAPI;
+    };
+
+    window.univerDispose = (containerId) => {
+        try {
+            // best-effort cleanup; Univer UMD doesn't guarantee a stable dispose API
+            if (window.__univerApi && typeof window.__univerApi.dispose === 'function') {
+                window.__univerApi.dispose();
+            }
+        } catch { }
+
+        window.__univerApi = null;
+        const el = document.getElementById(containerId);
+        if (el) el.innerHTML = '';
+    };
+</script>
+
+@code {
+    public void Dispose()
+    {
+        _ = JS.InvokeVoidAsync("univerDispose", "univer-app");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("univerEnsureCreated", "univer-app");
+        }
+    }
+}
