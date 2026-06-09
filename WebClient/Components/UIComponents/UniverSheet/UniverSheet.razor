@@ -10,17 +10,20 @@
         const { LocaleType, mergeLocales } = window.UniverCore;
         const { UniverSheetsCorePreset } = window.UniverPresetSheetsCore;
 
-        if (!createUniver || !LocaleType || !mergeLocales || !UniverSheetsCorePreset || !window.UniverPresetSheetsCoreEnUS) {
+        const localesToMerge = [];
+        if (window.UniverPresetSheetsCoreEnUS) localesToMerge.push(window.UniverPresetSheetsCoreEnUS);
+        if (window.UniverPresetSheetsCorePlPL) localesToMerge.push(window.UniverPresetSheetsCorePlPL);
+
+        if (!createUniver || !LocaleType || !mergeLocales || !UniverSheetsCorePreset || localesToMerge.length === 0) {
             console.error('UniverJS scripts not loaded');
             return;
         }
 
+        const resolvedLocale = window.UniverPresetSheetsCorePlPL ? (LocaleType.PL_PL ?? LocaleType.PL ?? LocaleType.EN_US) : LocaleType.EN_US;
         const { univerAPI } = createUniver({
-            locale: LocaleType.EN_US,
+            locale: resolvedLocale,
             locales: {
-                [LocaleType.EN_US]: mergeLocales(
-                    window.UniverPresetSheetsCoreEnUS
-                ),
+                [resolvedLocale]: mergeLocales(...localesToMerge),
             },
             presets: [
                 UniverSheetsCorePreset({
