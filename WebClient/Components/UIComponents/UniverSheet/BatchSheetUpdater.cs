@@ -13,7 +13,7 @@ namespace WebClient.Components.UIComponents.UniverSheet
         private readonly IJSRuntime _jsRuntime;
 
         private bool _inUpdate;
-        private List<PerformUpdate> _buffer = new();
+        private List<CellTextUpdate> _buffer = new();
 
         public BatchSheetUpdater(IJSRuntime jsRuntime)
         {
@@ -33,7 +33,7 @@ namespace WebClient.Components.UIComponents.UniverSheet
                 throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
             }
 
-            _buffer.Add(new PerformUpdate("univerSetCell", x, y, value));
+            _buffer.Add(new CellTextUpdate(x, y, value));
         }
 
         public async Task EndUpdateAsync()
@@ -46,7 +46,7 @@ namespace WebClient.Components.UIComponents.UniverSheet
             _inUpdate = false;
 
             var count = _buffer.Count;
-            var groups = _buffer.GroupBy(x => x.name);
+            var groups = _buffer.GroupBy(x => x.Name);
             // Na razie wywołanie JS: alert z liczbą operacji.
             foreach (var item in groups)
             {
@@ -60,12 +60,19 @@ namespace WebClient.Components.UIComponents.UniverSheet
             _buffer.Clear();
         }
 
-        private record PerformUpdate(string name, int X, int Y, string Value)
+        private record CellTextUpdate(int X, int Y, string Value) : UpdateData
         {
+            public string Name { get; set; } = "univerSetCell"
             public object[] ToArray()
             {
                 return new object[] { X, Y, Value };
             }
+        }
+
+        private interface UpdateData
+        {
+            string Name { get; }
+            object[] ToArray();
         }
     }
 }
