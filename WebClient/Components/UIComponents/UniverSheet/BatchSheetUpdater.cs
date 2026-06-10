@@ -13,7 +13,7 @@ namespace WebClient.Components.UIComponents.UniverSheet
         private readonly IJSRuntime _jsRuntime;
 
         private bool _inUpdate;
-        private List<CellTextUpdate> _buffer = new();
+        private List<UpdateData> _buffer = new();
 
         public BatchSheetUpdater(IJSRuntime jsRuntime)
         {
@@ -35,7 +35,57 @@ namespace WebClient.Components.UIComponents.UniverSheet
 
             _buffer.Add(new CellTextUpdate(x, y, value));
         }
+        public void SetCellColor(int x, int y, string value)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
 
+            _buffer.Add(new CellColorUpdate(x, y, value));
+        }
+
+        public void SetCellNumberFormat(int x, int y, string format)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+
+            _buffer.Add(new CellNumberFormatUpdate(x, y, format));
+        }
+        public void SetCellNumberFormat(int x, int y, int  decimalPlaces)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+            string format = $"0.{new string('0', decimalPlaces)}";
+            _buffer.Add(new CellNumberFormatUpdate(x, y, format));
+        }
+        
+        // Zamrożenie kolumn — przyjmuje liczbę kolumn do zamrożenia
+        public void univerFreezeColumns(int columns)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+
+            _buffer.Add(new FreezeColumnsUpdate(columns));
+        }
+
+        // Zamrożenie wierszy — przyjmuje liczbę wierszy do zamrożenia
+        public void univerFreezeRows(int rows)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+
+            _buffer.Add(new FreezeRowsUpdate(rows));
+        }
+        //univerSetNumberFormat
         public async Task EndUpdateAsync()
         {
             if (!_inUpdate)
@@ -62,12 +112,49 @@ namespace WebClient.Components.UIComponents.UniverSheet
 
         private record CellTextUpdate(int X, int Y, string Value) : UpdateData
         {
-            public string Name { get; set; } = "univerSetCell"
+            public string Name { get; set; } = "univerSetCell";
             public object[] ToArray()
             {
                 return new object[] { X, Y, Value };
             }
         }
+
+        private record CellColorUpdate(int X, int Y, string color) : UpdateData
+        {
+            public string Name { get; set; } = "univerSetCellColor";
+            public object[] ToArray()
+            {
+                return new object[] { X, Y, color };
+            }
+        }
+
+        private record CellNumberFormatUpdate(int X, int Y, string Format) : UpdateData
+        {
+            public string Name { get; set; } = "univerSetNumberFormat";
+            public object[] ToArray()
+            {
+                return new object[] { X, Y, Format };
+            }
+        }
+
+        private record FreezeColumnsUpdate(int Columns) : UpdateData
+        {
+            public string Name { get; set; } = "univerFreezeColumns";
+            public object[] ToArray()
+            {
+                return new object[] { Columns };
+            }
+        }
+
+        private record FreezeRowsUpdate(int Rows) : UpdateData
+        {
+            public string Name { get; set; } = "univerFreezeRows";
+            public object[] ToArray()
+            {
+                return new object[] { Rows };
+            }
+        }
+
 
         private interface UpdateData
         {

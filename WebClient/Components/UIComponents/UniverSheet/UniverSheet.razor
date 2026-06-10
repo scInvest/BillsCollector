@@ -60,22 +60,28 @@
 
             // Set single cell: univerSetCell(x, y, text)
             window.univerSetCell = (x, y, text) => {
-                console.log(x);
-                console.log(y);
-                console.log(text);
                 const cellName = xyToCell(x, y);
-                console.log(cellName);
-
                 const workbook = univerAPI.getActiveWorkbook();
-                console.log(workbook);
                 const worksheet = workbook.getActiveSheet();
-                console.log(worksheet);
                 worksheet.getRange(cellName).setValue(text);
                                 console.log("DONE");
             };
 
+            window.univerSetCellColor = (x, y, color) => {
+                const cellName = xyToCell(x, y);
+                const workbook = univerAPI.getActiveWorkbook();
+                const worksheet = workbook.getActiveSheet();
 
+                worksheet.getRange(cellName).setBackground(color);
+            };
 
+             window.univerSetNumberFormat = (x, y, format) => {
+                const cellName = xyToCell(x, y);
+                const workbook = univerAPI.getActiveWorkbook();
+                const worksheet = workbook.getActiveSheet();
+
+                worksheet.getRange(cellName).setNumberFormat(format);
+            };
             window.invoker = (methodName, args) =>{
                 const method = window?.[methodName];
 
@@ -163,6 +169,20 @@
         if (firstRender)
         {
             await JS.InvokeVoidAsync("univerEnsureCreated", ContainerId, WorkbookName);
+
+            BatchSheetUpdater batchSheetUpdater = new BatchSheetUpdater(JS);
+            batchSheetUpdater.BeginUpdate();
+
+            for (int i = 0; i < 10; i++)
+            {
+                for (int y = 0; y < 50; y++)
+                {
+                    batchSheetUpdater.SetCell(i, y, 123.34534534.ToString());
+                    batchSheetUpdater.SetCellColor(i, y, "#ff0000");
+                    batchSheetUpdater.SetCellNumberFormat(i, y, 2);
+                }
+            }
+            await batchSheetUpdater.EndUpdateAsync();
         }
     }
 }
