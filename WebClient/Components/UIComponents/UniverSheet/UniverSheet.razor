@@ -2,9 +2,15 @@
 @implements IDisposable
 @inject IJSRuntime JS
 
+<div style="width:100%; display:flex; justify-content:flex-end; margin-bottom:8px;">
+    <button @onclick="ShowAlert">Pokaż alert</button>
+</div>
+
 <div id="@ContainerId" style="@Style"></div>
 
 <script>
+
+
     window.univerEnsureCreated = (containerId, workbookName) => {
         const { createUniver } = window.UniverPresets;
         const { LocaleType, mergeLocales } = window.UniverCore;
@@ -37,6 +43,75 @@
         });
 
         window.__univerApi = univerAPI;
+            function columnIndexToName(colIndex) {
+                let name = '';
+                let i = Number(colIndex);
+                while (i >= 0) {
+                    name = String.fromCharCode((i % 26) + 65) + name;
+                    i = Math.floor(i / 26) - 1;
+                }
+                return name;
+            }
+
+            function xyToCell(x, y) {
+                // x = row (0-based), y = column (0-based)
+                return columnIndexToName(x) + (Number(y) + 1);
+            }
+
+            // Set single cell: univerSetCell(x, y, text)
+            window.univerSetCell = (x, y, text) => {
+                console.log(x);
+                console.log(y);
+                console.log(text);
+                const cellName = xyToCell(x, y);
+                console.log(cellName);
+
+                const workbook = univerAPI.getActiveWorkbook();
+                console.log(workbook);
+                const worksheet = workbook.getActiveSheet();
+                console.log(worksheet);
+                worksheet.getRange(cellName).setValue(text);
+                                console.log("DONE");
+            };
+
+
+
+            window.invoker = (methodName, args) =>{
+                const method = window?.[methodName];
+
+                if (typeof method !== "function") {
+                    throw new Error(`Metoda "${methodName}" nie istnieje`);
+                }
+
+                method.apply(window, args);
+
+            }
+            
+            window.batchInvoker = (methodName, argsArray) =>{
+                argsArray.forEach(args => {
+                    window.invoker(methodName, args);
+                });
+
+            }
+    
+
+            // Set an area of cells starting at (startX,startY) with given number of rows and columns.
+            // Does not accept a custom text; fills the area with the default value "test".
+            // Usage: window.univerSetCells(startX, startY, rowCount, colCount)
+            window.univerSetCells = (startX, startY, rowCount, colCount) => {
+                const workbook = univerAPI.getActiveWorkbook();
+                const worksheet = workbook.getActiveSheet();
+                const fillText = 'test';
+
+                for (let i = 0; i < rowCount; i++) {
+                    for (let j = 0; j < colCount; j++) {
+                        const r = Number(startX) + i;
+                        const c = Number(startY) + j;
+                        const cellName = xyToCell(r, c);
+                        worksheet.getRange(cellName).setValue(fillText);
+                    }
+                }
+            };
     };
 
     window.univerDispose = (containerId) => {
@@ -61,6 +136,26 @@
     public void Dispose()
     {
         _ = JS.InvokeVoidAsync("univerDispose", ContainerId);
+    }
+
+    public async Task ShowAlert()
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        //await JS.InvokeVoidAsync("univerSetCells", 0, 0, 15, 50, "test");
+        BatchSheetUpdater batchSheetUpdater = new BatchSheetUpdater(JS);
+        batchSheetUpdater.BeginUpdate();
+
+        for (int i = 0; i < 10; i++)
+        {
+            for (int y = 0; y < 50; y++)
+            {
+                batchSheetUpdater.SetCell(i, y, "test");
+            }
+        }
+        await batchSheetUpdater.EndUpdateAsync();
+        sw.Stop();
+        var elapsedMs = sw.Elapsed.TotalMilliseconds;
+        //await JS.InvokeVoidAsync("alert", $"Operation took {elapsedMs:F2} ms");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
