@@ -64,6 +64,17 @@ namespace WebClient.Components.UIComponents.UniverSheet
             _buffer.Add(new CellNumberFormatUpdate(x, y, format));
         }
         
+        // Ustawienie formuły w komórce — przyjmuje x, y i formułę jako tekst
+        public void SetCellFormula(int x, int y, string formula)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+
+            _buffer.Add(new CellFormulaUpdate(x, y, formula));
+        }
+        
         // Zamrożenie kolumn — przyjmuje liczbę kolumn do zamrożenia
         public void univerFreezeColumns(int columns)
         {
@@ -134,6 +145,15 @@ namespace WebClient.Components.UIComponents.UniverSheet
             public object[] ToArray()
             {
                 return new object[] { X, Y, Format };
+            }
+        }
+
+        private record CellFormulaUpdate(int X, int Y, string Formula) : UpdateData
+        {
+            public string Name { get; set; } = "univerSetFormula";
+            public object[] ToArray()
+            {
+                return new object[] { X, Y, Formula };
             }
         }
 

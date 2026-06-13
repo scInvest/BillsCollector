@@ -66,13 +66,37 @@
                 worksheet.getRange(cellName).setValue(text);
                                 console.log("DONE");
             };
+            window.univerFreezeRows = (count) => {
+                const workbook = univerAPI.getActiveWorkbook();
+                const worksheet = workbook.getActiveSheet();
 
+                worksheet.setFrozenRows(count);
+
+                console.log("FROZEN ROWS:", count);
+            }       ;
+
+            window.univerFreezeColumns = (count) => {
+                const workbook = univerAPI.getActiveWorkbook();
+                const worksheet = workbook.getActiveSheet();
+
+                worksheet.setFrozenColumns(count);
+
+                console.log("FROZEN COLUMNS:", count);
+            };
             window.univerSetCellColor = (x, y, color) => {
                 const cellName = xyToCell(x, y);
                 const workbook = univerAPI.getActiveWorkbook();
                 const worksheet = workbook.getActiveSheet();
 
                 worksheet.getRange(cellName).setBackground(color);
+            };
+
+            window.univerSetFormula = (x, y, formula) => {
+                const cellName = xyToCell(x, y);
+                const workbook = univerAPI.getActiveWorkbook();
+                const worksheet = workbook.getActiveSheet();
+
+                worksheet.getRange(cellName).setFormula(formula);
             };
 
              window.univerSetNumberFormat = (x, y, format) => {
@@ -92,14 +116,14 @@
                 method.apply(window, args);
 
             }
-            
+
             window.batchInvoker = (methodName, argsArray) =>{
                 argsArray.forEach(args => {
                     window.invoker(methodName, args);
                 });
 
             }
-    
+
 
             // Set an area of cells starting at (startX,startY) with given number of rows and columns.
             // Does not accept a custom text; fills the area with the default value "test".
@@ -177,7 +201,8 @@
             {
                 for (int y = 0; y < 50; y++)
                 {
-                    batchSheetUpdater.SetCell(i, y, 123.34534534.ToString());
+                    // batchSheetUpdater.SetCell(i, y, 123.34534534.ToString());
+                    batchSheetUpdater.SetCellFormula(i, y, "=SUM(A1:A10)");
                     batchSheetUpdater.SetCellColor(i, y, "#ff0000");
                     batchSheetUpdater.SetCellNumberFormat(i, y, 2);
                 }
