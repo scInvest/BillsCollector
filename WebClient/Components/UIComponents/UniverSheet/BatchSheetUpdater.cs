@@ -10,14 +10,20 @@ namespace WebClient.Components.UIComponents.UniverSheet
     /// </summary>
     public class BatchSheetUpdater
     {
-        private readonly IJSRuntime _jsRuntime;
+        private readonly Func<IJSRuntime> _rundtimeFucntion;
+        private readonly IJSRuntime JSRuntime;
+        //private readonly IJSRuntime _jsRuntime;
 
+        public IJSRuntime JSRuntime { get; set; }
         private bool _inUpdate;
         private List<UpdateData> _buffer = new();
-
         public BatchSheetUpdater(IJSRuntime jsRuntime)
         {
-            _jsRuntime = jsRuntime;
+            JSRuntime = jsRuntime;
+        }
+        public BatchSheetUpdater(Func<IJSRuntime> rundtimeFucntion)
+        {
+            _rundtimeFucntion = rundtimeFucntion;
         }
 
         public void BeginUpdate()
@@ -112,7 +118,7 @@ namespace WebClient.Components.UIComponents.UniverSheet
             foreach (var item in groups)
             {
                 var args = item.Select(x => x.ToArray()).ToArray(); ;
-                await _jsRuntime.InvokeVoidAsync("batchInvoker", item.Key, args);
+                await JSRuntime.InvokeVoidAsync("batchInvoker", item.Key, args);
             }
 
             // W przyszłości tutaj można wywołać jednorazowo funkcję JS która przyjmie _buffer
