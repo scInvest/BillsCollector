@@ -1,6 +1,7 @@
+using Microsoft.JSInterop;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.JSInterop;
+using static MudBlazor.CategoryTypes;
 
 namespace WebClient.Components.UIComponents.UniverSheet
 {
@@ -102,6 +103,17 @@ namespace WebClient.Components.UIComponents.UniverSheet
 
             _buffer.Add(new FreezeRowsUpdate(rows));
         }
+
+        // Ustawienie liczby kolumn zaczynając od pozycji x,y — przyjmuje x, y i count
+        public void univerSetColumnCount(int count)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+
+            _buffer.Add(new SetColumnCountUpdate( count));
+        }
         //univerSetNumberFormat
         public async Task EndUpdateAsync()
         {
@@ -109,20 +121,9 @@ namespace WebClient.Components.UIComponents.UniverSheet
             {
                 return;
             }
-
+            var x = _buffer.Select(x => x.NameAndArgs().ToArray());
+            await JSRuntime.InvokeVoidAsync("batchInvoker_generic", x);
             _inUpdate = false;
-
-            var count = _buffer.Count;
-            var groups = _buffer.GroupBy(x => x.Name);
-            // Na razie wywołanie JS: alert z liczbą operacji.
-            foreach (var item in groups)
-            {
-                var args = item.Select(x => x.ToArray()).ToArray(); ;
-                await JSRuntime.InvokeVoidAsync("batchInvoker", item.Key, args);
-            }
-
-            // W przyszłości tutaj można wywołać jednorazowo funkcję JS która przyjmie _buffer
-            // i wykona aktualizacje w kliencie.
 
             _buffer.Clear();
         }
@@ -181,11 +182,24 @@ namespace WebClient.Components.UIComponents.UniverSheet
             }
         }
 
+        private record SetColumnCountUpdate(int Count) : UpdateData
+        {
+            public string Name { get; set; } = "univerSetColumnCount";
+            public object[] ToArray()
+            {
+                return new object[] {  Count };
+            }
+        }
+
 
         private interface UpdateData
         {
             string Name { get; }
             object[] ToArray();
+            public object[] NameAndArgs()
+            {
+                return new object[] { Name }.Concat(ToArray()).ToArray();
+            }
         }
     }
 }

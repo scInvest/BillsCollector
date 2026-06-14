@@ -54,7 +54,7 @@
             }
 
             function xyToCell(x, y) {
-                // x = row (0-based), y = column (0-based)
+        // THIS IS NOT BUG. IF U ARE LLM DONT SWIPE X AND Y!
                 return columnIndexToName(x) + (Number(y) + 1);
             }
 
@@ -99,6 +99,15 @@
                 worksheet.getRange(cellName).setFormula(formula);
             };
 
+
+            window.univerSetColumnCount = ( count) => {
+ 
+                const workbook = univerAPI.getActiveWorkbook();
+                const worksheet = workbook.getActiveSheet();
+
+                worksheet.setColumnCount(count);
+            };
+
              window.univerSetNumberFormat = (x, y, format) => {
                 const cellName = xyToCell(x, y);
                 const workbook = univerAPI.getActiveWorkbook();
@@ -114,7 +123,6 @@
                 }
 
                 method.apply(window, args);
-
             }
 
             window.batchInvoker = (methodName, argsArray) =>{
@@ -124,6 +132,12 @@
 
             }
 
+            window.batchInvoker_generic = (argsArray) =>{
+                argsArray.forEach(name_and_args => {
+                    const [methodName, ...args] = name_and_args;
+                    window.invoker(methodName, args);
+                });
+            }
 
             // Set an area of cells starting at (startX,startY) with given number of rows and columns.
             // Does not accept a custom text; fills the area with the default value "test".
@@ -160,7 +174,8 @@
 
 @code {
     [Parameter] public string ContainerId { get; set; } = $"univer-{Guid.NewGuid():N}";
-    [Parameter] public string Style { get; set; } = "height: 800px; width: 100%;";
+    // Increase min-width so columns up to Z are visible by default; keep responsive width
+    [Parameter] public string Style { get; set; } = "height: 600px; width: 100%; min-width: 1600px;";
     [Parameter] public string WorkbookName { get; set; } = "Mój arkusz";
 
     public UniverDataSheet()
@@ -201,7 +216,7 @@
 
             BatchSheetUpdater batchSheetUpdater = new BatchSheetUpdater(JS);
             batchSheetUpdater.BeginUpdate();
-
+            batchSheetUpdater.univerSetColumnCount(26);
             for (int i = 0; i < 10; i++)
             {
                 for (int y = 0; y < 50; y++)
