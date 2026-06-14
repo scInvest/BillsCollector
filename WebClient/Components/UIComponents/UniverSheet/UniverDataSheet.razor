@@ -163,12 +163,17 @@
     [Parameter] public string Style { get; set; } = "height: 800px; width: 100%;";
     [Parameter] public string WorkbookName { get; set; } = "Mój arkusz";
 
+    public UniverDataSheet()
+    {
+         BatchSheetUpdater = new BatchSheetUpdater(() => JS);
+
+    }
     public void Dispose()
     {
         _ = JS.InvokeVoidAsync("univerDispose", ContainerId);
     }
-
-    public async Task ShowAlert()
+    public BatchSheetUpdater BatchSheetUpdater { get; }
+        public async Task ShowAlert()
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
         //await JS.InvokeVoidAsync("univerSetCells", 0, 0, 15, 50, "test");

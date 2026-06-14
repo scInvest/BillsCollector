@@ -75,7 +75,7 @@
     var key = item.Key;
     var isVisible = SelectedSheet == key;
     <div style="@($"display:{(isVisible ? "block" : "none")}")">
-        <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key" MenuItemInvoked="HandleMenuItemInvoked"></DataSheetComponent>
+        <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key" ></DataSheetComponent>
     </div>
 }
 
@@ -84,7 +84,7 @@
     var key = item.Key;
     var isVisible = SelectedSheet == key;
     <div style="@($"display:{(isVisible ? "block" : "none")}")">
-        <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key" MenuItemInvoked="HandleMenuItemInvoked"></DataSheetComponent>
+        <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key" ></DataSheetComponent>
     </div>
 }
 <!-- sekcja 3-->

@@ -12,11 +12,10 @@
 
 <!-- Minimal UI: keep only the datasheet element and shared directives/injections. UI controls removed for refactor. -->
 <div>
-    <UniverSheet @ref="univerSheet" Style="height: 600px; width:100%;" WorkbookName="Mój arkusz" />
+    <UniverDataSheet @ref="univerSheet" Style="height: 600px; width:100%;" WorkbookName="Mój arkusz" />
 </div>
 
 @code {
     // UI code removed as part of partial refactor. Logic remains in the code-behind (.razor.cs).
     // Temporary ref to the UniverSheet component. Code-behind will be updated in a later step.
-    private UniverSheet? univerSheet;
 }

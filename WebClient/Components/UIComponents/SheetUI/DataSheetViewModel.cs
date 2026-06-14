@@ -8,15 +8,11 @@ namespace WebClient.Components.UIComponents.SheetUI
 {
     public class DataSheetViewModel : ViewModelBase
     {
-        private readonly Datasheet datasheet;
-        private readonly Sheet _sheet;
 
-        public Sheet SheetData => _sheet;
-        public DataSheetViewModel(Func<ComponentBase> getComponent, Datasheet datasheet, Sheet sheet)
+        public DataSheetViewModel(Func<ComponentBase> getComponent, UniverSheet.UniverDataSheet univerSheet)
             : base(getComponent)
-        {   
-            this.datasheet = datasheet;
-            _sheet = sheet;
+        {
+            UniverSheet = univerSheet;
         }
     
         private string[] _headers;
@@ -45,12 +41,14 @@ namespace WebClient.Components.UIComponents.SheetUI
                     this.BeginUpdate();
                     this.Headers = value!.Headers;
                     _dataSheetLogic = value;
-                    value.Init(this, datasheet, _sheet);
+                    value.Init(this, UniverSheet);
                     OnPropertyChanged();
                     Refresh();
                     this.EndUpdate();
                 }
             }
         }
+
+        public UniverSheet.UniverDataSheet UniverSheet { get; }
     }
 }

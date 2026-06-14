@@ -11,15 +11,15 @@ namespace WebClient.Components.UIComponents.UniverSheet
     public class BatchSheetUpdater
     {
         private readonly Func<IJSRuntime> _rundtimeFucntion;
-        private readonly IJSRuntime JSRuntime;
-        //private readonly IJSRuntime _jsRuntime;
+       
+        private readonly IJSRuntime _jsRuntime;
 
-        public IJSRuntime JSRuntime { get; set; }
+        public IJSRuntime JSRuntime => _jsRuntime ?? _rundtimeFucntion();
         private bool _inUpdate;
         private List<UpdateData> _buffer = new();
         public BatchSheetUpdater(IJSRuntime jsRuntime)
         {
-            JSRuntime = jsRuntime;
+            _jsRuntime = jsRuntime;
         }
         public BatchSheetUpdater(Func<IJSRuntime> rundtimeFucntion)
         {

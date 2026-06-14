@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
 using WebClient.Components.UIComponents.Extenstions;
+using WebClient.Components.UIComponents.UniverSheet;
 using WebClient.Components.UIServices;
 using WebClient.ViewModels;
 
@@ -22,11 +23,12 @@ public partial class DataSheetComponent : ComponentBase, IFocusableObject, IRefr
     {
 
         public event EventHandler Focus;
+        private UniverDataSheet? univerSheet;
 
         protected override void OnInitialized()
         {
             this.SheetFocusManger.Register(this);
-           // this.ViewModel = new DataSheetViewModel(() => this, datasheet, sheet);
+            this.ViewModel = new DataSheetViewModel(() => this, univerSheet);
         }
         protected override void OnAfterRender(bool firstRender)
         {
