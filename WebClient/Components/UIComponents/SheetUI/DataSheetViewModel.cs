@@ -1,7 +1,9 @@
 using BlazorDatasheet;
 using BlazorDatasheet.Core.Data;
 using BlazorDatasheet.DataStructures.Geometry;
+using Integrations.Biedronka.BiedronkaImport.Dto;
 using Microsoft.AspNetCore.Components;
+using System;
 using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents.SheetUI
@@ -9,12 +11,26 @@ namespace WebClient.Components.UIComponents.SheetUI
     public class DataSheetViewModel : ViewModelBase
     {
 
-        public DataSheetViewModel(Func<ComponentBase> getComponent, UniverSheet.UniverDataSheet univerSheet)
+        private Func<UniverSheet.UniverDataSheet?> _univerSheetFactory;
+
+        public DataSheetViewModel(Func<ComponentBase> getComponent )
             : base(getComponent)
         {
-            UniverSheet = univerSheet;
+            
         }
     
+        public async Task BlazorLifeCycle_UniverSheetReady(Func<UniverSheet.UniverDataSheet?> univerSheet)
+        {
+            this.BeginUpdate();
+            
+            _univerSheetFactory = univerSheet;
+
+            if (DataSheetLogic != null)
+            {
+                 await DataSheetLogic.Init(this, UniverSheet);
+            }
+        }
+
         private string[] _headers;
         public string[] Headers
         {
@@ -41,7 +57,8 @@ namespace WebClient.Components.UIComponents.SheetUI
                     this.BeginUpdate();
                     this.Headers = value!.Headers;
                     _dataSheetLogic = value;
-                    value.Init(this, UniverSheet);
+
+                    //value.Init(this, UniverSheet);
                     OnPropertyChanged();
                     Refresh();
                     this.EndUpdate();
@@ -49,6 +66,6 @@ namespace WebClient.Components.UIComponents.SheetUI
             }
         }
 
-        public UniverSheet.UniverDataSheet UniverSheet { get; }
+        public UniverSheet.UniverDataSheet UniverSheet => _univerSheetFactory() ?? throw new InvalidOperationException("UniverSheet is not available.");
     }
 }

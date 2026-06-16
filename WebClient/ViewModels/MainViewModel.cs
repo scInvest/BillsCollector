@@ -14,7 +14,7 @@ namespace WebClient.ViewModels
         public DataSheetComponent DataSheet { get; set; }
 
         // Konstruktor przyjmujący instancję bazową (template) i opcjonalnie przypisujący komponent DataSheet.
-        public ExistingSheetsCreated(ExistingSheets template, DataSheetComponent dataSheet = null)
+        public ExistingSheetsCreated(ExistingSheets template, DataSheetComponent dataSheet)
         {
             if (template != null)
             {
@@ -116,6 +116,7 @@ namespace WebClient.ViewModels
             {
                 var toBeAdded = sheetPendingToCreate[id];
                 sheetPendingToCreate.Remove(id);
+
                 var sheet = new ExistingSheetsCreated(toBeAdded, sheetComponent);
                 sheetComponent.ViewModel.DataSheetLogic = toBeAdded.Logic;
                 this.sheets.Add(sheet);

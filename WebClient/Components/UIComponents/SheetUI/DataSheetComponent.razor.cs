@@ -23,12 +23,25 @@ public partial class DataSheetComponent : ComponentBase, IFocusableObject, IRefr
     {
 
         public event EventHandler Focus;
-        private UniverDataSheet? univerSheet;
+        private UniverDataSheet? _univerSheet;
+        public UniverDataSheet? UniverSheet
+        {
+            get => _univerSheet;
+            set
+            {
+                if (!object.Equals(_univerSheet, value))
+                {
+                    _univerSheet = value;
+                    this.ViewModel.BlazorLifeCycle_UniverSheetReady(() => value);
+
+                }
+            }
+        }
 
         protected override void OnInitialized()
         {
             this.SheetFocusManger.Register(this);
-            this.ViewModel = new DataSheetViewModel(() => this, univerSheet);
+            this.ViewModel = new DataSheetViewModel(() => this);
         }
         protected override void OnAfterRender(bool firstRender)
         {
@@ -37,6 +50,7 @@ public partial class DataSheetComponent : ComponentBase, IFocusableObject, IRefr
 
         [Parameter]
         public string ID { get; set; }
+
 
         public DataSheetViewModel ViewModel { get; private set; } = null!;
 

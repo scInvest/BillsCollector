@@ -19,8 +19,7 @@ namespace WebClient.Components.UIComponents.SheetUI
     {
         public string[] Headers { get; set; }
 
-        public void Init(DataSheetViewModel vm, UniverDataSheet sheet);
-
+        public Task Init(DataSheetViewModel vm, UniverDataSheet sheet);
 
         public void OnDataAdded();
         public void OnDataRemoved();
@@ -47,52 +46,54 @@ namespace WebClient.Components.UIComponents.SheetUI
             "Kategoria1", "Kategoria2", "Kategoria3", "Tagi", "ID", "Metadane",
         };
 
-        public void Init(DataSheetViewModel vm, UniverDataSheet univerDataSheet)
+        public async Task Init(DataSheetViewModel vm, UniverDataSheet univerDataSheet)
         {
             var updater = univerDataSheet.BatchSheetUpdater;
-            //var data = this.application.Data.GetData(this.spendingFileType);
+            var data = this.application.Data.GetData(this.spendingFileType);
 
-            //// Build ordered list of nodes: pre-order traversal preserving the order of roots from 'data'
-            //var ordered = new List<(ISpendingCase Node, int Depth)>();
+            // Build ordered list of nodes: pre-order traversal preserving the order of roots from 'data'
+            var ordered = new List<(ISpendingCase Node, int Depth)>();
 
-            //void Traverse(ISpendingCase node, int depth)
-            //{
-            //    ordered.Add((node, depth));
-            //    var childs = node.Node.Childs;
-            //    if (childs != null && childs.Count > 0)
-            //    {
-            //        foreach (var c in childs)
-            //        {
-            //            Traverse(c, depth + 1);
-            //        }
-            //    }
-            //}
+            void Traverse(ISpendingCase node, int depth)
+            {
+                ordered.Add((node, depth));
+                var childs = node.Node.Childs;
+                if (childs != null && childs.Count > 0)
+                {
+                    foreach (var c in childs)
+                    {
+                        Traverse(c, depth + 1);
+                    }
+                }
+            }
 
-            //foreach (var item in data)
-            //{
-            //    var root = item.Value;
-            //    Traverse(root, 0);
-            //}
+            foreach (var item in data)
+            {
+                var root = item.Value;
+                Traverse(root, 0);
+            }
 
-            //// Ensure sheet has enough rows to contain all nodes plus buffer
-            //try
-            //{
-            //    var requiredRows = ordered.Count + 50;
-            //    if (sheet.NumRows < requiredRows)
-            //    {
-            //        sheet.Rows.InsertAt(sheet.NumRows, requiredRows - sheet.NumRows);
-            //    }
+            // Ensure sheet has enough rows to contain all nodes plus buffer
+            try
+            {
+                var requiredRows = ordered.Count + 50;
+                if (univerDataSheet.NumRows < requiredRows)
+                {
+                    // use batch updater to set total row count instead of inserting
+                    updater.univerSetRowCount(requiredRows);
+                }
 
-            //    var requiredCols = this.Headers?.Length ?? 0;
-            //    if (sheet.NumCols < requiredCols)
-            //    {
-            //        sheet.Columns.InsertAt(sheet.NumCols, requiredCols - sheet.NumCols);
-            //    }
-            //}
-            //catch
-            //{
-            //    // swallow - sheet API may throw for invalid ops
-            //}
+                var requiredCols = this.Headers?.Length ?? 0;
+                if (univerDataSheet.NumCols < requiredCols)
+                {
+                    // use batch updater to set total column count instead of inserting
+                    updater.univerSetColumnCount(requiredCols);
+                }
+            }
+            catch
+            {
+                // swallow - operations against the sheet/updater may throw for invalid ops
+            }
 
             //// Fill cells according to headers mapping
             //// Column mapping:
