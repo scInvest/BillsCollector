@@ -1,5 +1,6 @@
 using Microsoft.JSInterop;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using static MudBlazor.CategoryTypes;
 
@@ -114,7 +115,39 @@ namespace WebClient.Components.UIComponents.UniverSheet
 
             _buffer.Add(new SetColumnCountUpdate( count));
         }
+        
+        // Ustawienie liczby wierszy — przyjmuje count
+        public void univerSetRowCount(int count)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+
+            _buffer.Add(new SetRowCountUpdate(count));
+        }
         //univerSetNumberFormat
+        // Ustawienie szerokości kolumny — przyjmuje index kolumny i szerokość
+        public void univerSetColumnWidth(int columnIndex, double width)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+
+            _buffer.Add(new SetColumnWidthUpdate(columnIndex, width));
+        }
+
+        // Ustawienie wysokości wiersza — przyjmuje index wiersza i wysokość
+        public void univerSetRowHeight(int rowIndex, double height)
+        {
+            if (!_inUpdate)
+            {
+                throw new InvalidOperationException("BeginUpdate must be called before setting cells.");
+            }
+
+            _buffer.Add(new SetRowHeightUpdate(rowIndex, height));
+        }
         public async Task EndUpdateAsync()
         {
             if (!_inUpdate)
@@ -188,6 +221,34 @@ namespace WebClient.Components.UIComponents.UniverSheet
             public object[] ToArray()
             {
                 return new object[] {  Count };
+            }
+        }
+
+
+        private record SetRowCountUpdate(int Count) : UpdateData
+        {
+            public string Name { get; set; } = "univerSetRowCount";
+            public object[] ToArray()
+            {
+                return new object[] { Count };
+            }
+        }
+
+        private record SetColumnWidthUpdate(int ColumnIndex, double Width) : UpdateData
+        {
+            public string Name { get; set; } = "univerSetColumnWidth";
+            public object[] ToArray()
+            {
+                return new object[] { ColumnIndex, Width };
+            }
+        }
+
+        private record SetRowHeightUpdate(int RowIndex, double Height) : UpdateData
+        {
+            public string Name { get; set; } = "univerSetRowHeight";
+            public object[] ToArray()
+            {
+                return new object[] { RowIndex, Height };
             }
         }
 

@@ -49,6 +49,7 @@ namespace WebClient.Components.UIComponents.SheetUI
 
         public void Init(DataSheetViewModel vm, UniverDataSheet univerDataSheet)
         {
+            var updater = univerDataSheet.BatchSheetUpdater;
             //var data = this.application.Data.GetData(this.spendingFileType);
 
             //// Build ordered list of nodes: pre-order traversal preserving the order of roots from 'data'
