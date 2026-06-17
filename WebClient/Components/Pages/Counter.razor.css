@@ -31,7 +31,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  min-width: 200px;
+  min-width: 120px; /* reduced minimum width */
   max-width: 65%;
   height: 100vh;
   overflow: auto;
@@ -58,14 +58,24 @@
   position: fixed;
   top: 0;
   bottom: 0;
-  width: 10px;
+  width: 12px; /* interaction area */
   cursor: col-resize;
-  background: linear-gradient(
-    to right,
-    rgba(0,0,0,.22),
-    rgba(0,0,0,.10)
-  );
+  background: transparent; /* no gradient that overlays content */
   z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* visible narrow grip in center of handle, doesn't overlay other components */
+.counter-split-handle::before {
+  content: "";
+  width: 6px;
+  height: 40px;
+  background: #6b7280; /* visible grip color */
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.12);
+  pointer-events: none; /* let the parent handle receive mouse events */
 }
 
 /* Ensure the split fills the full section height */
