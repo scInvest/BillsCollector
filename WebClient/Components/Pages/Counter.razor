@@ -31,9 +31,8 @@
     <!-- sekcja 1-->
     <section class="counter-section section-1">
         <div class="counter-section-content">
-            <DataPicker @ref="dataPicker" ViewModelCallBack="() => this.ViewModel.DataPickerViewModel">
-
-            </DataPicker>
+            @* DataPicker moved to the left fixed panel *@
+            <div style="padding:8px; color: #fff;">Panel boczny</div>
         </div>
     </section>
     <!-- sekcja koniec-->
@@ -78,7 +77,9 @@
             <div class="counter-split">
                 <div class="counter-split-left" style="width:@_leftPanelWidthPx">
                     <div class="counter-split-left-content">
-                        @* TODO: left panel content *@
+                        <DataPicker @ref="dataPicker" ViewModelCallBack="() => this.ViewModel.DataPickerViewModel">
+
+                        </DataPicker>
                     </div>
                 </div>
                 <div class="counter-split-handle" style="left:@_leftPanelWidthPx" @onmousedown="BeginResize"></div>
