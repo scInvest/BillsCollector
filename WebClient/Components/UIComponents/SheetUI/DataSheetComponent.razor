@@ -11,9 +11,9 @@
 @inject IJSRuntime JS
 
 <!-- Minimal UI: keep only the datasheet element and shared directives/injections. UI controls removed for refactor. -->
-<div>
-    <UniverDataSheet ViewModel="ViewModel" @ref="UniverSheet" Style="height: 600px; width:100%;" WorkbookName="Mój arkusz" />
-</div>
+@* <div> *@
+    <UniverDataSheet ViewModel="ViewModel" @ref="UniverSheet" Style="height: 100%; width:100%;" WorkbookName="Mój arkusz" />
+@* </div> *@
 
 @code {
     // UI code removed as part of partial refactor. Logic remains in the code-behind (.razor.cs).

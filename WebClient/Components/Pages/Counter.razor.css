@@ -6,6 +6,34 @@
     margin-bottom: 2px;
 }
 
+/* 4-section layout: each section fills exactly 25% of the viewport height */
+.counter-sections {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.counter-section {
+  flex: 0 0 25vh;
+  height: 25vh;
+  min-height: 25vh;
+  max-height: 25vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.counter-section-content {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.section-1 { background: #ff1a1a; }
+.section-2 { background: #00c853; }
+.section-3 { background: #ffea00; }
+.section-4 { background: #ff2db2; }
+
 /* Panels take only the space they need */
 .tabbed-row > * {
   flex: 0 0 auto;

@@ -25,69 +25,90 @@
 <!-- Alert component registers with DialogService to show JS alerts -->
 <AlertComponent />
 
-<!-- sekcja 1-->
-<DataPicker @ref="dataPicker" ViewModelCallBack="() => this.ViewModel.DataPickerViewModel">
+<div class="counter-sections">
+    <!-- sekcja 1-->
+    <section class="counter-section section-1">
+        <div class="counter-section-content">
+            <DataPicker @ref="dataPicker" ViewModelCallBack="() => this.ViewModel.DataPickerViewModel">
 
-</DataPicker>
-<!-- sekcja koniec-->
-<!-- sekcja 2-->
-<h1 style="@(((analiticBar != null && analiticBar.Tabs.Count > 0) || (dataBar != null && dataBar.Tabs.Count > 0)) ? "" : "display:none")">
-    VIZUALIZACJE
-</h1>
-<!-- sekcja koniec-->
-<!-- sekcja 3-->
+            </DataPicker>
+        </div>
+    </section>
+    <!-- sekcja koniec-->
 
-<div class="tabbed-row" style="@(((analiticBar != null && analiticBar.Tabs.Count > 0) || (dataBar != null && dataBar.Tabs.Count > 0)) ? "" : "display:none")">
-    <div class="tabbed-panel" )">
-        <div class="panel-title">Analiza</div>
-        <TabbedBar OnSelectionChanged="OnSelectedIndexChanged"
-                   BeforeDeleteCallback="(x) => this.ViewModel.UserInput_SheetDeleted(x)"
-                   @ref="analiticBar"
-                   AddTabCallback="UserInput_AddAnalyticViewClicked"></TabbedBar>
-    </div>
+    <!-- sekcja 2-->
+    <section class="counter-section section-2">
+        <div class="counter-section-content">
+            @* <h1 style="@(((analiticBar != null && analiticBar.Tabs.Count > 0) || (dataBar != null && dataBar.Tabs.Count > 0)) ? "" : "display:none")">
+                VIZUALIZACJE
+            </h1> *@
+        </div>
+    </section>
+    <!-- sekcja koniec-->
 
-    <div class="tabbed-panel">
-        <div class="panel-title">Dane</div>
-        <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged"
-                   BeforeDeleteCallback="(x) => this.ViewModel.UserInput_SheetDeleted(x)"
-                   @ref="dataBar"
-                   AddTabCallback="UserInput_AddDataClicked"></TabbedBar>
-    </div>
+    <!-- sekcja 3-->
+    <section class="counter-section section-3">
+        <div class="counter-section-content">
+            <div class="tabbed-row" style="@(((analiticBar != null && analiticBar.Tabs.Count > 0) || (dataBar != null && dataBar.Tabs.Count > 0)) ? "" : "display:none")">
+                <div class="tabbed-panel" )">
+                    <div class="panel-title">Analiza</div>
+                    <TabbedBar OnSelectionChanged="OnSelectedIndexChanged"
+                               BeforeDeleteCallback="(x) => this.ViewModel.UserInput_SheetDeleted(x)"
+                               @ref="analiticBar"
+                               AddTabCallback="UserInput_AddAnalyticViewClicked"></TabbedBar>
+                </div>
+
+                <div class="tabbed-panel">
+                    <div class="panel-title">Dane</div>
+                    <TabbedBar OnSelectionChanged="OnSelectedIndexDataChanged"
+                               BeforeDeleteCallback="(x) => this.ViewModel.UserInput_SheetDeleted(x)"
+                               @ref="dataBar"
+                               AddTabCallback="UserInput_AddDataClicked"></TabbedBar>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- sekcja koniec-->
+
+    <!-- Sekcja numer 4 -->
+    <section class="counter-section section-4">
+        <div class="counter-section-content">
+            @if (SelectedSheet is null)
+            {
+                <div class="empty-message">
+                    <h1>Dodaj dane by rozpocząć</h1>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(LastMenuAction))
+            {
+                <div class="empty-message">
+                    <p>Last datasheet menu action: @LastMenuAction</p>
+                </div>
+            }
+
+            @* Keep all components instantiated but hide those that are not the selected sheet. *@
+            @foreach (var item in dataSheetComponents)
+            {
+                var key = item.Key;
+                var isVisible = SelectedSheet == key;
+                <div style="@($"height: 100%; display:{(isVisible ? "block" : "none")}")">
+                    <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key"></DataSheetComponent>
+                </div>
+            }
+
+            @foreach (var item in dataSheetAnaliticalComponents)
+            {
+                var key = item.Key;
+                var isVisible = SelectedSheet == key;
+                <div style="@($"height: 100%; display:{(isVisible ? "block" : "none")}")">
+                    <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key"></DataSheetComponent>
+                </div>
+            }
+        </div>
+    </section>
+    <!-- sekcja 4-->
 </div>
-
-@if (SelectedSheet is null)
-{
-    <div class="empty-message">
-        <h1>Dodaj dane by rozpocząć</h1>
-    </div>
-}
-
-@if (!string.IsNullOrWhiteSpace(LastMenuAction))
-{
-    <div class="empty-message">
-        <p>Last datasheet menu action: @LastMenuAction</p>
-    </div>
-}
-
-@* Keep all components instantiated but hide those that are not the selected sheet. *@
-@foreach (var item in dataSheetComponents)
-{
-    var key = item.Key;
-    var isVisible = SelectedSheet == key;
-    <div style="@($"display:{(isVisible ? "block" : "none")}")">
-        <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key" ></DataSheetComponent>
-    </div>
-}
-
-@foreach (var item in dataSheetAnaliticalComponents)
-{
-    var key = item.Key;
-    var isVisible = SelectedSheet == key;
-    <div style="@($"display:{(isVisible ? "block" : "none")}")">
-        <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key" ></DataSheetComponent>
-    </div>
-}
-<!-- sekcja 3-->
 @code {
 
     public DataSheetComponent AddDataSheetComponent
