@@ -43,7 +43,7 @@ namespace WebClient.Components.UIComponents.SheetUI
         public string[] BillSummaryTable_Headers => new string[]
         {
             "Rodzaj", "Data", "Nazwa(oryginalna)", "Nazwa",
-            "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość", "Jednostka",
+            "Kwota łącznie", "Kwota", "Zniżka", "Przed znizka", "Ilość",
             "Kategoria1", "Kategoria2", "Kategoria3", "Tagi", "ID", "Metadane",
         };
 
@@ -75,6 +75,15 @@ namespace WebClient.Components.UIComponents.SheetUI
             }
             updater.BeginUpdate();
 
+            // write headers in the first row (row 0)
+            if (this.Headers != null)
+            {
+                for (int c = 0; c < this.Headers.Length; c++)
+                {
+                    updater.SetCell(c, 0, this.Headers[c] ?? string.Empty);
+                }
+            }
+
             // Ensure sheet has enough rows to contain all nodes plus buffer
             var requiredRows = ordered.Count + 50;
             if (univerDataSheet.SheetWidth < requiredRows)
@@ -104,15 +113,14 @@ namespace WebClient.Components.UIComponents.SheetUI
             // 6: Zniżka
             // 7: Przed znizka
             // 8: Ilość
-            // 9: Jednostka
-            // 10-12: Kategoria1..3
-            // 13: Tagi
-            // 14: ID
-            // 15: Metadane
+            // 9-11: Kategoria1..3
+            // 12: Tagi
+            // 13: ID
+            // 14: Metadane
 
-            for (int row = 1; row < ordered.Count + 1; row++)
+            for (int row = 2; row < ordered.Count + 2; row++)
             {
-                var (node, depth) = ordered[row - 1];
+                var (node, depth) = ordered[row - 2];
 
                 // Rodzaj = depth
                 updater.SetCell(0, row, depth.ToString(CultureInfo.InvariantCulture));
@@ -131,7 +139,7 @@ namespace WebClient.Components.UIComponents.SheetUI
                     // parent node: put aggregated total only (rounded)
                     var total = Math.Round((decimal)(summary?.Total ?? 0.0), 2);
                     updater.SetCell(4, row, total.ToString(CultureInfo.InvariantCulture));
-                    updater.SetCellNumberFormat(4, row, "C2");
+                    updater.SetCellNumberFormat(4, row, "0.00");
 
                     // leave individual fields empty
                     updater.SetCell(5, row, string.Empty);
@@ -159,15 +167,15 @@ namespace WebClient.Components.UIComponents.SheetUI
 
                     var cost = Math.Round((decimal)(summary?.Cost ?? 0.0), 2);
                     updater.SetCell(5, row, cost.ToString(CultureInfo.InvariantCulture));
-                    updater.SetCellNumberFormat(5, row, "C2");
+                    updater.SetCellNumberFormat(5, row, "0.00");
 
                     var discount = Math.Round((decimal)(summary?.Discount ?? 0.0), 2);
                     updater.SetCell(6, row, discount.ToString(CultureInfo.InvariantCulture));
-                    updater.SetCellNumberFormat(6, row, "C2");
+                    updater.SetCellNumberFormat(6, row, "0.00");
 
                     var totalLeaf = Math.Round((decimal)(summary?.Total ?? 0.0), 2);
                     updater.SetCell(7, row, totalLeaf.ToString(CultureInfo.InvariantCulture));
-                    updater.SetCellNumberFormat(7, row, "C2");
+                    updater.SetCellNumberFormat(7, row, "0.00");
                 }
 
                 // Quantity and unit (use batch updater)
@@ -178,13 +186,11 @@ namespace WebClient.Components.UIComponents.SheetUI
                     {
                         var amt = Math.Round((decimal)qty.Amount, 2).ToString(CultureInfo.InvariantCulture);
                         updater.SetCell(8, row, amt);
-                        updater.SetCellNumberFormat(8, row, "C2");
-                        updater.SetCell(9, row, qty.Unit ?? string.Empty);
+                        updater.SetCellNumberFormat(8, row, "0.00");
                     }
                     else
                     {
                         updater.SetCell(8, row, string.Empty);
-                        updater.SetCell(9, row, string.Empty);
                     }
                 }
                 catch
@@ -194,23 +200,23 @@ namespace WebClient.Components.UIComponents.SheetUI
                 }
 
                 // Categories - unavailable, leave empty (use batch updater)
+                updater.SetCell(9, row, string.Empty);
                 updater.SetCell(10, row, string.Empty);
                 updater.SetCell(11, row, string.Empty);
-                updater.SetCell(12, row, string.Empty);
 
                 // Tags
                 var tags = node.Tags?.Tags;
                 var tagsText = tags != null && tags.Count > 0 ? string.Join(", ", tags) : string.Empty;
-                updater.SetCell(13, row, tagsText);
+                updater.SetCell(12, row, tagsText);
 
                 // ID
-                updater.SetCell(14, row, node.Id?.ToString() ?? string.Empty);
+                updater.SetCell(13, row, node.Id?.ToString() ?? string.Empty);
 
                 // Metadane - try decorations ToString
-                updater.SetCell(15, row, node.Decorations?.ToString() ?? string.Empty);
+                updater.SetCell(14, row, node.Decorations?.ToString() ?? string.Empty);
             }
 
-            // Put summary formulas in the pinned first row (row 0)
+                // Put summary formulas in the pinned second row (row 1)
             if (ordered.Count > 0)
             {
                 string ColIndexToLetter(int col)
@@ -227,9 +233,9 @@ namespace WebClient.Components.UIComponents.SheetUI
                     return result;
                 }
 
-                // Data rows start at sheet row index 1, which corresponds to Excel row 2
-                int firstDataExcelRow = 2;
-                int lastDataExcelRow = ordered.Count + 1;
+                // Data rows start at sheet row index 2, which corresponds to Excel row 3
+                int firstDataExcelRow = 3;
+                int lastDataExcelRow = ordered.Count + 2;
 
                 int[] numericCols = new[] { 4, 5, 6, 7, 8 };
                 foreach (var col in numericCols)
@@ -237,16 +243,16 @@ namespace WebClient.Components.UIComponents.SheetUI
                     var colLetter = ColIndexToLetter(col);
                     // use ROUND around SUM so the formula result is rounded to 2 decimal places
                     var formula = $"=SUM({colLetter}{firstDataExcelRow}:{colLetter}{lastDataExcelRow})";
-                    updater.SetCellNumberFormat(col, 0, "C2");
-                    updater.SetCellFormula(col, 0, formula);
+                    updater.SetCellNumberFormat(col, 1, "0.00");
+                    updater.SetCellFormula(col, 1, formula);
                 }
 
-                // Label the first cell
-                updater.SetCell(0, 0, "SUMA");
+                // Label the summary cell on row 1
+                updater.SetCell(0, 1, "SUMA");
             }
 
-            // Freeze top row via batch updater
-            updater.univerFreezeRows(1);
+            // Freeze header + summary rows via batch updater
+            updater.univerFreezeRows(2);
 
             // Adjust column widths to more realistic values for better display.
 
@@ -262,13 +268,12 @@ namespace WebClient.Components.UIComponents.SheetUI
                 [6] = 80,  // Zniżka
                 [7] = 80,  // Przed znizka
                 [8] = 80,  // Ilość
-                [9] = 40,   // Jednostka
-                [10] = 140, // Kategoria1
-                [11] = 140, // Kategoria2
-                [12] = 140, // Kategoria3
-                [13] = 220, // Tagi
-                [14] = 260, // ID
-                [15] = 380, // Metadane - can be large
+                [9] = 140, // Kategoria1
+                [10] = 140, // Kategoria2
+                [11] = 140, // Kategoria3
+                [12] = 220, // Tagi
+                [13] = 260, // ID
+                [14] = 380, // Metadane - can be large
             };
 
             // apply column widths via batch updater
