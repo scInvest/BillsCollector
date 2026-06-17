@@ -13,6 +13,7 @@
 @using WebClient.Components.UIComponents.SheetUI
 @using WebClient.Components.UIComponents.TabbedBar
 @using WebClient.ViewModels
+@using Microsoft.AspNetCore.Components.Web
 
 @rendermode InteractiveServer
 
@@ -26,7 +27,7 @@
 <!-- Alert component registers with DialogService to show JS alerts -->
 <AlertComponent />
 
-<div class="counter-sections section2-hidden counter-page">
+<div class="counter-sections section2-hidden counter-page" style="padding-left:@_leftPanelWidthPx" @onmousemove="OnResizeMove" @onmouseup="EndResize" @onmouseleave="EndResize">
     <!-- sekcja 1-->
     <section class="counter-section section-1">
         <div class="counter-section-content">
@@ -74,43 +75,82 @@
     <!-- Sekcja numer 4 -->
     <section class="counter-section section-4">
         <div class="counter-section-content">
-            @if (SelectedSheet is null)
-            {
-                <div class="empty-message">
-                    <h1>Dodaj dane by rozpocząć</h1>
+            <div class="counter-split">
+                <div class="counter-split-left" style="width:@_leftPanelWidthPx">
+                    <div class="counter-split-left-content">
+                        @* TODO: left panel content *@
+                    </div>
                 </div>
-            }
+                <div class="counter-split-handle" style="left:@_leftPanelWidthPx" @onmousedown="BeginResize"></div>
+                <div class="counter-split-right">
+                    @if (SelectedSheet is null)
+                    {
+                        <div class="empty-message">
+                            <h1>Dodaj dane by rozpocząć</h1>
+                        </div>
+                    }
 
-            @if (!string.IsNullOrWhiteSpace(LastMenuAction))
-            {
-                <div class="empty-message">
-                    <p>Last datasheet menu action: @LastMenuAction</p>
-                </div>
-            }
+                    @if (!string.IsNullOrWhiteSpace(LastMenuAction))
+                    {
+                        <div class="empty-message">
+                            <p>Last datasheet menu action: @LastMenuAction</p>
+                        </div>
+                    }
 
-            @* Keep all components instantiated but hide those that are not the selected sheet. *@
-            @foreach (var item in dataSheetComponents)
-            {
-                var key = item.Key;
-                var isVisible = SelectedSheet == key;
-                <div style="@($"height: 100%; display:{(isVisible ? "block" : "none")}")">
-                    <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key"></DataSheetComponent>
-                </div>
-            }
+                    @* Keep all components instantiated but hide those that are not the selected sheet. *@
+                    @foreach (var item in dataSheetComponents)
+                    {
+                        var key = item.Key;
+                        var isVisible = SelectedSheet == key;
+                        <div style="@($"height: 100%; display:{(isVisible ? "block" : "none")}")" class="full-height">
+                            <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key"></DataSheetComponent>
+                        </div>
+                    }
 
-            @foreach (var item in dataSheetAnaliticalComponents)
-            {
-                var key = item.Key;
-                var isVisible = SelectedSheet == key;
-                <div style="@($"height: 100%; display:{(isVisible ? "block" : "none")}")">
-                    <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key"></DataSheetComponent>
+                    @foreach (var item in dataSheetAnaliticalComponents)
+                    {
+                        var key = item.Key;
+                        var isVisible = SelectedSheet == key;
+                        <div style="@($"height: 100%; display:{(isVisible ? "block" : "none")}")" class="full-height">
+                            <DataSheetComponent @ref="AddDataSheetComponent" ID="@key" @key="key"></DataSheetComponent>
+                        </div>
+                    }
                 </div>
-            }
+            </div>
         </div>
     </section>
     <!-- sekcja 4-->
 </div>
 @code {
+
+    private double _leftPanelWidth = 320;
+    private bool _isResizing;
+    private double _resizeStartX;
+    private double _resizeStartWidth;
+    private string _leftPanelWidthPx => $"{_leftPanelWidth:0}px";
+
+    private void BeginResize(MouseEventArgs e)
+    {
+        _isResizing = true;
+        _resizeStartX = e.ClientX;
+        _resizeStartWidth = _leftPanelWidth;
+    }
+
+    private void OnResizeMove(MouseEventArgs e)
+    {
+        if (!_isResizing)
+            return;
+
+        var delta = e.ClientX - _resizeStartX;
+        var next = _resizeStartWidth + delta;
+        next = Math.Clamp(next, 200, 900);
+        _leftPanelWidth = next;
+    }
+
+    private void EndResize()
+    {
+        _isResizing = false;
+    }
 
     public DataSheetComponent AddDataSheetComponent
     {
