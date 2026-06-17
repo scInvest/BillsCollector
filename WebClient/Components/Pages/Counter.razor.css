@@ -15,10 +15,7 @@
 
 /* MainLayout wraps pages in `article.content.px-4` (Bootstrap padding). Neutralize it for this page. */
 .counter-page {
-  margin-left: -1.5rem;
-  margin-right: -1.5rem;
-  margin-top: -1.1rem;
-  padding: 0;
+ 
 }
 
 .counter-section {
@@ -56,9 +53,9 @@
 
 .counter-sections.section2-hidden .section-4 {
   flex: 0 0 auto;
-  height: calc(100vh - 200px);
-  min-height: calc(100vh - 200px);
-  max-height: calc(100vh - 200px);
+  height: calc(100vh - 210px);
+  min-height: calc(100vh - 210px);
+  max-height: calc(100vh - 210px);
 }
 
 .counter-section-content {
