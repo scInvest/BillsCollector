@@ -5,6 +5,7 @@ using CostAnalizerApp;
 using CostAnalizerApp.Interfaces;
 using System;
 using System.Linq;
+using System.Globalization;
 using SharedCode;
 using BlazorDatasheet.Formula.Core.Interpreter;
 using WebClient.Components.UIComponents.UniverSheet;
@@ -72,210 +73,212 @@ namespace WebClient.Components.UIComponents.SheetUI
                 var root = item.Value;
                 Traverse(root, 0);
             }
+            updater.BeginUpdate();
 
             // Ensure sheet has enough rows to contain all nodes plus buffer
-            try
+            var requiredRows = ordered.Count + 50;
+            if (univerDataSheet.SheetWidth < requiredRows)
             {
-                var requiredRows = ordered.Count + 50;
-                if (univerDataSheet.NumRows < requiredRows)
-                {
-                    // use batch updater to set total row count instead of inserting
-                    updater.univerSetRowCount(requiredRows);
-                }
-
-                var requiredCols = this.Headers?.Length ?? 0;
-                if (univerDataSheet.NumCols < requiredCols)
-                {
-                    // use batch updater to set total column count instead of inserting
-                    updater.univerSetColumnCount(requiredCols);
-                }
-            }
-            catch
-            {
-                // swallow - operations against the sheet/updater may throw for invalid ops
+                // use batch updater to set total row count instead of inserting
+                updater.univerSetRowCount(requiredRows);
             }
 
-            //// Fill cells according to headers mapping
-            //// Column mapping:
-            //// 0: Rodzaj (depth)
-            //// 1: Data
-            //// 2: Nazwa(oryginalna)
-            //// 3: Nazwa
-            //// 4: Kwota łącznie
-            //// 5: Kwota
-            //// 6: Zniżka
-            //// 7: Przed znizka
-            //// 8: Ilość
-            //// 9: Jednostka
-            //// 10-12: Kategoria1..3
-            //// 13: Tagi
-            //// 14: ID
-            //// 15: Metadane
+            var requiredCols = this.Headers?.Length ?? 0;
+            if (univerDataSheet.SheetHeight < requiredCols)
+            {
+                // use batch updater to set total column count instead of inserting
+                updater.univerSetColumnCount(requiredCols);
+            }
 
-            //for (int row = 1; row < ordered.Count+1; row++)
-            //{
-            //    var (node, depth) = ordered[row-1];
+            // Start batch update
 
-            //    // Rodzaj = depth
-            //    sheet.Cells.SetValue(row, 0, new CellValue(depth));
 
-            //    // Data
-            //    sheet.Cells.SetValue(row, 1, new CellValue(node.Date.ToString("yyyy-MM-dd HH:mm")));
+            // Fill cells according to headers mapping
+            // Column mapping:
+            // 0: Rodzaj (depth)
+            // 1: Data
+            // 2: Nazwa(oryginalna)
+            // 3: Nazwa
+            // 4: Kwota łącznie
+            // 5: Kwota
+            // 6: Zniżka
+            // 7: Przed znizka
+            // 8: Ilość
+            // 9: Jednostka
+            // 10-12: Kategoria1..3
+            // 13: Tagi
+            // 14: ID
+            // 15: Metadane
 
-            //    // Names
-            //    sheet.Cells.SetValue(row, 2, new CellValue(node.Name ?? string.Empty));
-            //    sheet.Cells.SetValue(row, 3, new CellValue(node.UserFriendlyName ?? string.Empty));
+            for (int row = 1; row < ordered.Count + 1; row++)
+            {
+                var (node, depth) = ordered[row - 1];
 
-            //    var summary = node.Summary;
+                // Rodzaj = depth
+                updater.SetCell(0, row, depth.ToString(CultureInfo.InvariantCulture));
 
-            //    if (node.Node.Childs != null && node.Node.Childs.Count > 0)
-            //    {
-            //        // parent node: put aggregated total only (rounded)
-            //        sheet.Cells.SetValue(row, 4, new CellValue(Math.Round((decimal)(summary?.Total ?? 0.0), 2)));
-            //        sheet.Cells.SetType(row, 4, "C2");
+                // Data
+                updater.SetCell(1, row, node.Date.ToString("yyyy-MM-dd HH:mm"));
 
-            //        // leave individual fields empty
-            //        sheet.Cells.SetValue(row, 5, new CellValue(string.Empty));
-            //        sheet.Cells.SetValue(row, 6, new CellValue(string.Empty));
-            //        sheet.Cells.SetValue(row, 7, new CellValue(string.Empty));
+                // Names
+                updater.SetCell(2, row, node.Name ?? string.Empty);
+                updater.SetCell(3, row, node.UserFriendlyName ?? string.Empty);
 
-            //        // lightly shade parent row
-            //        try
-            //        {
-            //            var cols = this.Headers?.Length ?? sheet.NumCols;
-            //            for (int c = 0; c < cols; c++)
-            //            {
-            //                var cell = sheet.Cells[row, c];
-            //                var fmt = cell.Format.Clone();
-            //                fmt.BackgroundColor = "#f2f2f2"; // light gray
-            //                cell.Format = fmt;
-            //            }
-            //        }
-            //        catch
-            //        {
-            //            // ignore formatting errors
-            //        }
-            //    }
-            //    else
-            //    {
-            //        // leaf/child: put individual amounts (raw values); formatting via cell type
-            //        sheet.Cells.SetValue(row, 4, new CellValue(string.Empty));
-            //        sheet.Cells.SetValue(row, 5, new CellValue(Math.Round((decimal)(summary?.Cost ?? 0.0), 2)));
-            //        sheet.Cells.SetType(row, 5, "C2");
-            //        sheet.Cells.SetValue(row, 6, new CellValue(Math.Round((decimal)(summary?.Discount ?? 0.0), 2)));
-            //        sheet.Cells.SetType(row, 6, "C2");
-            //        sheet.Cells.SetValue(row, 7, new CellValue(Math.Round((decimal)(summary?.Total ?? 0.0), 2)));
-            //        sheet.Cells.SetType(row, 7, "C2");
-            //    }
+                var summary = node.Summary;
 
-            //    // Quantity and unit
-            //    try
-            //    {
-            //        var qty = summary?.Quantity;
-            //            if (qty != null)
-            //            {
-            //                sheet.Cells.SetValue(row, 8, new CellValue(Math.Round((decimal)qty.Amount, 2)));
-            //                sheet.Cells.SetType(row, 8, "C2");
-            //                sheet.Cells.SetValue(row, 9, new CellValue(qty.Unit ?? string.Empty));
-            //            }
-            //        else
-            //        {
-            //            sheet.Cells.SetValue(row, 8, new CellValue(string.Empty));
-            //            sheet.Cells.SetValue(row, 9, new CellValue(string.Empty));
-            //        }
-            //    }
-            //    catch
-            //    {
-            //        sheet.Cells.SetValue(row, 8, new CellValue(string.Empty));
-            //        sheet.Cells.SetValue(row, 9, new CellValue(string.Empty));
-            //    }
+                if (node.Node.Childs != null && node.Node.Childs.Count > 0)
+                {
+                    // parent node: put aggregated total only (rounded)
+                    var total = Math.Round((decimal)(summary?.Total ?? 0.0), 2);
+                    updater.SetCell(4, row, total.ToString(CultureInfo.InvariantCulture));
+                    updater.SetCellNumberFormat(4, row, "C2");
 
-            //    // Categories - unavailable, leave empty
-            //    sheet.Cells.SetValue(row, 10, new CellValue(string.Empty));
-            //    sheet.Cells.SetValue(row, 11, new CellValue(string.Empty));
-            //    sheet.Cells.SetValue(row, 12, new CellValue(string.Empty));
+                    // leave individual fields empty
+                    updater.SetCell(5, row, string.Empty);
+                    updater.SetCell(6, row, string.Empty);
+                    updater.SetCell(7, row, string.Empty);
 
-            //    // Tags
-            //    var tags = node.Tags?.Tags;
-            //    sheet.Cells.SetValue(row, 13, new CellValue(tags != null && tags.Count > 0 ? string.Join(", ", tags) : string.Empty));
+                    // lightly shade parent row
+                    try
+                    {
+                        var cols = this.Headers?.Length ?? univerDataSheet.SheetWidth;
+                        for (int c = 0; c < cols; c++)
+                        {
+                            updater.SetCellColor(c, row, "#f2f2f2"); // light gray
+                        }
+                    }
+                    catch
+                    {
+                        // ignore formatting errors
+                    }
+                }
+                else
+                {
+                    // leaf/child: put individual amounts (raw values); formatting via cell type
+                    updater.SetCell(4, row, string.Empty);
 
-            //    // ID
-            //    sheet.Cells.SetValue(row, 14, new CellValue(node.Id?.ToString() ?? string.Empty));
+                    var cost = Math.Round((decimal)(summary?.Cost ?? 0.0), 2);
+                    updater.SetCell(5, row, cost.ToString(CultureInfo.InvariantCulture));
+                    updater.SetCellNumberFormat(5, row, "C2");
 
-            //    // Metadane - try decorations ToString
-            //    sheet.Cells.SetValue(row, 15, new CellValue(node.Decorations?.ToString() ?? string.Empty));
-            //}
+                    var discount = Math.Round((decimal)(summary?.Discount ?? 0.0), 2);
+                    updater.SetCell(6, row, discount.ToString(CultureInfo.InvariantCulture));
+                    updater.SetCellNumberFormat(6, row, "C2");
 
-            //// Put summary formulas in the pinned first row (row 0)
-            //if (ordered.Count > 0)
-            //{
-            //    string ColIndexToLetter(int col)
-            //    {
-            //        const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            //        var result = string.Empty;
-            //        var value = col + 1; // 1-based
-            //        while (value > 0)
-            //        {
-            //            var rem = (value - 1) % 26;
-            //            result = letters[rem] + result;
-            //            value = (value - 1) / 26;
-            //        }
-            //        return result;
-            //    }
+                    var totalLeaf = Math.Round((decimal)(summary?.Total ?? 0.0), 2);
+                    updater.SetCell(7, row, totalLeaf.ToString(CultureInfo.InvariantCulture));
+                    updater.SetCellNumberFormat(7, row, "C2");
+                }
 
-            //    // Data rows start at sheet row index 1, which corresponds to Excel row 2
-            //    int firstDataExcelRow = 2;
-            //    int lastDataExcelRow = ordered.Count + 1;
+                // Quantity and unit (use batch updater)
+                try
+                {
+                    var qty = summary?.Quantity;
+                    if (qty != null)
+                    {
+                        var amt = Math.Round((decimal)qty.Amount, 2).ToString(CultureInfo.InvariantCulture);
+                        updater.SetCell(8, row, amt);
+                        updater.SetCellNumberFormat(8, row, "C2");
+                        updater.SetCell(9, row, qty.Unit ?? string.Empty);
+                    }
+                    else
+                    {
+                        updater.SetCell(8, row, string.Empty);
+                        updater.SetCell(9, row, string.Empty);
+                    }
+                }
+                catch
+                {
+                    updater.SetCell(8, row, string.Empty);
+                    updater.SetCell(9, row, string.Empty);
+                }
 
-            //    int[] numericCols = new[] { 4, 5, 6, 7, 8 };
-            //    foreach (var col in numericCols)
-            //    {
-            //        var colLetter = ColIndexToLetter(col);
-            //        // use ROUND around SUM so the formula result is rounded to 2 decimal places
-            //        var formula = $"=SUM({colLetter}{firstDataExcelRow}:{colLetter}{lastDataExcelRow})";
-            //        sheet.Cells.SetType(0, col, "C2");
-            //        sheet.Cells.SetFormula(0, col, formula);
-            //    }
+                // Categories - unavailable, leave empty (use batch updater)
+                updater.SetCell(10, row, string.Empty);
+                updater.SetCell(11, row, string.Empty);
+                updater.SetCell(12, row, string.Empty);
 
-            //    // Label the first cell
-            //    sheet.Cells.SetValue(0, 0, new CellValue("SUMA"));
-            //}
+                // Tags
+                var tags = node.Tags?.Tags;
+                var tagsText = tags != null && tags.Count > 0 ? string.Join(", ", tags) : string.Empty;
+                updater.SetCell(13, row, tagsText);
 
-            //sheet.FreezeTopRows(1);
+                // ID
+                updater.SetCell(14, row, node.Id?.ToString() ?? string.Empty);
 
-            //// Adjust column widths to more realistic values for better display.
+                // Metadane - try decorations ToString
+                updater.SetCell(15, row, node.Decorations?.ToString() ?? string.Empty);
+            }
 
-            //    void TrySetColWidth(int colIndex, int widthPx)
-            //    {
-            //        sheet.Columns.SetSize(colIndex, widthPx);
-            //    }
+            // Put summary formulas in the pinned first row (row 0)
+            if (ordered.Count > 0)
+            {
+                string ColIndexToLetter(int col)
+                {
+                    const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    var result = string.Empty;
+                    var value = col + 1; // 1-based
+                    while (value > 0)
+                    {
+                        var rem = (value - 1) % 26;
+                        result = letters[rem] + result;
+                        value = (value - 1) / 26;
+                    }
+                    return result;
+                }
 
-            //    // sensible defaults per header index
-            //    var widths = new Dictionary<int, int>
-            //    {
-            //        [0] = 36,   // Rodzaj (type/depth) - small
-            //        [1] = 140,  // Data - include time
-            //        [2] = 200,  // Nazwa(oryginalna) - long
-            //        [3] = 240,  // Nazwa - long
-            //        [4] = 100,  // Kwota łącznie
-            //        [5] = 100,  // Kwota
-            //        [6] = 80,  // Zniżka
-            //        [7] = 80,  // Przed znizka
-            //        [8] = 80,  // Ilość
-            //        [9] = 40,   // Jednostka
-            //        [10] = 140, // Kategoria1
-            //        [11] = 140, // Kategoria2
-            //        [12] = 140, // Kategoria3
-            //        [13] = 220, // Tagi
-            //        [14] = 260, // ID
-            //        [15] = 380, // Metadane - can be large
-            //    };
+                // Data rows start at sheet row index 1, which corresponds to Excel row 2
+                int firstDataExcelRow = 2;
+                int lastDataExcelRow = ordered.Count + 1;
 
-            //    foreach (var kv in widths)
-            //    {
-            //        TrySetColWidth(kv.Key, kv.Value);
-            //    }
+                int[] numericCols = new[] { 4, 5, 6, 7, 8 };
+                foreach (var col in numericCols)
+                {
+                    var colLetter = ColIndexToLetter(col);
+                    // use ROUND around SUM so the formula result is rounded to 2 decimal places
+                    var formula = $"=SUM({colLetter}{firstDataExcelRow}:{colLetter}{lastDataExcelRow})";
+                    updater.SetCellNumberFormat(col, 0, "C2");
+                    updater.SetCellFormula(col, 0, formula);
+                }
 
+                // Label the first cell
+                updater.SetCell(0, 0, "SUMA");
+            }
+
+            // Freeze top row via batch updater
+            updater.univerFreezeRows(1);
+
+            // Adjust column widths to more realistic values for better display.
+
+            // sensible defaults per header index
+            var widths = new Dictionary<int, int>
+            {
+                [0] = 36,   // Rodzaj (type/depth) - small
+                [1] = 140,  // Data - include time
+                [2] = 200,  // Nazwa(oryginalna) - long
+                [3] = 240,  // Nazwa - long
+                [4] = 100,  // Kwota łącznie
+                [5] = 100,  // Kwota
+                [6] = 80,  // Zniżka
+                [7] = 80,  // Przed znizka
+                [8] = 80,  // Ilość
+                [9] = 40,   // Jednostka
+                [10] = 140, // Kategoria1
+                [11] = 140, // Kategoria2
+                [12] = 140, // Kategoria3
+                [13] = 220, // Tagi
+                [14] = 260, // ID
+                [15] = 380, // Metadane - can be large
+            };
+
+            // apply column widths via batch updater
+            foreach (var kv in widths)
+            {
+                updater.univerSetColumnWidth(kv.Key, kv.Value);
+            }
+
+            // Finish batch update and push to JS
+            await updater.EndUpdateAsync();
         }
 
         public void OnDataAdded()
@@ -285,7 +288,7 @@ namespace WebClient.Components.UIComponents.SheetUI
 
         public void OnDataRemoved()
         {
- 
+
         }
 
         public void OnSheetDeleted()

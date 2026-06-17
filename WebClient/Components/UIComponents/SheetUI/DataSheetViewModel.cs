@@ -12,23 +12,39 @@ namespace WebClient.Components.UIComponents.SheetUI
     {
 
         private Func<UniverSheet.UniverDataSheet?> _univerSheetFactory;
-
-        public DataSheetViewModel(Func<ComponentBase> getComponent )
+        private bool logicInitialized = false;
+        public DataSheetViewModel(Func<ComponentBase> getComponent)
             : base(getComponent)
         {
-            
+
         }
-    
+
+        public async Task BlazorLifeCycle_InitDataSheetLogicIfNeeded()
+        {
+            if (IsInitNeeded())
+            {
+                this.BeginUpdate();
+                if (UniverSheet != null)
+                {
+                    await DataSheetLogic.Init(this, UniverSheet);
+                }
+                logicInitialized = true;
+                this.EndUpdate(); 
+            }
+        }
+
+        private bool IsInitNeeded()
+        {
+            if(this.DataSheetLogic != null && UniverSheet != null && !logicInitialized)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public async Task BlazorLifeCycle_UniverSheetReady(Func<UniverSheet.UniverDataSheet?> univerSheet)
         {
-            this.BeginUpdate();
-            
             _univerSheetFactory = univerSheet;
-
-            if (DataSheetLogic != null)
-            {
-                 await DataSheetLogic.Init(this, UniverSheet);
-            }
         }
 
         private string[] _headers;
@@ -57,7 +73,7 @@ namespace WebClient.Components.UIComponents.SheetUI
                     this.BeginUpdate();
                     this.Headers = value!.Headers;
                     _dataSheetLogic = value;
-
+                    logicInitialized = false;
                     //value.Init(this, UniverSheet);
                     OnPropertyChanged();
                     Refresh();
@@ -66,6 +82,6 @@ namespace WebClient.Components.UIComponents.SheetUI
             }
         }
 
-        public UniverSheet.UniverDataSheet UniverSheet => _univerSheetFactory() ?? throw new InvalidOperationException("UniverSheet is not available.");
+        public UniverSheet.UniverDataSheet? UniverSheet => _univerSheetFactory();
     }
 }

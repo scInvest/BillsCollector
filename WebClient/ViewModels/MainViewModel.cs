@@ -1,11 +1,8 @@
-using BlazorDatasheet.Core.Data;
 using CostAnalizerApp;
 using SharedCode;
-using System.Diagnostics.Metrics;
 using WebClient.Components.Pages;
 using WebClient.Components.UIComponents.DataPicker;
 using WebClient.Components.UIComponents.SheetUI;
-using WebClient.ViewModels;
 
 namespace WebClient.ViewModels
 {

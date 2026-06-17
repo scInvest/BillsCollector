@@ -1,5 +1,4 @@
 @using Microsoft.JSInterop
-@using WebClient.Components.UIComponents.SheetUI
 @implements IDisposable
 @inject IJSRuntime JS
 
@@ -281,9 +280,6 @@
     public int SheetWidth => _sheetWidth;
     public int SheetHeight => _sheetHeight;
 
-    [Parameter]
-    public DataSheetViewModel ViewModel { get; set; }
-
     public UniverDataSheet()
     {
         BatchSheetUpdater = new BatchSheetUpdater(() => JS);
@@ -357,7 +353,21 @@
 
     public async Task ShowAlert()
     {
-        await JS.InvokeVoidAsync("alert", $"Hello word");
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        //await JS.InvokeVoidAsync("univerSetCells", 0, 0, 15, 50, "test");
+        BatchSheetUpdater.BeginUpdate();
+
+        for (int i = 0; i < 10; i++)
+        {
+            for (int y = 0; y < 50; y++)
+            {
+                BatchSheetUpdater.SetCell(i, y, "test");
+            }
+        }
+        await BatchSheetUpdater.EndUpdateAsync();
+        sw.Stop();
+        var elapsedMs = sw.Elapsed.TotalMilliseconds;
+        //await JS.InvokeVoidAsync("alert", $"Operation took {elapsedMs:F2} ms");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -369,27 +379,19 @@
             BatchSheetUpdater.BeginUpdate();
             BatchSheetUpdater.univerSetColumnCount(26);
             BatchSheetUpdater.univerSetRowCount(1000);
+            BatchSheetUpdater.univerSetColumnWidth(2, 10);
+            BatchSheetUpdater.univerSetRowHeight(2, 10);
+            for (int i = 0; i < 10; i++)
+            {
+                for (int y = 0; y < 50; y++)
+                {
+                    // BatchSheetUpdater.SetCell(i, y, 123.34534534.ToString());
+                    BatchSheetUpdater.SetCellFormula(i, y, "=SUM(A1:A10)");
+                    BatchSheetUpdater.SetCellColor(i, y, "#ff0000");
+                    BatchSheetUpdater.SetCellNumberFormat(i, y, 2);
+                }
+            }
             await BatchSheetUpdater.EndUpdateAsync();
-            ViewModel.BlazorLifeCycle_InitDataSheetLogicIfNeeded();
-
-            // BatchSheetUpdater.univerSetColumnWidth(2, 10);
-            // BatchSheetUpdater.univerSetRowHeight(2, 10);
-            // for (int i = 0; i < 10; i++)
-            // {
-            //     for (int y = 0; y < 50; y++)
-            //     {
-            //         // BatchSheetUpdater.SetCell(i, y, 123.34534534.ToString());
-            //         BatchSheetUpdater.SetCellFormula(i, y, "=SUM(A1:A10)");
-            //         BatchSheetUpdater.SetCellColor(i, y, "#ff0000");
-            //         BatchSheetUpdater.SetCellNumberFormat(i, y, 2);
-            //     }
-            // }
-            // await BatchSheetUpdater.EndUpdateAsync();
-        }
-        else
-        {
         }
     }
-
-
 }
