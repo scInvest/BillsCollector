@@ -1,6 +1,20 @@
 ﻿/* Styles for DataPicker component */
 .data-picker {
   display: inline-block;
+  margin-bottom: 5px; /* add vertical spacing between buttons */
+}
+
+/* container to center the pickers and style the header */
+.data-picker-container {
+  text-align: center; /* center child inline-block pickers */
+  padding: 12px 0;
+}
+
+.data-picker-container h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #222222;
 }
 
 .data-picker-btn {
@@ -113,7 +127,7 @@
     #ff7a00 25%, #ff7a00 50%,
     #8b0000 50%, #8b0000 75%,
     #2ecc71 75%, #2ecc71 100%);
-  border: 3px solid #ff7a00; /* orange border */
+  border: 2px solid #ff7a00; /* orange border (reduced by 1px) */
   color: #ffffff; /* white text */
   font-weight: 700;
   box-shadow: none;
@@ -212,6 +226,12 @@
 
 .underline {
     text-decoration: underline;
+}
+
+/* Apply fixed width only to the span that contains the shop name */
+.data-picker .data-picker-btn .label-text {
+  display: inline-block; /* allow width to apply */
+  width: 100px;
 }
 
 

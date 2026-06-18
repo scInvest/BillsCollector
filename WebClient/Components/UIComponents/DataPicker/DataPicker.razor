@@ -2,7 +2,9 @@
 
 @inject WebClient.Components.UIServices.DialogService DialogService
 
-<div><TextInputModal @ref="Dialog"></TextInputModal>
+<div class="data-picker-container">
+    <h3>Dodaj dane</h3>
+    <TextInputModal @ref="Dialog"></TextInputModal>
     <!-- Enable Biedronka theme by default -->
     <div class="data-picker biedronka">
         <label class="data-picker-btn" role="button">
@@ -15,9 +17,8 @@
             <span class="label-text">Biedronka</span>
         </label>
     </div>
-
     <!-- mBank themed picker: striped background (red, orange, burgundy, green) with white 'mbank' text -->
-    <div class="data-picker mbank" style="display:inline-block; margin-left:12px">
+    <div class="data-picker mbank">
         <label class="data-picker-btn" role="button">
             <InputFile OnChange="HandleFileSelected_MBank" hidden multiple />
             <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -30,7 +31,7 @@
     </div>
 
     <!-- Allegro themed picker: white background, orange text and border -->
-    <div class="data-picker allegro" style="display:inline-block; margin-left:12px">
+    <div class="data-picker allegro">
         <label class="data-picker-btn" role="button">
             <InputFile OnChange="HandleFileSelected_Allegro" hidden multiple />
             <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -43,7 +44,7 @@
     </div>
 
     <!-- Kaufland themed picker: white background, red border and text -->
-    <div class="data-picker kaufland" style="display:inline-block; margin-left:12px">
+    <div class="data-picker kaufland">
         <label class="data-picker-btn" role="button">
             <InputFile OnChange="HandleFileSelected_Kaufland" hidden multiple />
             <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -55,21 +56,8 @@
         </label>
     </div>
 
-    <!-- Custom pale-green CSV picker -->
-    <div class="data-picker csv-custom" style="display:inline-block; margin-left:12px">
-        <label class="data-picker-btn" role="button">
-            <InputFile OnChange="HandleFileSelected_CsvCustom" hidden multiple />
-            <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="label-text">Custom</span>
-        </label>
-    </div>
-
     <!-- Żabka themed picker: dark green background, light flashy green border and text -->
-    <div class="data-picker zabka" style="display:inline-block; margin-left:12px">
+    <div class="data-picker zabka">
         <label class="data-picker-btn" role="button">
             <InputFile OnChange="HandleFileSelected_Zabka" hidden multiple />
             <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -82,4 +70,18 @@
             </span>
         </label>
     </div>
+
+    <!-- Custom pale-green CSV picker -->
+    <div class="data-picker csv-custom">
+        <label class="data-picker-btn" role="button">
+            <InputFile OnChange="HandleFileSelected_CsvCustom" hidden multiple />
+            <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="7 10 12 5 17 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <line x1="12" y1="5" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="label-text">Custom</span>
+        </label>
+    </div>
+
 </div>
