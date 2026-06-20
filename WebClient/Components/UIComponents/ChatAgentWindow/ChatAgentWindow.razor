@@ -1,7 +1,32 @@
 <div class="agent-chat-window">
     <div class="agent-chat-window__frame">
-        <div class="agent-chat-window__center">
+        <section class="agent-chat-window__top">
+            <h3>_title_</h3>
+
+            <div class="agent-chat-window__actions">
+                <div class="agent-chat-window__panel-left">
+                    @PanelLewy
+                </div>
+
+                <div class="agent-chat-window__panel-right">
+                    <button type="button" aria-label="Nowy wątek" title="Nowy wątek" @onclick="UserInput_NewThread">
+                        <span aria-hidden="true">＋</span>
+                    </button>
+
+                    <button type="button" aria-label="Skasuj wątek" title="Skasuj wątek" @onclick="UserInput_DeleteThread">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="agent-chat-window__center">
             <h1>_chat_</h1>
-        </div>
+        </section>
+
+        <section class="agent-chat-window__bottom">
+            <h1>Input</h1>
+            <input type="text" placeholder="Type here..." />
+        </section>
     </div>
 </div>
