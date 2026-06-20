@@ -1,0 +1,36 @@
+.agent-chat-window {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex: 1 1 auto;
+    box-sizing: border-box;
+}
+
+.agent-chat-window__frame {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+}
+
+.agent-chat-window__center {
+    flex: 1 1 auto;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.agent-chat-window__center h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: #e5eefc;
+    letter-spacing: 0.04em;
+    text-align: center;
+}

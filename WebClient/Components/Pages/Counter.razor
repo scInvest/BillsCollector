@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using BlazorDatasheet.Core.Data
 @using BlazorDatasheet
 @using BlazorDatasheet.Core
@@ -9,6 +9,7 @@
 @using MudBlazor
 @using WebClient.Components.UIComponents
 @using WebClient.Components.UIComponents.DataPicker
+@using WebClient.Components.UIComponents.ChatAgentWindow
 @using WebClient.Components.UIComponents.Dialogs
 @using WebClient.Components.UIComponents.SheetUI
 @using WebClient.Components.UIComponents.TabbedBar
@@ -77,9 +78,15 @@
             <div class="counter-split">
                 <div class="counter-split-left" style="width:@_leftPanelWidthPx">
                     <div class="counter-split-left-content">
-                        <DataPicker @ref="dataPicker" ViewModelCallBack="() => this.ViewModel.DataPickerViewModel">
+                        <div class="counter-left-stack">
+                            <DataPicker @ref="dataPicker" ViewModelCallBack="() => this.ViewModel.DataPickerViewModel">
 
-                        </DataPicker>
+                            </DataPicker>
+
+                            <div class="counter-chat-host">
+                                <ChatAgentWindow />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="counter-split-handle" style="left:@_leftPanelWidthPx" @onmousedown="BeginResize"></div>
@@ -124,7 +131,7 @@
 </div>
 @code {
 
-    private double _leftPanelWidth = 320;
+    private double _leftPanelWidth = 352;
     private bool _isResizing;
     private double _resizeStartX;
     private double _resizeStartWidth;
