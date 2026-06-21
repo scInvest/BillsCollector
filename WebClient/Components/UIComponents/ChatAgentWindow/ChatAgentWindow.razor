@@ -9,6 +9,12 @@
 
                     <select aria-label="Historia wiadomości" title="Historia wiadomości">
                         <option selected disabled>Historia wiadomości</option>
+                        @foreach (var conversation in ViewModel?.Conversations ?? [])
+                        {
+                            <option value="@conversation.Id" selected="@(ViewModel?.ActiveChat?.Id == conversation.Id)">
+                                @conversation.Title
+                            </option>
+                        }
                     </select>
                 </div>
 

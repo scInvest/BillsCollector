@@ -1,5 +1,6 @@
 using CostAnalizerApp;
 using SharedCode;
+using WebClient.Components.UIComponents.ChatAgent;
 using WebClient.Components.Pages;
 using WebClient.Components.UIComponents.DataPicker;
 using WebClient.Components.UIComponents.SheetUI;
@@ -41,6 +42,7 @@ namespace WebClient.ViewModels
         private List<ExistingSheetsCreated> sheets = new List<ExistingSheetsCreated>();
         private Func<CostAnalizerApplication> costAnalizerApp;
 
+        public ChatAgentViewModel ChatAgentViewModel { get; set; }
         public DataPickerViewModel DataPickerViewModel { get; set; }
         public CostAnalizerApplication CostAnalizerApp => costAnalizerApp();
         public Counter MainPage => (base.Component as Counter)!;
@@ -51,6 +53,7 @@ namespace WebClient.ViewModels
             System.Func<CostAnalizerApplication> mainApp)
             : base(getComponent)
         {
+            ChatAgentViewModel = new ChatAgentViewModel(getComponent);
             DataPickerViewModel = new DataPickerViewModel(getDatPicker, mainApp);
             DataPickerViewModel.UserInputBeforeDataAdded += DataPickerViewModel_UserInputBeforeDataAdded;
             DataPickerViewModel.UserInputAfterDataAdded += DataPickerViewModel_UserInputAfterDataAdded;

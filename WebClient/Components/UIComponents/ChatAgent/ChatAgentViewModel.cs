@@ -1,0 +1,99 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Components;
+using WebClient.ViewModels;
+
+namespace WebClient.Components.UIComponents.ChatAgent;
+
+public class ChatAgentViewModel : ViewModelBase
+{
+    public Guid Id { get; } = Guid.NewGuid();
+
+    public List<ConversationViewModel> Conversations { get; } = new();
+
+    private ConversationViewModel? activeChat;
+
+    public ConversationViewModel? ActiveChat
+    {
+        get => activeChat;
+        set
+        {
+            if (ReferenceEquals(activeChat, value))
+            {
+                return;
+            }
+
+            activeChat = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ChatAgentViewModel(Func<ComponentBase> getComponent)
+        : base(getComponent)
+    {
+        EnsureConversationExists();
+    }
+
+    public void UserInput_NewThread()
+    {
+        var conversation = CreateConversation();
+
+        Conversations.Add(conversation);
+        ActiveChat = conversation;
+    }
+
+    public void UserInput_DeleteThread()
+    {
+        if (ActiveChat is null)
+        {
+            EnsureConversationExists();
+            return;
+        }
+
+        if (Conversations.Count <= 1)
+        {
+            var oldChat = ActiveChat ?? Conversations.FirstOrDefault();
+            var replacementConversation = CreateConversation();
+            Conversations.Add(replacementConversation);
+            if (oldChat != null)
+            {
+                Conversations.Remove(oldChat);
+            }
+
+            ActiveChat = replacementConversation;
+            EnsureConversationExists();
+            return;
+        }
+
+        Conversations.Remove(ActiveChat);
+        ActiveChat = Conversations.Count > 0 ? Conversations[0] : null;
+
+        EnsureConversationExists();
+    }
+
+    private ConversationViewModel CreateConversation()
+    {
+        return new ConversationViewModel(() => Component)
+        {
+            Title = "Nowy chat"
+        };
+    }
+
+    private void EnsureConversationExists()
+    {
+        if (Conversations.Count > 0)
+        {
+            if (ActiveChat is null || !Conversations.Any(x => x.Id == ActiveChat.Id))
+            {
+                ActiveChat = Conversations[0];
+            }
+
+            return;
+        }
+
+        var conversation = CreateConversation();
+        Conversations.Add(conversation);
+        ActiveChat = conversation;
+    }
+}

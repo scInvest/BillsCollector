@@ -148,6 +148,7 @@ namespace WebClient.ViewModels
             {
                 Parent?.RefreshInternal(Propagate.This | Propagate.Parents);
             }
+
         }
 
         public void Refresh(Propagate propagate)
