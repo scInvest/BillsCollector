@@ -72,6 +72,11 @@ public class ChatAgentViewModel : ViewModelBase
         EnsureConversationExists();
     }
 
+    public void UserInput_RenameConversation(ConversationViewModel conversation)
+    {
+        Console.WriteLine();
+    }
+
     private ConversationViewModel CreateConversation()
     {
         return new ConversationViewModel(() => Component)

@@ -41,7 +41,7 @@
 }
 
 .counter-split-left-content {
-  padding: 8px;
+  padding: 8px 0 8px 8px;
   box-sizing: border-box;
   height: 100%;
   display: flex;
@@ -53,6 +53,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 }
 
 .counter-chat-host {

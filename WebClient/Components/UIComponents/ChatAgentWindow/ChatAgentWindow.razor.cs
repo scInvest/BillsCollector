@@ -21,4 +21,9 @@ public partial class ChatAgentWindow : ComponentBase
     {
         ViewModel?.UserInput_DeleteThread();
     }
+
+    private void UserInput_RenameConversation(ConversationViewModel conversation)
+    {
+        ViewModel?.UserInput_RenameConversation(conversation);
+    }
 }

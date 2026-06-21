@@ -7,15 +7,22 @@
                 <div class="agent-chat-window__panel-left">
                     @PanelLewy
 
-                    <select aria-label="Historia wiadomości" title="Historia wiadomości">
-                        <option selected disabled>Historia wiadomości</option>
+                    <div class="agent-chat-window__conversation-list">
                         @foreach (var conversation in ViewModel?.Conversations ?? [])
                         {
-                            <option value="@conversation.Id" selected="@(ViewModel?.ActiveChat?.Id == conversation.Id)">
-                                @conversation.Title
-                            </option>
+                            <div class="agent-chat-window__conversation-item @(ViewModel?.ActiveChat?.Id == conversation.Id ? "is-active" : string.Empty)" @key="conversation.Id">
+                                <span class="agent-chat-window__conversation-title">@conversation.Title</span>
+
+                                <button type="button"
+                                        class="agent-chat-window__rename-button"
+                                        title="Rename"
+                                        aria-label="Rename"
+                                        @onclick="() => UserInput_RenameConversation(conversation)">
+                                    <span aria-hidden="true">✎</span>
+                                </button>
+                            </div>
                         }
-                    </select>
+                    </div>
                 </div>
 
                 <div class="agent-chat-window__panel-right">
