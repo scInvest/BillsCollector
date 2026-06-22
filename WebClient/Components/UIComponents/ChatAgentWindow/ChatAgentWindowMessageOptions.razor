@@ -1,16 +1,14 @@
 <div class="agent-chat-window-message-options">
     <label class="agent-chat-window-message-options__field">
-        <span>Tryb</span>
         <select @bind="ViewModel.SelectedMode">
             @foreach (var mode in ViewModel.Modes)
             {
-                <option value="@mode">@mode</option>
+                <option value="@mode.Value" title="@mode.Tooltip">@mode.Value</option>
             }
         </select>
     </label>
 
     <label class="agent-chat-window-message-options__field">
-        <span>Model</span>
         <select @bind="ViewModel.SelectedModel">
             @foreach (var model in ViewModel.Models)
             {
