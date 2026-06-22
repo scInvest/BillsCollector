@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
+using System.ComponentModel;
 using WebClient.Components.UIComponents.ChatAgent;
 using WebClient.ViewModels;
 
@@ -16,15 +17,18 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
     };
     private static readonly IReadOnlyList<string> models = new[] { "GPT-5.4 mini", "GPT-5.4" };
 
-    public ChatAgentViewModel ParentViewModel { get; }
+    private readonly ChatAgentViewModel parentViewModel;
 
     private string selectedMode = modes[0].Value;
     private string selectedModel = models[0];
+    private string sendButtonClass = "is-ready";
 
     public ChatAgentWindowMessageOptionsViewModel(ChatAgentViewModel parentViewModel, Func<ComponentBase> getComponent)
         : base(getComponent)
     {
-        ParentViewModel = parentViewModel;
+        this.parentViewModel = parentViewModel;
+        this.parentViewModel.PropertyChanged += ParentViewModel_PropertyChanged;
+        UpdateSendButtonClass();
     }
 
     public IReadOnlyList<ModeOption> Modes => modes;
@@ -59,5 +63,35 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
             selectedModel = value;
             OnPropertyChanged();
         }
+    }
+
+    public string SendButtonClass => sendButtonClass;
+
+    public void UserInput_Send()
+    {
+        parentViewModel.UserInput_Send();
+    }
+
+    private void ParentViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is null || e.PropertyName == nameof(ChatAgentViewModel.State))
+        {
+            UpdateSendButtonClass();
+        }
+    }
+
+    private void UpdateSendButtonClass()
+    {
+        var nextClass = parentViewModel.State == ChatAgentViewModel.ChatAgentState.Ready
+            ? "is-ready"
+            : "is-working";
+
+        if (sendButtonClass == nextClass)
+        {
+            return;
+        }
+
+        sendButtonClass = nextClass;
+        OnPropertyChanged(nameof(SendButtonClass));
     }
 }

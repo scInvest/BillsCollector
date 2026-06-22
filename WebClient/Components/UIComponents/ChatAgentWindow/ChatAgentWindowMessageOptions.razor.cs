@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using System.ComponentModel;
-using WebClient.Components.UIComponents.ChatAgent;
 
 namespace WebClient.Components.UIComponents.ChatAgentWindow;
 
 public partial class ChatAgentWindowMessageOptions : ComponentBase, IDisposable
 {
-    private ChatAgentViewModel? subscribedParent;
+    private ChatAgentWindowMessageOptionsViewModel? subscribedViewModel;
 
     [Parameter]
     public ChatAgentWindowMessageOptionsViewModel ViewModel { get; set; } = default!;
@@ -15,27 +14,35 @@ public partial class ChatAgentWindowMessageOptions : ComponentBase, IDisposable
     {
         base.OnParametersSet();
 
-        if (ReferenceEquals(subscribedParent, ViewModel.ParentViewModel))
+        if (ReferenceEquals(subscribedViewModel, ViewModel))
         {
             return;
         }
 
-        if (subscribedParent is not null)
+        if (subscribedViewModel is not null)
         {
-            subscribedParent.PropertyChanged -= ParentViewModel_PropertyChanged;
+            subscribedViewModel.PropertyChanged -= ViewModel_PropertyChanged;
         }
 
-        subscribedParent = ViewModel.ParentViewModel;
+        subscribedViewModel = ViewModel;
 
-        if (subscribedParent is not null)
+        if (subscribedViewModel is not null)
         {
-            subscribedParent.PropertyChanged += ParentViewModel_PropertyChanged;
+            subscribedViewModel.PropertyChanged += ViewModel_PropertyChanged;
         }
     }
 
-    private void ParentViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is null || e.PropertyName == nameof(ChatAgentViewModel.State))
+        if (e.PropertyName is null)
+        {
+            _ = InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (e.PropertyName == nameof(ChatAgentWindowMessageOptionsViewModel.SendButtonClass) ||
+            e.PropertyName == nameof(ChatAgentWindowMessageOptionsViewModel.SelectedMode) ||
+            e.PropertyName == nameof(ChatAgentWindowMessageOptionsViewModel.SelectedModel))
         {
             _ = InvokeAsync(StateHasChanged);
         }
@@ -43,10 +50,10 @@ public partial class ChatAgentWindowMessageOptions : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        if (subscribedParent is not null)
+        if (subscribedViewModel is not null)
         {
-            subscribedParent.PropertyChanged -= ParentViewModel_PropertyChanged;
-            subscribedParent = null;
+            subscribedViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            subscribedViewModel = null;
         }
     }
 }

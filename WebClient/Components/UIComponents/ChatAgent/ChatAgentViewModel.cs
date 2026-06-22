@@ -104,6 +104,10 @@ public class ChatAgentViewModel : ViewModelBase
         EnsureConversationExists();
     }
 
+    public void UserInput_Send()
+    {
+    }
+
     public async Task UserInput_RenameConversation(ConversationViewModel conversation)
     {
         if (conversation == null)
