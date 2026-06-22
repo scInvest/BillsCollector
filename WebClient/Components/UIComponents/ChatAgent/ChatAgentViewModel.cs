@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
+using WebClient.Components.UIServices;
 using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents.ChatAgent;
@@ -9,6 +10,8 @@ namespace WebClient.Components.UIComponents.ChatAgent;
 public class ChatAgentViewModel : ViewModelBase
 {
     public Guid Id { get; } = Guid.NewGuid();
+
+    public DialogService? DialogService { get; set; }
 
     public List<ConversationViewModel> Conversations { get; } = new();
 
@@ -72,9 +75,27 @@ public class ChatAgentViewModel : ViewModelBase
         EnsureConversationExists();
     }
 
-    public void UserInput_RenameConversation(ConversationViewModel conversation)
+    public async Task UserInput_RenameConversation(ConversationViewModel conversation)
     {
-        Console.WriteLine();
+        if (conversation == null)
+        {
+            return;
+        }
+
+        if (DialogService is null)
+        {
+            return;
+        }
+
+        var newTitle = await DialogService.ShowTextInput(
+            conversation.Title,
+            "Zmie? nazw? konwersacji",
+            "Podaj now? nazw? konwersacji");
+
+        if (!string.IsNullOrWhiteSpace(newTitle))
+        {
+            conversation.Title = newTitle;
+        }
     }
 
     private ConversationViewModel CreateConversation()

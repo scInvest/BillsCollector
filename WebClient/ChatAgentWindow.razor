@@ -1,10 +1,7 @@
 <div class="agent-chat-window">
     <div class="agent-chat-window__frame">
         <section class="agent-chat-window__top">
-            <h3 class="agent-chat-window__title">
-                <span class="agent-chat-window__title-icon" aria-hidden="true">⚡</span>
-                <span>Agent AI</span>
-            </h3>
+            <h3>_title_</h3>
 
             <div class="agent-chat-window__actions">
                 <div class="agent-chat-window__panel-left">
@@ -14,12 +11,12 @@
                         @foreach (var conversation in ViewModel?.Conversations ?? [])
                         {
                             <div class="agent-chat-window__conversation-item @(ViewModel?.ActiveChat?.Id == conversation.Id ? "is-active" : string.Empty)" @key="conversation.Id">
-                                <span class="agent-chat-window__conversation-title" title="@conversation.Title">@conversation.Title</span>
+                                <span class="agent-chat-window__conversation-title">@conversation.Title</span>
 
                                 <button type="button"
                                         class="agent-chat-window__rename-button"
-                                        title="Zmień nazwę konwersacji"
-                                        aria-label="Zmień nazwę konwersacji"
+                                        title="Rename"
+                                        aria-label="Rename"
                                         @onclick="() => UserInput_RenameConversation(conversation)">
                                     <span aria-hidden="true">✎</span>
                                 </button>

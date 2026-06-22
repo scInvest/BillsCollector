@@ -35,17 +35,6 @@
     background: linear-gradient(180deg, #16213a 0%, #1b2a4a 100%);
 }
 
-.agent-chat-window__title {
-    margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.agent-chat-window__title-icon {
-    color: #facc15;
-}
-
 .agent-chat-window__actions {
     display: flex;
     align-items: stretch;
@@ -114,9 +103,9 @@
     width: 1.35rem;
     height: 1.35rem;
     padding: 0;
-    border: none;
+    border: 1px solid rgba(148, 163, 184, 0.35);
     border-radius: 0.2rem;
-    background: transparent;
+    background: rgba(15, 23, 42, 0.35);
     color: #e5eefc;
     display: grid;
     place-items: center;

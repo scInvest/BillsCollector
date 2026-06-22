@@ -15,6 +15,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="ChatAgentWindow.razor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="ChatAgentWindow.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ChatAgentWindow.razor.css" />
+    <None Remove="Components\UIComponents\UniverSheet\vtqw5j4c.iev~" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorDatasheet" Version="0.11.0" />
     <PackageReference Include="MudBlazor" Version="9.4.0" />
   </ItemGroup>

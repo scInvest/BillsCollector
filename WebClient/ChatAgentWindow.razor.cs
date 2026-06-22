@@ -16,12 +16,6 @@ public partial class ChatAgentWindow : ComponentBase
     public Func<ChatAgentViewModel>? ViewModelParam { get; set; }
     public ChatAgentViewModel ViewModel => ViewModelParam?.Invoke() ?? throw new InvalidOperationException();
 
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        ViewModel.DialogService = DialogService;
-    }
-
     private void UserInput_NewThread()
     {
         ViewModel?.UserInput_NewThread();
@@ -32,13 +26,8 @@ public partial class ChatAgentWindow : ComponentBase
         ViewModel?.UserInput_DeleteThread();
     }
 
-    private async Task UserInput_RenameConversation(ConversationViewModel conversation)
+    private void UserInput_RenameConversation(ConversationViewModel conversation)
     {
-        if (ViewModel is null)
-        {
-            return;
-        }
-
-        await ViewModel.UserInput_RenameConversation(conversation);
+        ViewModel?.UserInput_RenameConversation(conversation);
     }
 }
