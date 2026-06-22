@@ -14,6 +14,7 @@ public class ChatAgentViewModel : ViewModelBase
 
     public DialogService? DialogService { get; set; }
 
+    public readonly ChatAgentWindowContextViewModel Context;
     public readonly ChatAgentWindowMessageOptionsViewModel MessageOptions;
 
     public List<ConversationViewModel> Conversations { get; } = new();
@@ -38,6 +39,7 @@ public class ChatAgentViewModel : ViewModelBase
     public ChatAgentViewModel(Func<ComponentBase> getComponent)
         : base(getComponent)
     {
+        Context = new ChatAgentWindowContextViewModel(() => Component);
         MessageOptions = new ChatAgentWindowMessageOptionsViewModel(() => Component);
         EnsureConversationExists();
     }
