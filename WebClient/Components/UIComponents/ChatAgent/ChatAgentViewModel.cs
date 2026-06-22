@@ -13,7 +13,8 @@ public class ChatAgentViewModel : ViewModelBase
     public enum ChatAgentState
     {
         Ready,
-        Working
+        Working,
+        NoApiKey
     }
 
     public Guid Id { get; } = Guid.NewGuid();

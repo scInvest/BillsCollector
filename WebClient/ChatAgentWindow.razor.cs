@@ -7,7 +7,7 @@ namespace WebClient.Components.UIComponents.ChatAgentWindow;
 public partial class ChatAgentWindow : ComponentBase
 {
     [Inject]
-    public DialogService DialogService { get; set; } = default!;
+    public DialogService? DialogService { get; set; }
 
     [Parameter]
     public RenderFragment? PanelLewy { get; set; }
@@ -29,5 +29,15 @@ public partial class ChatAgentWindow : ComponentBase
     private void UserInput_RenameConversation(ConversationViewModel conversation)
     {
         ViewModel?.UserInput_RenameConversation(conversation);
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (ViewModel is not null)
+        {
+            ViewModel.DialogService = DialogService;
+        }
     }
 }

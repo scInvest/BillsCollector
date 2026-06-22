@@ -79,14 +79,19 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
             apiKey = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(ApiKeyButtonClass));
+            UpdateParentStateFromApiKey();
         }
     }
 
     public string SendButtonClass => sendButtonClass;
 
+    public string SendButtonTooltip => parentViewModel.State == ChatAgentViewModel.ChatAgentState.Ready
+        ? "Wyślij wiadomość"
+        : "Zatrzymaj czat";
+
     public string ApiKeyButtonClass => string.IsNullOrEmpty(apiKey) ? "is-missing" : "is-present";
 
-    public void UserInput_SendOrCancelChatAgentMessage()
+    public async Task UserInput_SendOrCancelChatAgentMessage()
     {
         if (parentViewModel.State == ChatAgentViewModel.ChatAgentState.Ready)
         {
@@ -98,7 +103,10 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
         }
         else
         {
-            throw new InvalidOperationException();
+            if (parentViewModel.DialogService is not null)
+            {
+                await parentViewModel.DialogService.ShowAlert("Nieprawidłowy stan agenta.");
+            }
         }
     }
 
@@ -112,9 +120,9 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
 
     private void UpdateSendButtonClass()
     {
-        var nextClass = parentViewModel.State == ChatAgentViewModel.ChatAgentState.Ready
-            ? "is-ready"
-            : "is-working";
+        var nextClass = parentViewModel.State == ChatAgentViewModel.ChatAgentState.Working
+            ? "is-working"
+            : "is-ready";
 
         if (sendButtonClass == nextClass)
         {
@@ -123,5 +131,17 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
 
         sendButtonClass = nextClass;
         OnPropertyChanged(nameof(SendButtonClass));
+    }
+
+    private void UpdateParentStateFromApiKey()
+    {
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            parentViewModel.State = ChatAgentViewModel.ChatAgentState.NoApiKey;
+        }
+        else if (parentViewModel.State == ChatAgentViewModel.ChatAgentState.NoApiKey)
+        {
+            parentViewModel.State = ChatAgentViewModel.ChatAgentState.Ready;
+        }
     }
 }
