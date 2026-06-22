@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Components;
 using WebClient.Components.UIComponents.ChatAgent;
+using WebClient.Components.UIServices;
 
 namespace WebClient.Components.UIComponents.ChatAgentWindow;
 
 public partial class ChatAgentWindow : ComponentBase
 {
+    [Inject]
+    public DialogService DialogService { get; set; } = default!;
+
     [Parameter]
     public RenderFragment? PanelLewy { get; set; }
 
