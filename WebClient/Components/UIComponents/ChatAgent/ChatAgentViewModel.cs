@@ -10,12 +10,35 @@ namespace WebClient.Components.UIComponents.ChatAgent;
 
 public class ChatAgentViewModel : ViewModelBase
 {
+    public enum ChatAgentState
+    {
+        Ready,
+        Working
+    }
+
     public Guid Id { get; } = Guid.NewGuid();
 
     public DialogService? DialogService { get; set; }
 
     public readonly ChatAgentWindowContextViewModel Context;
     public readonly ChatAgentWindowMessageOptionsViewModel MessageOptions;
+
+    private ChatAgentState state = ChatAgentState.Ready;
+
+    public ChatAgentState State
+    {
+        get => state;
+        set
+        {
+            if (state == value)
+            {
+                return;
+            }
+
+            state = value;
+            OnPropertyChanged();
+        }
+    }
 
     public List<ConversationViewModel> Conversations { get; } = new();
 
@@ -40,7 +63,7 @@ public class ChatAgentViewModel : ViewModelBase
         : base(getComponent)
     {
         Context = new ChatAgentWindowContextViewModel(() => Component);
-        MessageOptions = new ChatAgentWindowMessageOptionsViewModel(() => Component);
+        MessageOptions = new ChatAgentWindowMessageOptionsViewModel(this, () => Component);
         EnsureConversationExists();
     }
 

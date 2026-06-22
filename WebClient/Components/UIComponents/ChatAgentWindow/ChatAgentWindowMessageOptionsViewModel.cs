@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
+using WebClient.Components.UIComponents.ChatAgent;
 using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents.ChatAgentWindow;
@@ -11,16 +12,19 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
     private static readonly IReadOnlyList<ModeOption> modes = new[]
     {
         new ModeOption("Agent", "Tryb agenta — może analizować i zmieniać dane"),
-        new ModeOption("Pytanie", "Tryb rozmowy — zwykły czat, bez zmian w danych")
+        new ModeOption("Pytanie", "Tryb rozmowy — zwykły czat, bez zmian w danych"),
     };
     private static readonly IReadOnlyList<string> models = new[] { "GPT-5.4 mini", "GPT-5.4" };
+
+    public ChatAgentViewModel ParentViewModel { get; }
 
     private string selectedMode = modes[0].Value;
     private string selectedModel = models[0];
 
-    public ChatAgentWindowMessageOptionsViewModel(Func<ComponentBase> getComponent)
+    public ChatAgentWindowMessageOptionsViewModel(ChatAgentViewModel parentViewModel, Func<ComponentBase> getComponent)
         : base(getComponent)
     {
+        ParentViewModel = parentViewModel;
     }
 
     public IReadOnlyList<ModeOption> Modes => modes;
