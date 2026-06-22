@@ -21,6 +21,7 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
 
     private string selectedMode = modes[0].Value;
     private string selectedModel = models[0];
+    private string? apiKey;
     private string sendButtonClass = "is-ready";
 
     public ChatAgentWindowMessageOptionsViewModel(ChatAgentViewModel parentViewModel, Func<ComponentBase> getComponent)
@@ -65,7 +66,25 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
         }
     }
 
+    public string? ApiKey
+    {
+        get => apiKey;
+        set
+        {
+            if (apiKey == value)
+            {
+                return;
+            }
+
+            apiKey = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(ApiKeyButtonClass));
+        }
+    }
+
     public string SendButtonClass => sendButtonClass;
+
+    public string ApiKeyButtonClass => string.IsNullOrEmpty(apiKey) ? "is-missing" : "is-present";
 
     public void UserInput_SendOrCancelChatAgentMessage()
     {
@@ -73,9 +92,13 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
         {
             parentViewModel.UserInput_SendChatAgentMessage();
         }
-        else
+        else if (parentViewModel.State == ChatAgentViewModel.ChatAgentState.Working)
         {
             parentViewModel.UserInput_CancelChatAgentMessage();
+        }
+        else
+        {
+            throw new InvalidOperationException();
         }
     }
 

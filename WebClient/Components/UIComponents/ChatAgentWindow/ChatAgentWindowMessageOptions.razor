@@ -18,6 +18,13 @@
     </label>
 
     <button type="button"
+            class="agent-chat-window-message-options__api-key-button @ViewModel.ApiKeyButtonClass"
+            aria-label="API key">
+        <span class="agent-chat-window-message-options__api-key-icon" aria-hidden="true">🔑</span>
+        <span>API key</span>
+    </button>
+
+    <button type="button"
             class="agent-chat-window-message-options__send-button @ViewModel.SendButtonClass"
             @onclick="ViewModel.UserInput_SendOrCancelChatAgentMessage"
             aria-label="Wyślij">
