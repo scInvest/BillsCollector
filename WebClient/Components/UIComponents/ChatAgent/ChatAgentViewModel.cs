@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
+using WebClient.Components.UIComponents.ChatAgentWindow;
 using WebClient.Components.UIServices;
 using WebClient.ViewModels;
 
@@ -12,6 +13,8 @@ public class ChatAgentViewModel : ViewModelBase
     public Guid Id { get; } = Guid.NewGuid();
 
     public DialogService? DialogService { get; set; }
+
+    public readonly ChatAgentWindowMessageOptionsViewModel MessageOptions;
 
     public List<ConversationViewModel> Conversations { get; } = new();
 
@@ -35,6 +38,7 @@ public class ChatAgentViewModel : ViewModelBase
     public ChatAgentViewModel(Func<ComponentBase> getComponent)
         : base(getComponent)
     {
+        MessageOptions = new ChatAgentWindowMessageOptionsViewModel(() => Component);
         EnsureConversationExists();
     }
 

@@ -165,7 +165,8 @@
 }
 
 .agent-chat-window__bottom {
-    background: linear-gradient(180deg, #111827 0%, #0b1220 100%);
+    border-top: 1px solid rgba(148, 163, 184, 0.35);
+    background: linear-gradient(180deg, #1b2435 0%, #162133 100%);
 }
 
 .agent-chat-window__bottom input {
