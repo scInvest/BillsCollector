@@ -16,4 +16,10 @@
             }
         </select>
     </label>
+
+    <button type="button"
+            class="agent-chat-window-message-options__send-button @(ViewModel.ParentViewModel.State == WebClient.Components.UIComponents.ChatAgent.ChatAgentViewModel.ChatAgentState.Ready ? "is-ready" : "is-working")"
+            aria-label="Wyślij">
+        <span class="agent-chat-window-message-options__send-icon" aria-hidden="true"></span>
+    </button>
 </div>
