@@ -104,7 +104,11 @@ public class ChatAgentViewModel : ViewModelBase
         EnsureConversationExists();
     }
 
-    public void UserInput_Send()
+    public void UserInput_SendChatAgentMessage()
+    {
+    }
+
+    public void UserInput_CancelChatAgentMessage()
     {
     }
 

@@ -67,9 +67,16 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
 
     public string SendButtonClass => sendButtonClass;
 
-    public void UserInput_Send()
+    public void UserInput_SendOrCancelChatAgentMessage()
     {
-        parentViewModel.UserInput_Send();
+        if (parentViewModel.State == ChatAgentViewModel.ChatAgentState.Ready)
+        {
+            parentViewModel.UserInput_SendChatAgentMessage();
+        }
+        else
+        {
+            parentViewModel.UserInput_CancelChatAgentMessage();
+        }
     }
 
     private void ParentViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
