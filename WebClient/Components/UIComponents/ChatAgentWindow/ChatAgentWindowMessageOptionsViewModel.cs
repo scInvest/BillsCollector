@@ -6,16 +6,48 @@ namespace WebClient.Components.UIComponents.ChatAgentWindow;
 
 public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
 {
+    private static readonly IReadOnlyList<string> modes = new[] { "Agent", "Pytanie" };
+    private static readonly IReadOnlyList<string> models = new[] { "GPT-5.4 mini", "GPT-5.4" };
+
+    private string selectedMode = modes[0];
+    private string selectedModel = models[0];
+
     public ChatAgentWindowMessageOptionsViewModel(Func<ComponentBase> getComponent)
         : base(getComponent)
     {
     }
 
-    public IReadOnlyList<string> Modes { get; } = new[] { "Agent", "Pytanie" };
+    public IReadOnlyList<string> Modes => modes;
 
-    public IReadOnlyList<string> Models { get; } = new[] { "GPT-5.4 mini", "GPT-5.4" };
+    public IReadOnlyList<string> Models => models;
 
-    public string SelectedMode { get; set; } = "Agent";
+    public string SelectedMode
+    {
+        get => selectedMode;
+        set
+        {
+            if (selectedMode == value)
+            {
+                return;
+            }
 
-    public string SelectedModel { get; set; } = "GPT-5.4 mini";
+            selectedMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedModel
+    {
+        get => selectedModel;
+        set
+        {
+            if (selectedModel == value)
+            {
+                return;
+            }
+
+            selectedModel = value;
+            OnPropertyChanged();
+        }
+    }
 }
