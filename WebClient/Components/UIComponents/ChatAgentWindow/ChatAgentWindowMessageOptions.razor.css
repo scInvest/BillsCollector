@@ -89,3 +89,25 @@
     border-color: #ef4444;
     box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.15);
 }
+
+/* Hover/focus visual affordances to make the control feel more responsive */
+.agent-chat-window-message-options__send-button,
+.agent-chat-window-message-options__api-key-button {
+    transition: background-color 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+.agent-chat-window-message-options__api-key-button:hover,
+.agent-chat-window-message-options__api-key-button:focus {
+    background: rgba(255,255,255,0.04);
+}
+
+.agent-chat-window-message-options__send-button:hover,
+.agent-chat-window-message-options__send-button:focus {
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-1px);
+}
+
+.agent-chat-window-message-options__field:hover {
+    background: rgba(255,255,255,0.02);
+    border-radius: 0.25rem;
+}
