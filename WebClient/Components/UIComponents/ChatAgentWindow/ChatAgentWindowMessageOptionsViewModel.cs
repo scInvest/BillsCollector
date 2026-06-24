@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.ComponentModel;
 using WebClient.Components.UIComponents.ChatAgent;
 using WebClient.ViewModels;
+using MudBlazor;
 
 namespace WebClient.Components.UIComponents.ChatAgentWindow;
 
@@ -30,6 +32,15 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
         this.parentViewModel = parentViewModel;
         this.parentViewModel.PropertyChanged += ParentViewModel_PropertyChanged;
         UpdateSendButtonClass();
+    }
+
+    public async Task UserInput_AddApiKey()
+    {
+        var key = await this.parentViewModel.DialogService.ShowTextInput("Dodaj klucz API", "Dodaj klucz API", "Wprowadź swój klucz API, aby korzystać z AI.");
+        if (key != null)
+        {
+            this.ApiKey = key;
+        }
     }
 
     public IReadOnlyList<ModeOption> Modes => modes;

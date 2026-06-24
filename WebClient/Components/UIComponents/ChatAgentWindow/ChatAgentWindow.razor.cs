@@ -10,9 +10,6 @@ public partial class ChatAgentWindow : ComponentBase
     public DialogService DialogService { get; set; } = default!;
 
     [Parameter]
-    public RenderFragment? PanelLewy { get; set; }
-
-    [Parameter]
     public Func<ChatAgentViewModel>? ViewModelParam { get; set; }
     public ChatAgentViewModel ViewModel => ViewModelParam?.Invoke() ?? throw new InvalidOperationException();
 
@@ -32,9 +29,31 @@ public partial class ChatAgentWindow : ComponentBase
         ViewModel?.UserInput_DeleteThread();
     }
 
-    private async Task UserInput_RenameConversation(ConversationViewModel conversation)
+    private void UserInput_SelectConversation(ChangeEventArgs args)
     {
-        if (ViewModel is null)
+        if (ViewModel is null || args.Value is null)
+        {
+            return;
+        }
+
+        if (!Guid.TryParse(args.Value.ToString(), out var conversationId))
+        {
+            return;
+        }
+
+        foreach (var conversation in ViewModel.Conversations)
+        {
+            if (conversation.Id == conversationId)
+            {
+                ViewModel.ActiveChat = conversation;
+                return;
+            }
+        }
+    }
+
+    private async Task UserInput_RenameConversation(ConversationViewModel? conversation)
+    {
+        if (ViewModel is null || conversation is null)
         {
             return;
         }

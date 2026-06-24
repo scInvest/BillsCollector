@@ -8,24 +8,25 @@
 
             <div class="agent-chat-window__actions">
                 <div class="agent-chat-window__panel-left">
-                    @PanelLewy
 
-                    <div class="agent-chat-window__conversation-list">
+                    <select class="agent-chat-window__conversation-list"
+                            aria-label="Wybierz konwersację"
+                            title="Wybierz konwersację"
+                            value="@(ViewModel?.ActiveChat?.Id.ToString() ?? string.Empty)"
+                            @onchange="UserInput_SelectConversation">
                         @foreach (var conversation in ViewModel?.Conversations ?? [])
                         {
-                            <div class="agent-chat-window__conversation-item @(ViewModel?.ActiveChat?.Id == conversation.Id ? "is-active" : string.Empty)" @key="conversation.Id">
-                                <span class="agent-chat-window__conversation-title" title="@conversation.Title">@conversation.Title</span>
-
-                                <button type="button"
-                                        class="agent-chat-window__rename-button"
-                                        title="Zmień nazwę konwersacji"
-                                        aria-label="Zmień nazwę konwersacji"
-                                        @onclick="() => UserInput_RenameConversation(conversation)">
-                                    <span aria-hidden="true">✎</span>
-                                </button>
-                            </div>
+                            <option value="@conversation.Id" @key="conversation.Id">@conversation.Title</option>
                         }
-                    </div>
+                    </select>
+
+                    <button type="button"
+                            class="agent-chat-window__rename-button"
+                            title="Zmień nazwę konwersacji"
+                            aria-label="Zmień nazwę konwersacji"
+                            @onclick="() => UserInput_RenameConversation(ViewModel?.ActiveChat)">
+                        <span aria-hidden="true">✎</span>
+                    </button>
                 </div>
 
                 <div class="agent-chat-window__panel-right">

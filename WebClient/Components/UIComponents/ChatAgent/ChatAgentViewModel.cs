@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
 using Microsoft.AspNetCore.Components;
 using WebClient.Components.UIComponents.ChatAgentWindow;
 using WebClient.Components.UIServices;
@@ -24,7 +25,7 @@ public class ChatAgentViewModel : ViewModelBase
     public readonly ChatAgentWindowContextViewModel Context;
     public readonly ChatAgentWindowMessageOptionsViewModel MessageOptions;
 
-    private ChatAgentState state = ChatAgentState.Ready;
+    private ChatAgentState state = ChatAgentState.NoApiKey;
 
     public ChatAgentState State
     {
@@ -65,6 +66,7 @@ public class ChatAgentViewModel : ViewModelBase
     {
         Context = new ChatAgentWindowContextViewModel(() => Component);
         MessageOptions = new ChatAgentWindowMessageOptionsViewModel(this, () => Component);
+        MessageOptions.PropertyChanged += MessageOptions_PropertyChanged_ApiKey;
         EnsureConversationExists();
     }
 
@@ -111,6 +113,19 @@ public class ChatAgentViewModel : ViewModelBase
 
     public void UserInput_CancelChatAgentMessage()
     {
+    }
+
+    private void MessageOptions_PropertyChanged_ApiKey(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(ChatAgentWindowMessageOptionsViewModel.ApiKey))
+        {
+            return;
+        }
+
+        if (State == ChatAgentState.NoApiKey && !string.IsNullOrWhiteSpace(MessageOptions.ApiKey))
+        {
+            State = ChatAgentState.Ready;
+        }
     }
 
     public async Task UserInput_RenameConversation(ConversationViewModel conversation)
