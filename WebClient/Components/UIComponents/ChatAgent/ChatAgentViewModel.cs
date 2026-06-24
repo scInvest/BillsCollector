@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
@@ -19,7 +19,7 @@ public class ChatAgentViewModel : ViewModelBase
 
     public Guid Id { get; } = Guid.NewGuid();
 
-    public DialogService? DialogService { get; set; }
+    public DialogService DialogService { get; set; }
 
     public readonly ChatAgentWindowContextViewModel Context;
     public readonly ChatAgentWindowMessageOptionsViewModel MessageOptions;
@@ -127,8 +127,8 @@ public class ChatAgentViewModel : ViewModelBase
 
         var newTitle = await DialogService.ShowTextInput(
             conversation.Title,
-            "Zmie? nazw? konwersacji",
-            "Podaj now? nazw? konwersacji");
+            "Zmień nazwę konwersacji",
+            "Podaj nową nazwę konwersacji");
 
         if (!string.IsNullOrWhiteSpace(newTitle))
         {

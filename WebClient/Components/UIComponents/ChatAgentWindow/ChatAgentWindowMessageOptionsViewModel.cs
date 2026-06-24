@@ -103,10 +103,7 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
         }
         else
         {
-            if (parentViewModel.DialogService is not null)
-            {
-                await parentViewModel.DialogService.ShowAlert("Nieprawidłowy stan agenta.");
-            }
+            await parentViewModel.DialogService.ShowAlert("Dodaj klucz API, aby korzystać z AI. Instrukcja znajduje sie po prawej stronie.");
         }
     }
 

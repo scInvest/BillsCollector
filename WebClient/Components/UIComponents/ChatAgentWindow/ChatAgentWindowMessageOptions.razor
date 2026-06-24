@@ -19,14 +19,15 @@
 
     <button type="button"
             class="agent-chat-window-message-options__api-key-button @ViewModel.ApiKeyButtonClass"
-            aria-label="Dodaj klucz API, aby korzystać z AI"
-            title="Dodaj klucz API — Uwaga: korzystanie może generować koszty.">
+            aria-label="Klucz API"
+            title="Nie stac mnie na sponsorowanie tysiaca agentów AI, dodaj swoj klucz please :)">
         <span class="agent-chat-window-message-options__api-key-icon" aria-hidden="true">🔑</span>
-        <span>Dodaj klucz API, aby korzystać z AI</span>
+        <span>klucz API</span>
     </button>
 
     <button type="button"
             class="agent-chat-window-message-options__send-button @ViewModel.SendButtonClass"
+            style="margin-left:-3px;"
             @onclick="ViewModel.UserInput_SendOrCancelChatAgentMessage"
             aria-label="@ViewModel.SendButtonTooltip"
             title="@ViewModel.SendButtonTooltip">
