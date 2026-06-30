@@ -47,7 +47,12 @@
 
         <section class="agent-chat-window__bottom">
             <ChatAgentWindowContext ViewModel="ViewModel.Context"></ChatAgentWindowContext>
-            <input type="text" placeholder="Type here..." />
+            <textarea class="agent-chat-window__message-input"
+                      rows="1"
+                      placeholder="Type here..."
+                      @ref="MessageInputElement"
+                      value="@MessageDraft"
+                      @oninput="UserInput_MessageDraftChanged"></textarea>
             <ChatAgentWindowMessageOptions ViewModel="ViewModel.MessageOptions"></ChatAgentWindowMessageOptions>
         </section>
     </div>
