@@ -29,4 +29,18 @@ public class ChatAgentWindowContextViewModel : ViewModelBase
     }
 
     public List<ContextItemViewModel> Contexts { get; }
+
+    public void UserInput_AddContext()
+    {
+        Contexts.Add(new("context"));
+        OnPropertyChanged(nameof(Contexts));
+    }
+
+    public void UserInput_RemoveContext(ContextItemViewModel context)
+    {
+        if (Contexts.Remove(context))
+        {
+            OnPropertyChanged(nameof(Contexts));
+        }
+    }
 }

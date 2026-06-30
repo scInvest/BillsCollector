@@ -11,7 +11,8 @@
         <button type="button"
                 class="agent-chat-window-context__add-button"
                 aria-label="Dodaj kontekst"
-                title="Dodaj kontekst">
+                title="Dodaj kontekst"
+                @onclick="UserInput_AddContext">
             <span aria-hidden="true">+</span>
         </button>
     </div>
@@ -26,7 +27,8 @@
                 <button type="button"
                         class="agent-chat-window-context__remove-button"
                         aria-label="Usuń kontekst @context.Title"
-                        title="Usuń kontekst @context.Title">
+                        title="Usuń kontekst @context.Title"
+                        @onclick="() => UserInput_RemoveContext(context)">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
