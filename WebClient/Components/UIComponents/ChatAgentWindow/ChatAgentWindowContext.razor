@@ -1,3 +1,35 @@
 <div class="agent-chat-window-context">
-    <p>@ViewModel.ContextText</p>
+    <div class="agent-chat-window-context__toolbar">
+        <label class="agent-chat-window-context__field">
+            <select aria-label="Tryb zarządzania kontekstem" title="Tryb zarządzania kontekstem">
+                <option value="LineByLine" title="Linia-po-linii">Linia-po-linii</option>
+                <option value="AllAtOnce" title="Wszystko naraz">Wszystko naraz</option>
+                <option value="Auto" title="Auto">Auto</option>
+            </select>
+        </label>
+
+        <button type="button"
+                class="agent-chat-window-context__add-button"
+                aria-label="Dodaj kontekst"
+                title="Dodaj kontekst">
+            <span aria-hidden="true">+</span>
+        </button>
+    </div>
+
+    <div class="agent-chat-window-context__list" aria-label="Lista kontekstów">
+        @foreach (var context in ViewModel.Contexts)
+        {
+            <div class="agent-chat-window-context__item" @key="context.Id">
+                <span class="agent-chat-window-context__file-icon" aria-hidden="true">📄</span>
+                <span class="agent-chat-window-context__title" title="@context.Title">@context.Title</span>
+
+                <button type="button"
+                        class="agent-chat-window-context__remove-button"
+                        aria-label="Usuń kontekst @context.Title"
+                        title="Usuń kontekst @context.Title">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        }
+    </div>
 </div>
