@@ -1,3 +1,4 @@
+@using WebClient.Components.UIComponents.ConversationPreview
 <div class="agent-chat-window">
     <div class="agent-chat-window__frame">
         <section class="agent-chat-window__top">
@@ -42,7 +43,7 @@
         </section>
 
         <section class="agent-chat-window__center">
-            <h1>_chat_</h1>
+            <ConversationPreview ViewModel="ViewModel.ConversationPreview"></ConversationPreview>
         </section>
 
         <section class="agent-chat-window__bottom">

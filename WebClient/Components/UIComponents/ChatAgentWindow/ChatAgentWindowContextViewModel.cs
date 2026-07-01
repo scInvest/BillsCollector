@@ -7,6 +7,15 @@ namespace WebClient.Components.UIComponents.ChatAgentWindow;
 
 public class ChatAgentWindowContextViewModel : ViewModelBase
 {
+    public enum ContextMode
+    {
+        LineByLine,
+        AllAtOnce,
+        Auto
+    }
+
+    public sealed record ContextModeOption(ContextMode Value, string Text);
+
     public sealed class ContextItemViewModel
     {
         public Guid Id { get; } = Guid.NewGuid();
@@ -19,6 +28,16 @@ public class ChatAgentWindowContextViewModel : ViewModelBase
         }
     }
 
+    private static readonly IReadOnlyList<ContextModeOption> contextModes = new[]
+    {
+        new ContextModeOption(ContextMode.LineByLine, "Linia-po-linii"),
+        new ContextModeOption(ContextMode.AllAtOnce, "Wszystko naraz"),
+        new ContextModeOption(ContextMode.Auto, "Auto")
+    };
+
+    private ContextMode selectedContextMode = contextModes[0].Value;
+    private string selectedContextModeText = contextModes[0].Text;
+
     public ChatAgentWindowContextViewModel(Func<ComponentBase> getComponent)
         : base(getComponent)
     {
@@ -29,6 +48,27 @@ public class ChatAgentWindowContextViewModel : ViewModelBase
     }
 
     public List<ContextItemViewModel> Contexts { get; }
+
+    public IReadOnlyList<ContextModeOption> ContextModes => contextModes;
+
+    public ContextMode SelectedContextMode
+    {
+        get => selectedContextMode;
+        set
+        {
+            if (selectedContextMode == value)
+            {
+                return;
+            }
+
+            selectedContextMode = value;
+            selectedContextModeText = GetContextModeText(value);
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedContextModeText));
+        }
+    }
+
+    public string SelectedContextModeText => selectedContextModeText;
 
     public void UserInput_AddContext()
     {
@@ -42,5 +82,18 @@ public class ChatAgentWindowContextViewModel : ViewModelBase
         {
             OnPropertyChanged(nameof(Contexts));
         }
+    }
+
+    private static string GetContextModeText(ContextMode contextMode)
+    {
+        foreach (var mode in contextModes)
+        {
+            if (mode.Value == contextMode)
+            {
+                return mode.Text;
+            }
+        }
+
+        return contextMode.ToString();
     }
 }

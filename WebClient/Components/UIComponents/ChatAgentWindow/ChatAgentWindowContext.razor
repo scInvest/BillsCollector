@@ -1,10 +1,13 @@
 <div class="agent-chat-window-context">
     <div class="agent-chat-window-context__toolbar">
         <label class="agent-chat-window-context__field">
-            <select aria-label="Tryb zarządzania kontekstem" title="Tryb zarządzania kontekstem">
-                <option value="LineByLine" title="Linia-po-linii">Linia-po-linii</option>
-                <option value="AllAtOnce" title="Wszystko naraz">Wszystko naraz</option>
-                <option value="Auto" title="Auto">Auto</option>
+            <select aria-label="Tryb zarządzania kontekstem"
+                    title="Tryb zarządzania kontekstem"
+                    @bind="ViewModel.SelectedContextMode">
+                @foreach (var mode in ViewModel.ContextModes)
+                {
+                    <option value="@mode.Value" title="@mode.Text">@mode.Text</option>
+                }
             </select>
         </label>
 

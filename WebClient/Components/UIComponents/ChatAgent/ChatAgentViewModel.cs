@@ -4,6 +4,7 @@ using System.Linq;
 using System.ComponentModel;
 using Microsoft.AspNetCore.Components;
 using WebClient.Components.UIComponents.ChatAgentWindow;
+using WebClient.Components.UIComponents.ConversationPreview;
 using WebClient.Components.UIServices;
 using WebClient.ViewModels;
 
@@ -24,6 +25,7 @@ public class ChatAgentViewModel : ViewModelBase
 
     public readonly ChatAgentWindowContextViewModel Context;
     public readonly ChatAgentWindowMessageOptionsViewModel MessageOptions;
+    public readonly ConversationPreviewViewModel ConversationPreview;
 
     private ChatAgentState state = ChatAgentState.NoApiKey;
 
@@ -66,6 +68,7 @@ public class ChatAgentViewModel : ViewModelBase
     {
         Context = new ChatAgentWindowContextViewModel(() => Component);
         MessageOptions = new ChatAgentWindowMessageOptionsViewModel(this, () => Component);
+        ConversationPreview = new ConversationPreviewViewModel(() => Component);
         MessageOptions.PropertyChanged += MessageOptions_PropertyChanged_ApiKey;
         EnsureConversationExists();
     }

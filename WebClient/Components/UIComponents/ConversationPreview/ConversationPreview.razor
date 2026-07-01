@@ -1,0 +1,15 @@
+<section class="conversation-preview">
+    <h1 class="conversation-preview__title">Historia konwersjacji</h1>
+
+    <div class="conversation-preview__history" role="log" aria-label="Historia konwersjacji">
+        @foreach (var message in ViewModel.Messages)
+        {
+            <article class="conversation-preview__message @GetMessageCssClass(message)"
+                     title="@GetMessageTooltip(message)">
+                <div class="conversation-preview__bubble">
+                    <div class="conversation-preview__content">@message.Content</div>
+                </div>
+            </article>
+        }
+    </div>
+</section>
