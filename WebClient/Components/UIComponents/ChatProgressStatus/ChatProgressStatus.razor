@@ -1,0 +1,10 @@
+<section class="chat-progress-status @GetStatusClass()">
+    <div class="chat-progress-status__bubble" aria-live="polite" aria-atomic="true">
+        <ul class="chat-progress-status__items">
+            @foreach (var item in ViewModel.ProgressStatuses)
+            {
+                <li class="chat-progress-status__item">@item.GetDisplayText()</li>
+            }
+        </ul>
+    </div>
+</section>

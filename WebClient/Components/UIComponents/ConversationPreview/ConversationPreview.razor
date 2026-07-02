@@ -1,6 +1,6 @@
-<section class="conversation-preview">
-    <h1 class="conversation-preview__title">Historia konwersjacji</h1>
+@using WebClient.Components.UIComponents.ChatProgressStatus
 
+<section class="conversation-preview">
     <div class="conversation-preview__history" role="log" aria-label="Historia konwersjacji">
         @foreach (var message in ViewModel.Messages)
         {
@@ -12,4 +12,6 @@
             </article>
         }
     </div>
+
+    <ChatProgressStatus ViewModel="ViewModel.ProgressStatus"></ChatProgressStatus>
 </section>

@@ -1,0 +1,57 @@
+.chat-progress-status {
+    width: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+}
+
+.chat-progress-status--in-progress {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: auto;
+    min-height: 1px;
+    padding: 1px;
+    opacity: 1;
+    overflow: visible;
+    pointer-events: auto;
+}
+
+.chat-progress-status--stopped {
+    display: block;
+    height: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.chat-progress-status__bubble {
+    max-width: min(70%, 28rem);
+    border-radius: 4px;
+    padding: 1px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.85);
+    color: #e5eefc;
+}
+
+.chat-progress-status__items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 1px;
+}
+
+.chat-progress-status__item {
+    padding: 1px;
+    font-size: 0.82rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+

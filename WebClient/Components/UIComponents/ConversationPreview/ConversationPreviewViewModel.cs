@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
+using WebClient.Components.UIComponents.ChatProgressStatus;
 using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents.ConversationPreview;
@@ -36,8 +37,12 @@ public class ConversationPreviewViewModel : ViewModelBase
         new ConversationMessageViewModel(DateTimeOffset.UtcNow.AddMinutes(-1), "_chat_placeholder", MessageAuthor.System)
     };
 
+    public ChatProgressStatusViewModel ProgressStatus { get; }
+
     public ConversationPreviewViewModel(Func<ComponentBase> getComponent)
         : base(getComponent)
     {
+        ProgressStatus = new ChatProgressStatusViewModel(() => Component);
+        ProgressStatus.UserInput_StartRequest();
     }
 }
