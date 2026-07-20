@@ -10,11 +10,13 @@
   <Folder Name="/Tests/">
     <Project Path="BiedronkaParser.Tests/BiedronkaParser.Tests.csproj" />
     <Project Path="CostAnalizerApp.Tests/CostAnalizerApp.Tests.csproj" />
+    <Project Path="Pgr.AIHub.Tests/Pgr.AIHub.Tests.csproj" />
   </Folder>
   <Project Path="BiedronkaParser/Integrations.csproj" />
   <Project Path="ConsoleApp3/ConsoleApp3.csproj" />
   <Project Path="CostAnalizerApp.Interfaces/CostAnalizerApp.Interfaces.csproj" Id="40edc16a-225d-44e3-9246-dfb44b709ecb" />
   <Project Path="CostAnalizerApp/CostAnalizerApp.csproj" />
   <Project Path="DataSrouce/DataSource.csproj" />
+  <Project Path="Pgr.AIHub/Pgr.AIHub.csproj" Id="cc25e654-4eb9-45cc-87db-95496ce959c0" />
   <Project Path="SharedCode/SharedCode.csproj" Id="084d268a-411c-4ecd-a549-de7aac418c41" />
 </Solution>
