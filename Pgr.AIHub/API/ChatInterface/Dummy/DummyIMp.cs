@@ -122,6 +122,16 @@ namespace Pgr.AIHub.API.ChatInterface.Dummy
             chats.Add(chat);
             return chat;
         }
+
+        public bool DeleteChat(IAiChatClientWorker chat)
+        {
+            if (chat == null)
+            {
+                return false;
+            }
+
+            return chats.Remove(chat);
+        }
     }
 
     public class ChatRateLimiterDummyImp : IChatRateLimiter

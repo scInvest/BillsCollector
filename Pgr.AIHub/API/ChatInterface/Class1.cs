@@ -82,6 +82,7 @@ public interface IAiChatClientWorker
 public interface IAiChatManager
 {
     public IAiChatClientWorker CreateChat();
+    public bool DeleteChat(IAiChatClientWorker chat);
     public IReadOnlyList<IAiChatClientWorker> Chats { get; set; }
 }
 

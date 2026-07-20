@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CostAnalizerApp\CostAnalizerApp.csproj" />
+    <ProjectReference Include="..\Pgr.AIHub\Pgr.AIHub.csproj" />
     <ProjectReference Include="..\SharedCode\SharedCode.csproj" />
   </ItemGroup>
 

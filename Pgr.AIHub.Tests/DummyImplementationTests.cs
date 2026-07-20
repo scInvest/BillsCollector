@@ -22,6 +22,19 @@ public class DummyImplementationTests
     }
 
     [TestMethod]
+    public void DeleteChat_RemovesChatFromManagerCollection()
+    {
+        var manager = new AiChatManagerDummyImp();
+
+        var chat = manager.CreateChat();
+
+        var deleted = manager.DeleteChat(chat);
+
+        Assert.IsTrue(deleted);
+        Assert.AreEqual(0, manager.Chats.Count);
+    }
+
+    [TestMethod]
     public async Task SendAsync_AddsUserMessage_AndRaisesAssistantEvent()
     {
         var chat = new AiChatClientWorkerDummyImp();

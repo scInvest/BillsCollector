@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using Microsoft.AspNetCore.Components;
+using Pgr.AIHub.API.ChatInterface;
+using Pgr.AIHub.API.ChatInterface.Dummy;
 using WebClient.Components.UIComponents.ChatAgentWindow;
 using WebClient.Components.UIComponents.ConversationPreview;
 using WebClient.Components.UIServices;
@@ -22,6 +24,7 @@ public class ChatAgentViewModel : ViewModelBase
     public Guid Id { get; } = Guid.NewGuid();
 
     public DialogService DialogService { get; set; }
+    public IAiChatManager ChatManager { get; }
 
     public readonly ChatAgentWindowContextViewModel Context;
     public readonly ChatAgentWindowMessageOptionsViewModel MessageOptions;
@@ -46,6 +49,8 @@ public class ChatAgentViewModel : ViewModelBase
 
     public List<ConversationViewModel> Conversations { get; } = new();
 
+    private readonly List<IAiChatClientWorker> chatWorkers = new();
+
     private ConversationViewModel? activeChat;
 
     public ConversationViewModel? ActiveChat
@@ -66,6 +71,7 @@ public class ChatAgentViewModel : ViewModelBase
     public ChatAgentViewModel(Func<ComponentBase> getComponent)
         : base(getComponent)
     {
+        ChatManager = new AiChatManagerDummyImp();
         Context = new ChatAgentWindowContextViewModel(() => Component);
         MessageOptions = new ChatAgentWindowMessageOptionsViewModel(this, () => Component);
         ConversationPreview = new ConversationPreviewViewModel(() => Component);
@@ -75,10 +81,7 @@ public class ChatAgentViewModel : ViewModelBase
 
     public void UserInput_NewThread()
     {
-        var conversation = CreateConversation();
-
-        Conversations.Add(conversation);
-        ActiveChat = conversation;
+        AddConversation();
     }
 
     public void UserInput_DeleteThread()
@@ -92,10 +95,10 @@ public class ChatAgentViewModel : ViewModelBase
         if (Conversations.Count <= 1)
         {
             var oldChat = ActiveChat ?? Conversations.FirstOrDefault();
-            var replacementConversation = CreateConversation();
-            Conversations.Add(replacementConversation);
+            var replacementConversation = AddConversation();
             if (oldChat != null)
             {
+                RemoveConversation(oldChat);
                 Conversations.Remove(oldChat);
             }
 
@@ -104,7 +107,9 @@ public class ChatAgentViewModel : ViewModelBase
             return;
         }
 
-        Conversations.Remove(ActiveChat);
+        var activeChat = ActiveChat;
+        RemoveConversation(activeChat);
+        Conversations.Remove(activeChat);
         ActiveChat = Conversations.Count > 0 ? Conversations[0] : null;
 
         EnsureConversationExists();
@@ -162,6 +167,30 @@ public class ChatAgentViewModel : ViewModelBase
         };
     }
 
+    private ConversationViewModel AddConversation()
+    {
+        var conversation = CreateConversation();
+        Conversations.Add(conversation);
+        chatWorkers.Add(ChatManager.CreateChat());
+        ActiveChat = conversation;
+        return conversation;
+    }
+
+    private void RemoveConversation(ConversationViewModel conversation)
+    {
+        var index = Conversations.FindIndex(x => x.Id == conversation.Id);
+        if (index < 0)
+        {
+            return;
+        }
+
+        if (index < chatWorkers.Count)
+        {
+            ChatManager.DeleteChat(chatWorkers[index]);
+            chatWorkers.RemoveAt(index);
+        }
+    }
+
     private void EnsureConversationExists()
     {
         if (Conversations.Count > 0)
@@ -174,8 +203,6 @@ public class ChatAgentViewModel : ViewModelBase
             return;
         }
 
-        var conversation = CreateConversation();
-        Conversations.Add(conversation);
-        ActiveChat = conversation;
+        AddConversation();
     }
 }
