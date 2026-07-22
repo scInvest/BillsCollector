@@ -1,4 +1,5 @@
 using System;
+using Pgr.AIHub.API.ChatInterface;
 using Microsoft.AspNetCore.Components;
 using WebClient.ViewModels;
 
@@ -8,13 +9,16 @@ public class ConversationViewModel : ViewModelBase
 {
     public Guid Id { get; } = Guid.NewGuid();
 
+    public IAiChatClientWorker Chat { get; }
+
     private string title = string.Empty;
 
-    public event Action<string>? UserInput_PropertyChanged;
+    public event Action<string>? UserInput_TitleChanged;
 
-    public ConversationViewModel(Func<ComponentBase> getComponent)
+    public ConversationViewModel(Func<ComponentBase> getComponent, IAiChatClientWorker chat)
         : base(getComponent)
     {
+        Chat = chat;
     }
 
     public string Title
@@ -29,7 +33,7 @@ public class ConversationViewModel : ViewModelBase
 
             title = value;
             OnPropertyChanged();
-            UserInput_PropertyChanged?.Invoke(nameof(Title));
+            UserInput_TitleChanged?.Invoke(nameof(Title));
         }
     }
 }

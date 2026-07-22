@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System.ComponentModel;
 using WebClient.Components.UIComponents.ChatAgent;
 using WebClient.Components.UIServices;
 
 namespace WebClient.Components.UIComponents.ChatAgentWindow;
 
-public partial class ChatAgentWindow : ComponentBase
+public partial class ChatAgentWindow : ComponentBase, IDisposable
 {
+    private ChatAgentViewModel? subscribedViewModel;
+
     [Inject]
     public DialogService DialogService { get; set; } = default!;
 
@@ -18,12 +21,24 @@ public partial class ChatAgentWindow : ComponentBase
     public ChatAgentViewModel ViewModel => ViewModelParam?.Invoke() ?? throw new InvalidOperationException();
 
     private ElementReference MessageInputElement;
-    private string MessageDraft = string.Empty;
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
         ViewModel.DialogService = DialogService;
+
+        if (ReferenceEquals(subscribedViewModel, ViewModel))
+        {
+            return;
+        }
+
+        if (subscribedViewModel is not null)
+        {
+            subscribedViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+        }
+
+        subscribedViewModel = ViewModel;
+        subscribedViewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -56,14 +71,7 @@ public partial class ChatAgentWindow : ComponentBase
             return;
         }
 
-        foreach (var conversation in ViewModel.Conversations)
-        {
-            if (conversation.Id == conversationId)
-            {
-                ViewModel.ActiveChat = conversation;
-                return;
-            }
-        }
+        ViewModel.UserInput_SelectConversation(conversationId);
     }
 
     private async Task UserInput_RenameConversation(ConversationViewModel? conversation)
@@ -78,12 +86,26 @@ public partial class ChatAgentWindow : ComponentBase
 
     private async Task UserInput_MessageDraftChanged(ChangeEventArgs args)
     {
-        MessageDraft = args.Value?.ToString() ?? string.Empty;
+        ViewModel.MessageDraft = args.Value?.ToString() ?? string.Empty;
         await ResizeMessageInputAsync();
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        _ = InvokeAsync(StateHasChanged);
     }
 
     private async Task ResizeMessageInputAsync()
     {
         await JSRuntime.InvokeVoidAsync("chatAgentWindow.autoResizeTextarea", MessageInputElement);
+    }
+
+    public void Dispose()
+    {
+        if (subscribedViewModel is not null)
+        {
+            subscribedViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            subscribedViewModel = null;
+        }
     }
 }

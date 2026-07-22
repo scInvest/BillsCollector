@@ -106,11 +106,11 @@ public class ChatAgentWindowMessageOptionsViewModel : ViewModelBase
     {
         if (parentViewModel.State == ChatAgentViewModel.ChatAgentState.Ready)
         {
-            parentViewModel.UserInput_SendChatAgentMessage();
+            await parentViewModel.UserInput_SendChatAgentMessage();
         }
         else if (parentViewModel.State == ChatAgentViewModel.ChatAgentState.Working)
         {
-            parentViewModel.UserInput_CancelChatAgentMessage();
+            await parentViewModel.UserInput_CancelChatAgentMessage();
         }
         else
         {
