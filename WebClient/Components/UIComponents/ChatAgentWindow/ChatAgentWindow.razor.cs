@@ -9,6 +9,7 @@ namespace WebClient.Components.UIComponents.ChatAgentWindow;
 public partial class ChatAgentWindow : ComponentBase, IDisposable
 {
     private ChatAgentViewModel? subscribedViewModel;
+    private DotNetObjectReference<ChatAgentWindow>? dotNetReference;
 
     [Inject]
     public DialogService DialogService { get; set; } = default!;
@@ -45,8 +46,19 @@ public partial class ChatAgentWindow : ComponentBase, IDisposable
     {
         if (firstRender)
         {
+            dotNetReference = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync(
+                "chatAgentWindow.registerMessageInput",
+                MessageInputElement,
+                dotNetReference);
             await ResizeMessageInputAsync();
         }
+    }
+
+    [JSInvokable]
+    public async Task SubmitMessageFromKeyboard()
+    {
+        await ViewModel.MessageOptions.UserInput_SendOrCancelChatAgentMessage();
     }
 
     private void UserInput_NewThread()
@@ -107,5 +119,8 @@ public partial class ChatAgentWindow : ComponentBase, IDisposable
             subscribedViewModel.PropertyChanged -= ViewModel_PropertyChanged;
             subscribedViewModel = null;
         }
+
+        dotNetReference?.Dispose();
+        dotNetReference = null;
     }
 }

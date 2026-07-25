@@ -1,5 +1,34 @@
 window.chatAgentWindow = window.chatAgentWindow || {};
 
+window.chatAgentWindow.registerMessageInput = function (textarea, dotNetReference) {
+    if (!textarea || !dotNetReference) {
+        return;
+    }
+
+    textarea.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            dotNetReference.invokeMethodAsync("SubmitMessageFromKeyboard");
+        }
+    });
+};
+
+window.chatAgentWindow.registerTextInput = function (textarea, dotNetReference) {
+    if (!textarea || !dotNetReference) {
+        return;
+    }
+
+    textarea.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            dotNetReference.invokeMethodAsync("CancelTextInput");
+        } else if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            dotNetReference.invokeMethodAsync("SubmitTextInput");
+        }
+    });
+};
+
 window.chatAgentWindow.autoResizeTextarea = function (textarea) {
     if (!textarea) {
         return;

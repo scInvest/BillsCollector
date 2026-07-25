@@ -51,7 +51,20 @@
 
     private TaskCompletionSource<string?>? _tcs;
     private ElementReference TextareaElement;
+    private DotNetObjectReference<TextInputModal>? _dotNetReference;
     private Func<string, Result>? _validationFunc;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetReference = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync(
+                "chatAgentWindow.registerTextInput",
+                TextareaElement,
+                _dotNetReference);
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -62,6 +75,20 @@
     public void Dispose()
     {
         DialogService.UnregisterTextInputComponent();
+        _dotNetReference?.Dispose();
+        _dotNetReference = null;
+    }
+
+    [JSInvokable]
+    public Task SubmitTextInput()
+    {
+        return OnOkClicked();
+    }
+
+    [JSInvokable]
+    public Task CancelTextInput()
+    {
+        return OnCancelClicked();
     }
 
     // Show the modal (call from parent via DialogService.ShowTextInput)
