@@ -165,7 +165,8 @@ public class ChatAgentViewModel : ViewModelBase
                 {
                     Title = context.Title
                 })
-                .ToArray()
+                .ToArray(),
+            ContextMode = Context.SelectedContextMode
         };
 
         State = ChatAgentState.Working;

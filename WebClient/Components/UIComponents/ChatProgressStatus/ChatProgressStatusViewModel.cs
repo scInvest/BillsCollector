@@ -28,18 +28,15 @@ public class ChatProgressStatusViewModel : ViewModelBase
         InProgress
     }
 
-    public IReadOnlyList<IProgressStatusItem> ProgressStatuses { get; }
+    private readonly List<IProgressStatusItem> progressStatuses = new();
+
+    public IReadOnlyList<IProgressStatusItem> ProgressStatuses => progressStatuses;
 
     private RequestStatus currentStatus = RequestStatus.Stopped;
 
     public ChatProgressStatusViewModel(Func<ComponentBase> getComponent)
         : base(getComponent)
     {
-        ProgressStatuses = new IProgressStatusItem[]
-        {
-            new ProgressStatusItem("progress_placeholder", "in progress"),
-            new ProgressStatusItem("progress_placeholder", "waiting")
-        };
     }
 
     public RequestStatus CurrentStatus
@@ -59,21 +56,39 @@ public class ChatProgressStatusViewModel : ViewModelBase
 
     public void UserInput_StartRequest()
     {
+        AddProgressStatuses();
         CurrentStatus = RequestStatus.InProgress;
     }
 
     public void UserInput_StopRequest()
     {
-        CurrentStatus = RequestStatus.Stopped;
+        System_stopRequest();
     }
 
     public void System_progressUpdate()
     {
+        AddProgressStatuses();
         CurrentStatus = RequestStatus.InProgress;
+    }
+
+    private void AddProgressStatuses()
+    {
+        if (progressStatuses.Count == 0)
+        {
+            progressStatuses.Add(new ProgressStatusItem("Czekamy na odpowiedź", "w toku"));
+            progressStatuses.Add(new ProgressStatusItem("Przygotowujemy odpowiedź", "oczekiwanie"));
+            OnPropertyChanged(nameof(ProgressStatuses));
+        }
     }
 
     public void System_stopRequest()
     {
+        if (progressStatuses.Count > 0)
+        {
+            progressStatuses.Clear();
+            OnPropertyChanged(nameof(ProgressStatuses));
+        }
+
         CurrentStatus = RequestStatus.Stopped;
     }
 }

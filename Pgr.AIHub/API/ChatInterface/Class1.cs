@@ -18,6 +18,13 @@ public enum ContentType
     Selection
 }
 
+public enum AiChatContextMode
+{
+    LineByLine,
+    AllAtOnce,
+    Auto
+}
+
 public interface IAiChatMessage
 {
     AiChatRole Role { get; }
@@ -51,6 +58,8 @@ public interface IAiChatRequest
 
     IAiChatOptions Options { get; }
 
+    AiChatContextMode ContextMode { get; }
+
 }
 
 public sealed class AiChatMessageReceivedEventArgsDummyImp : EventArgs
@@ -68,6 +77,7 @@ public sealed class AiChatMessageReceivedEventArgsDummyImp : EventArgs
 public interface IAiChatClientWorker
 {
     event EventHandler<AiChatMessageReceivedEventArgsDummyImp>? MessageReceived;
+    event EventHandler? ChatStopped;
 
     IReadOnlyList<IAiChatMessage> Messages { get; }
 

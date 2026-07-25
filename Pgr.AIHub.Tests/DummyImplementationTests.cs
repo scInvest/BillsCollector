@@ -39,6 +39,7 @@ public class DummyImplementationTests
     {
         var chat = new AiChatClientWorkerDummyImp();
         var received = new TaskCompletionSource<IAiChatMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var stopped = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var options = new AiChatOptionsDummyImp
         {
             Model = "GPT-5.4",
@@ -47,10 +48,12 @@ public class DummyImplementationTests
         };
 
         chat.MessageReceived += (_, args) => received.TrySetResult(args.Message);
+        chat.ChatStopped += (_, _) => stopped.TrySetResult();
 
         await chat.SendAsync("hello", options);
 
         var message = await received.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await stopped.Task.WaitAsync(TimeSpan.FromSeconds(2));
 
         Assert.AreEqual(2, chat.Messages.Count);
         Assert.AreEqual(AiChatRole.User, chat.Messages[0].Role);
@@ -64,6 +67,7 @@ public class DummyImplementationTests
     {
         var chat = new AiChatClientWorkerDummyImp();
         var eventRaised = false;
+        var stopped = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var options = new AiChatOptionsDummyImp
         {
             Model = "GPT-5.4",
@@ -71,14 +75,27 @@ public class DummyImplementationTests
         };
 
         chat.MessageReceived += (_, _) => eventRaised = true;
+        chat.ChatStopped += (_, _) => stopped.TrySetResult();
 
         var sendTask = chat.SendAsync("stop me", options, CancellationToken.None);
         await chat.CancelAsync();
         await sendTask;
+        await stopped.Task.WaitAsync(TimeSpan.FromSeconds(2));
 
         Assert.IsFalse(eventRaised);
         Assert.AreEqual(1, chat.Messages.Count);
         Assert.AreEqual(AiChatRole.User, chat.Messages[0].Role);
+    }
+
+    [TestMethod]
+    public async Task SendAsync_WhenRequestIsNull_RaisesChatStoppedAndPropagatesException()
+    {
+        var chat = new AiChatClientWorkerDummyImp();
+        var stopped = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        chat.ChatStopped += (_, _) => stopped.TrySetResult();
+
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(() => chat.SendAsync((IAiChatRequest)null!));
+        await stopped.Task.WaitAsync(TimeSpan.FromSeconds(2));
     }
 
     [TestMethod]

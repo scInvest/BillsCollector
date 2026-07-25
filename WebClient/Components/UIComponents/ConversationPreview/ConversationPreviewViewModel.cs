@@ -104,6 +104,7 @@ public class ConversationPreviewViewModel : ViewModelBase
 
         subscribedChat = activeChat.Chat;
         subscribedChat.MessageReceived += ActiveChat_MessageReceived;
+        subscribedChat.ChatStopped += ActiveChat_ChatStopped;
     }
 
     private void UnsubscribeFromActiveChat()
@@ -114,11 +115,17 @@ public class ConversationPreviewViewModel : ViewModelBase
         }
 
         subscribedChat.MessageReceived -= ActiveChat_MessageReceived;
+        subscribedChat.ChatStopped -= ActiveChat_ChatStopped;
         subscribedChat = null;
     }
 
     private void ActiveChat_MessageReceived(object? sender, AiChatMessageReceivedEventArgsDummyImp e)
     {
         UserInput_RefreshMessages();
+    }
+
+    private void ActiveChat_ChatStopped(object? sender, EventArgs e)
+    {
+        ProgressStatus.System_stopRequest();
     }
 }

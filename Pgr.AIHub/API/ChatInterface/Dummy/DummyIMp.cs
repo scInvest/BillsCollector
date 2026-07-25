@@ -36,6 +36,8 @@ namespace Pgr.AIHub.API.ChatInterface.Dummy
         public IReadOnlyList<IAiChatContextItem> ContextItems { get; set; } = Array.Empty<IAiChatContextItem>();
 
         public IAiChatOptions Options { get; set; } = new AiChatOptionsDummyImp();
+
+        public AiChatContextMode ContextMode { get; set; } = AiChatContextMode.LineByLine;
     }
 
     public class AiChatClientWorkerDummyImp : IAiChatClientWorker
@@ -44,6 +46,7 @@ namespace Pgr.AIHub.API.ChatInterface.Dummy
         private bool cancelRequested;
 
         public event EventHandler<AiChatMessageReceivedEventArgsDummyImp>? MessageReceived;
+        public event EventHandler? ChatStopped;
 
         public IReadOnlyList<IAiChatMessage> Messages => messages;
 
@@ -51,34 +54,42 @@ namespace Pgr.AIHub.API.ChatInterface.Dummy
 
         public async Task SendAsync(IAiChatRequest request, CancellationToken cancellationToken = default)
         {
-            if (request == null)
+            try
             {
-                throw new ArgumentNullException(nameof(request));
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request));
+                }
+
+                cancelRequested = false;
+
+                messages.Add(new AiChatMessageDummyImp
+                {
+                    Role = AiChatRole.User,
+                    Content = request.Prompt
+                });
+
+                var random = Random.Shared.Next(1000, 3000);
+                await Task.Delay(random, cancellationToken);
+
+                if (cancelRequested || cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                var reply = new AiChatMessageDummyImp
+                {
+                    Role = AiChatRole.Assistant,
+                    Content = $"AI: {request.Prompt}"
+                };
+
+                messages.Add(reply);
+                MessageReceived?.Invoke(this, new AiChatMessageReceivedEventArgsDummyImp(this, reply));
             }
-
-            cancelRequested = false;
-
-            messages.Add(new AiChatMessageDummyImp
+            finally
             {
-                Role = AiChatRole.User,
-                Content = request.Prompt
-            });
-
-            await Task.Delay(100, cancellationToken);
-
-            if (cancelRequested || cancellationToken.IsCancellationRequested)
-            {
-                return;
+                ChatStopped?.Invoke(this, EventArgs.Empty);
             }
-
-            var reply = new AiChatMessageDummyImp
-            {
-                Role = AiChatRole.Assistant,
-                Content = $"AI: {request.Prompt}"
-            };
-
-            messages.Add(reply);
-            MessageReceived?.Invoke(this, new AiChatMessageReceivedEventArgsDummyImp(this, reply));
         }
 
         public Task SendAsync(string prompt, IAiChatOptions Options, CancellationToken cancellationToken = default)

@@ -1,20 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
+using Pgr.AIHub.API.ChatInterface;
 using WebClient.ViewModels;
 
 namespace WebClient.Components.UIComponents.ChatAgentWindow;
 
 public class ChatAgentWindowContextViewModel : ViewModelBase
 {
-    public enum ContextMode
-    {
-        LineByLine,
-        AllAtOnce,
-        Auto
-    }
-
-    public sealed record ContextModeOption(ContextMode Value, string Text);
+    public sealed record ContextModeOption(AiChatContextMode Value, string Text);
 
     public sealed class ContextItemViewModel
     {
@@ -30,12 +24,12 @@ public class ChatAgentWindowContextViewModel : ViewModelBase
 
     private static readonly IReadOnlyList<ContextModeOption> contextModes = new[]
     {
-        new ContextModeOption(ContextMode.LineByLine, "Linia-po-linii"),
-        new ContextModeOption(ContextMode.AllAtOnce, "Wszystko naraz"),
-        new ContextModeOption(ContextMode.Auto, "Auto")
+        new ContextModeOption(AiChatContextMode.LineByLine, "Linia-po-linii"),
+        new ContextModeOption(AiChatContextMode.AllAtOnce, "Wszystko naraz"),
+        new ContextModeOption(AiChatContextMode.Auto, "Auto")
     };
 
-    private ContextMode selectedContextMode = contextModes[0].Value;
+    private AiChatContextMode selectedContextMode = contextModes[0].Value;
     private string selectedContextModeText = contextModes[0].Text;
 
     public ChatAgentWindowContextViewModel(Func<ComponentBase> getComponent)
@@ -51,7 +45,7 @@ public class ChatAgentWindowContextViewModel : ViewModelBase
 
     public IReadOnlyList<ContextModeOption> ContextModes => contextModes;
 
-    public ContextMode SelectedContextMode
+    public AiChatContextMode SelectedContextMode
     {
         get => selectedContextMode;
         set
@@ -84,7 +78,7 @@ public class ChatAgentWindowContextViewModel : ViewModelBase
         }
     }
 
-    private static string GetContextModeText(ContextMode contextMode)
+    private static string GetContextModeText(AiChatContextMode contextMode)
     {
         foreach (var mode in contextModes)
         {
