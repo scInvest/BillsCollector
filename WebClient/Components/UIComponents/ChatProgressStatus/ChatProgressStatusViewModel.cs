@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 using Microsoft.AspNetCore.Components;
 using WebClient.ViewModels;
 
@@ -29,8 +32,14 @@ public class ChatProgressStatusViewModel : ViewModelBase
     }
 
     private readonly List<IProgressStatusItem> progressStatuses = new();
+    private readonly Stopwatch requestTimer = new();
+    private Timer? requestTimerUpdate;
 
     public IReadOnlyList<IProgressStatusItem> ProgressStatuses => progressStatuses;
+
+    public string ElapsedTime => requestTimer.Elapsed.TotalHours >= 1
+        ? requestTimer.Elapsed.ToString(@"hh\:mm\:ss")
+        : requestTimer.Elapsed.ToString(@"mm\:ss");
 
     private RequestStatus currentStatus = RequestStatus.Stopped;
 
@@ -56,6 +65,15 @@ public class ChatProgressStatusViewModel : ViewModelBase
 
     public void UserInput_StartRequest()
     {
+        requestTimerUpdate?.Dispose();
+        requestTimer.Restart();
+        OnPropertyChanged(nameof(ElapsedTime));
+        requestTimerUpdate = new Timer(
+            RequestTimerUpdate,
+            null,
+            TimeSpan.FromSeconds(1),
+            TimeSpan.FromSeconds(1));
+
         AddProgressStatuses();
         CurrentStatus = RequestStatus.InProgress;
     }
@@ -63,6 +81,11 @@ public class ChatProgressStatusViewModel : ViewModelBase
     public void UserInput_StopRequest()
     {
         System_stopRequest();
+    }
+
+    private void RequestTimerUpdate(object? state)
+    {
+        OnPropertyChanged(nameof(ElapsedTime));
     }
 
     public void System_progressUpdate()
@@ -83,6 +106,11 @@ public class ChatProgressStatusViewModel : ViewModelBase
 
     public void System_stopRequest()
     {
+        requestTimerUpdate?.Dispose();
+        requestTimerUpdate = null;
+        requestTimer.Stop();
+        OnPropertyChanged(nameof(ElapsedTime));
+
         if (progressStatuses.Count > 0)
         {
             progressStatuses.Clear();

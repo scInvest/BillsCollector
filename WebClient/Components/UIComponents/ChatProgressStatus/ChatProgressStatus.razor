@@ -1,9 +1,17 @@
 <section class="chat-progress-status @GetStatusClass()">
     <div class="chat-progress-status__bubble" aria-live="polite" aria-atomic="true">
+        <div class="chat-progress-status__timer" role="timer" aria-label="Czas przetwarzania żądania">
+            <span class="chat-progress-status__timer-icon" aria-hidden="true">◷</span>
+            <span>@ViewModel.ElapsedTime</span>
+        </div>
+
         <ul class="chat-progress-status__items">
             @foreach (var item in ViewModel.ProgressStatuses)
             {
-                <li class="chat-progress-status__item">@item.GetDisplayText()</li>
+                var displayText = item.GetDisplayText();
+                <li class="chat-progress-status__item"
+                    title="@displayText"
+                    aria-label="@displayText">@displayText</li>
             }
         </ul>
     </div>

@@ -38,6 +38,26 @@
     color: #e5eefc;
 }
 
+.chat-progress-status__timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.18);
+    color: #bfdbfe;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.chat-progress-status__timer-icon {
+    color: #93c5fd;
+    font-size: 1rem;
+}
+
 .chat-progress-status__items {
     margin: 0;
     padding: 0;
@@ -50,8 +70,8 @@
     padding: 1px;
     font-size: 0.82rem;
     line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
